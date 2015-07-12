@@ -1,6 +1,8 @@
 MythCore
 ========
 
-MythCore v12.58 by Desch
+MythCore v12.54 by Desch
 
-Visit my portfolio desch.es
+zonewow.com
+wowtallercreador.com
+sourcewow.com
