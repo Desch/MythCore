@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -793,7 +793,7 @@ public:
         }
 
         InstanceScript* instance = creature->GetInstanceScript();
-        if(instance && instance->GetBossState(DATA_DEATHBRINGER_SAURFANG) != DONE)
+        if(instance && instance->GetBossState(DATA_DEATHBRINGER_SAURFANG) != DONE && instance->GetBossState(DATA_LADY_DEATHWHISPER) == DONE)
         {
             player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "We are ready to go, High Overlord. The Lich King must fall!", 631, -ACTION_START_EVENT);
             player->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
@@ -941,7 +941,7 @@ public:
     bool OnGossipHello(Player* pPlayer, Creature* pCreature)
     {
         InstanceScript* pInstance = pCreature->GetInstanceScript();
-        if(pInstance && pInstance->GetBossState(DATA_DEATHBRINGER_SAURFANG) != DONE)
+        if(pInstance && pInstance->GetBossState(DATA_DEATHBRINGER_SAURFANG) != DONE && pInstance->GetBossState(DATA_LADY_DEATHWHISPER) == DONE)
         {
             pPlayer->ADD_GOSSIP_ITEM(0, "Let it begin...", 631, -ACTION_START_EVENT + 1);
             pPlayer->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, pCreature->GetGUID());

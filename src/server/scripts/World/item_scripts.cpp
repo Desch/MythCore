@@ -1,7 +1,7 @@
 ﻿/*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -520,14 +520,14 @@ public:
         if(pPlayer)
         {
             pPlayer->CastSpell(pPlayer, 60458, true);
-            pPlayer->TextEmote("throws into the air its Titanium print Dalaran");
+            pPlayer->TextEmote("небрежно подкидывает в воздух свою Титановую печать Даларана");
             switch(irand(0, 1))
             {
                 case 1:
-                    pPlayer->TextEmote("eagle");
+                    pPlayer->TextEmote("обнаруживает что монета упала орлом");
                     break;
                 case 0:
-                    pPlayer->TextEmote("tail");
+                    pPlayer->TextEmote("обнаруживает что монета упала решкой");
                     break;
             }
         }

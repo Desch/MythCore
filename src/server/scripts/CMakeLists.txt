@@ -1,7 +1,7 @@
 #
 # Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
 #
-# Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
+# Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
 #
 # Myth Project's source is based on the Trinity Project source, you can find the
 # link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -17,6 +17,8 @@ file(GLOB_RECURSE scripts_world World/*.cpp World/*.h)
 file(GLOB_RECURSE scripts_spells Spells/*.cpp Spells/*.h)
 file(GLOB_RECURSE scripts_outdoorpvp OutdoorPvP/*.cpp OutdoorPvP/*.h)
 file(GLOB_RECURSE scripts_commands Commands/*.cpp Commands/*.h)
+file(GLOB_RECURSE scripts_chatlog ChatLog/*.cpp ChatLog/*.h)
+file(GLOB_RECURSE scripts_custom Custom/*.cpp Custom/*.h)
 
 source_group(EasternKingdoms FILES ${scripts_easternkingdoms})
 source_group(Kalimdor FILES ${scripts_kalimdor})
@@ -26,6 +28,8 @@ source_group(World FILES ${scripts_world})
 source_group(Spells FILES ${scripts_spells})
 source_group(OutdoorPvP FILES ${scripts_outdoorpvp})
 source_group(Commands FILES ${scripts_commands})
+source_group(ChatLog FILES ${scripts_chatlog})
+source_group(Custom FILES ${scripts_custom})
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 set(scripts_STAT_SRCS
@@ -42,6 +46,8 @@ set(scripts_STAT_SRCS
   ${scripts_spells}
   ${scripts_outdoorpvp}
   ${scripts_commands}
+  ${scripts_chatlog}
+  ${scripts_custom}
   ../game/AI/ScriptedAI/ScriptedEscortAI.cpp
   ../game/AI/ScriptedAI/ScriptedCreature.cpp
   ../game/AI/ScriptedAI/ScriptedFollowerAI.cpp

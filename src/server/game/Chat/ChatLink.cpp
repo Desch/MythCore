@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Copyright (C) 2012 SymphonyArt <http://symphonyart.com/>
  *
@@ -539,7 +539,13 @@ bool GlyphChatLink::Initialize(std::istringstream& iss)
     return true;
 }
 
-LinkExtractor::LinkExtractor(const char* msg) : _iss(msg) { }
+LinkExtractor::LinkExtractor(const char* msg) : _iss(msg)
+{
+}
+
+LinkExtractor::LinkExtractor(const std::string& msg) : _iss(msg)
+{
+}
 
 LinkExtractor::~LinkExtractor()
 {
@@ -697,4 +703,12 @@ bool LinkExtractor::IsValidMessage()
     }
 
     return true;
+}
+
+std::string LinkExtractor::RemoveLinks() const
+{
+    std::string s(_iss.str());
+    for (Links::const_reverse_iterator itr = _links.rbegin(); itr != _links.rend(); ++itr)
+        (*itr)->RemoveLink(s);
+    return s;
 }

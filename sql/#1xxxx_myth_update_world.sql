@@ -143,6 +143,9 @@ UPDATE `creature` SET `npcflag` = 1 WHERE `guid` = 117023; -- Archmage Vargoth
 -- Restore NPC Flags.
 UPDATE `creature` SET `npcflag` = 0 WHERE `guid` = 98174;
 DELETE FROM `smart_scripts` WHERE `entryorguid` = -98174;
+UPDATE `creature` SET `npcflag` = 0 WHERE `guid` = 57986;
+DELETE FROM `smart_scripts` WHERE `entryorguid` = -57986;
+
 DELETE FROM `creature_template_addon` WHERE `entry` = 19481;
 INSERT INTO `creature_template_addon`(`entry`,`mount`,`bytes1`,`bytes2`,`emote`,`auras`) VALUES
  (19481, 0, 0, 1, 0, NULL); -- Archmage Vargoth

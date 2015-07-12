@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -572,9 +572,9 @@ class npc_rotting_frost_giant : public CreatureScript
     public:
         npc_rotting_frost_giant() : CreatureScript("npc_rotting_frost_giant") { }
 
-        struct npc_rotting_frost_giantAI : public ScriptedAI
+        struct npc_rotting_frost_giantAI : public BossAI
         {
-            npc_rotting_frost_giantAI(Creature* pCreature): ScriptedAI(pCreature) { }
+            npc_rotting_frost_giantAI(Creature* pCreature): BossAI(pCreature, DATA_GUNSHIP_EVENT) { }
 
             void Reset()
             {
@@ -587,6 +587,28 @@ class npc_rotting_frost_giant : public CreatureScript
             void JustDied(Unit* /*pKiller*/)
             {
                 _events.Reset();
+                if(instance)
+                    instance->SetBossState(DATA_GUNSHIP_EVENT, DONE);
+            }
+            
+            void JustReachedHome()
+            {
+                if(instance)
+                    instance->SetBossState(DATA_GUNSHIP_EVENT, FAIL);
+            }
+            
+            void EnterCombat(Unit* who)
+            {
+                if(!instance->CheckRequiredBosses(DATA_GUNSHIP_EVENT, who->ToPlayer()))
+                {
+                    EnterEvadeMode();
+                    instance->DoCastSpellOnPlayers(LIGHT_S_HAMMER_TELEPORT);
+                    return;
+                }
+
+                DoZoneInCombat();
+                if(instance)
+                    instance->SetBossState(DATA_GUNSHIP_EVENT, IN_PROGRESS);
             }
 
             void UpdateAI(uint32 const diff)

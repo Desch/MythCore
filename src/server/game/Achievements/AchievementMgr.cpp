@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -2053,6 +2053,7 @@ void AchievementMgr::CompletedAchievement(AchievementEntry const* achievement)
         return;
 
     SendAchievementEarned(achievement);
+    GetPlayer()->CreateWowarmoryFeed(1, achievement->ID, 0, 0);
     CompletedAchievementData& ca =  m_completedAchievements[achievement->ID];
     ca.date = time(NULL);
     ca.changed = true;

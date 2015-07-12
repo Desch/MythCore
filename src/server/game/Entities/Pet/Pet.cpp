@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -1001,7 +1001,7 @@ bool Guardian::InitStatsForLevel(uint8 petlevel)
                         bonus += pSummoner->GetTotalAuraModifier(SPELL_AURA_MOD_MELEE_HASTE) + pSummoner->GetTotalAuraModifier(SPELL_AURA_MOD_MELEE_RANGED_HASTE);
                         ApplyCastTimePercentMod(bonus, true);
                     }
-                    SetBonusDamage(int32(m_owner->GetTotalAttackPowerValue(BASE_ATTACK) * 0.4f)); // attack power coefficient is 40%
+                    SetBonusDamage(int32(m_owner->GetTotalAttackPowerValue(BASE_ATTACK) * 0.4f)); // attack power coefficient is 0.4
                     SetBaseWeaponDamage(BASE_ATTACK, MINDAMAGE, float(petlevel - (petlevel / 4)));
                     SetBaseWeaponDamage(BASE_ATTACK, MAXDAMAGE, float(petlevel + (petlevel / 4)));
                     break;

@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -1427,6 +1427,7 @@ class Unit : public WorldObject
         float GetUnitDodgeChance()    const;
         float GetUnitParryChance()    const;
         float GetUnitBlockChance()    const;
+        float GetUnitMissChance(WeaponAttackType attType)     const;
         float GetUnitCriticalChance(WeaponAttackType attackType, const Unit* pVictim) const;
         int32 GetMechanicResistChance(const SpellEntry* spell);
         bool CanUseAttackType(uint8 attacktype) const

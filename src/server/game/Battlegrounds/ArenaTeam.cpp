@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -468,12 +468,13 @@ void ArenaTeamMember::ModifyMatchmakerRating(int32 mod, uint32 /*slot*/)
         MatchMakerRating += mod;
 }
 
-void ArenaTeam::BroadcastPacket(WorldPacket* pWP)
+void ArenaTeam::BroadcastPacket(WorldPacket* packet)
 {
     for(MemberList::const_iterator itr = Members.begin(); itr != Members.end(); ++itr)
     {
-        if(Player* pPlayer = sObjectMgr->GetPlayer(itr->Guid))
-            pPlayer->GetSession()->SendPacket(pWP);
+        Player* player = sObjectMgr->GetPlayer(itr->Guid);
+        if(player)
+            player->GetSession()->SendPacket(packet);
     }
 }
 
@@ -484,10 +485,17 @@ void ArenaTeam::BroadcastEvent(ArenaTeamEvents event, uint64 guid, uint8 strCoun
     data << uint8(strCount);
     switch(strCount)
     {
-        case 0:                                 break;
-        case 1: data << str1;                   break;
-        case 2: data << str1 << str2;           break;
-        case 3: data << str1 << str2 << str3;   break;
+        case 0:
+            break;
+        case 1:
+            data << str1;
+            break;
+        case 2:
+            data << str1 << str2;
+            break;
+        case 3:
+            data << str1 << str2 << str3;
+            break;
         default:
             sLog->outError("Unhandled strCount %u in ArenaTeam::BroadcastEvent", strCount);
             return;
@@ -567,9 +575,9 @@ uint32 ArenaTeam::GetPoints(uint32 memberRating)
     return (uint32) points;
 }
 
-uint32 ArenaTeam::GetAverageMMR(Group* pGroup) const
+uint32 ArenaTeam::GetAverageMMR(Group* group) const
 {
-    if(!pGroup)
+    if(!group)
         return 0;
 
     uint32 matchMakerRating = 0;
@@ -581,7 +589,7 @@ uint32 ArenaTeam::GetAverageMMR(Group* pGroup) const
             continue;
 
         // Skip if player is not member of group
-        if(!pGroup->IsMember(itr->Guid))
+        if(!group->IsMember(itr->Guid))
             continue;
 
         matchMakerRating += itr->MatchMakerRating;
@@ -613,6 +621,17 @@ int32 ArenaTeam::GetMatchmakerRatingMod(uint32 ownRating, uint32 opponentRating,
     float mod = won_mod - chance;
 
     // Work in progress:
+    /*
+    // This is a simulation, as there is not much info on how it really works
+    float confidence_mod = min(1.0f - fabs(mod), 0.5f);
+
+    // Apply confidence factor to the mod:
+    mod *= confidence_factor
+
+    // And only after that update the new confidence factor
+    confidence_factor -= ((confidence_factor - 1.0f) * confidence_mod) / confidence_factor;
+    */
+
     // Real rating modification
     mod *= 24.0f;
 
@@ -630,9 +649,9 @@ int32 ArenaTeam::GetRatingMod(uint32 ownRating, uint32 opponentRating, bool won 
     float mod;
 
     // TODO: Replace this hack with using the confidence factor (limiting the factor to 2.0f)
-    if(won && ownRating < 1300)
+    if (won && ownRating < 1300)
     {
-        if(ownRating < 1000)
+        if (ownRating < 1000)
             mod = 48.0f * (won_mod - chance);
         else
             mod = (24.0f + (24.0f * (1300.0f - float(ownRating)) / 300.0f)) * (won_mod - chance);
@@ -677,7 +696,7 @@ int32 ArenaTeam::WonAgainst(uint32 Own_MMRating, uint32 Opponent_MMRating, int32
     // Called when the team has won
     // Change in Matchmaker rating
     int32 mod = GetMatchmakerRatingMod(Own_MMRating, Opponent_MMRating, true);
-
+    
     // Change in Team Rating
     rating_change = GetRatingMod(Stats.Rating, Opponent_MMRating, true);
 

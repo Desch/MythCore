@@ -1,7 +1,7 @@
 #
 # Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
 #
-# Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
+# Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
 #
 # Myth Project's source is based on the Trinity Project source, you can find the
 # link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -182,15 +182,21 @@ if( WIN32 )
   add_custom_command(TARGET worldserver
     POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/worldserver.conf.dist ${CMAKE_BINARY_DIR}/bin/$(ConfigurationName)/
+    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/innormative_words.txt.dist ${CMAKE_BINARY_DIR}/bin/$(ConfigurationName)/
+    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/letter_analogs.txt.dist ${CMAKE_BINARY_DIR}/bin/$(ConfigurationName)/
   )
 endif()
 
 if( UNIX )
   install(TARGETS worldserver DESTINATION bin)
   install(FILES worldserver.conf.dist DESTINATION etc)
+  install(FILES innormative_words.txt.dist DESTINATION bin)
+  install(FILES letter_analogs.txt.dist DESTINATION bin)
 elseif( WIN32 )
   install(TARGETS worldserver DESTINATION "${CMAKE_INSTALL_PREFIX}")
   install(FILES worldserver.conf.dist DESTINATION "${CMAKE_INSTALL_PREFIX}")
+  install(FILES innormative_words.txt.dist DESTINATION "${CMAKE_INSTALL_PREFIX}")
+  install(FILES letter_analogs.txt.dist DESTINATION "${CMAKE_INSTALL_PREFIX}")
 endif()
 
 # Generate precompiled header

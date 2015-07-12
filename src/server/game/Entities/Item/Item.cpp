@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -18,6 +18,7 @@
 #include "SpellMgr.h"
 #include "ScriptMgr.h"
 #include "ConditionMgr.h"
+#include "../../../scripts/Custom/Transmogrification.h"
 
 void AddItemsSetItem(Player* player, Item* item)
 {
@@ -267,6 +268,13 @@ bool Item::Create(uint32 guidlow, uint32 itemid, Player const* owner)
 
     SetUInt32Value(ITEM_FIELD_DURATION, abs(itemProto->Duration));
     SetUInt32Value(ITEM_FIELD_CREATE_PLAYED_TIME, 0);
+    
+    if(itemProto->Quality > 2 && itemProto->Flags != 2048 && (itemProto->Class == ITEM_CLASS_WEAPON || itemProto->Class == ITEM_CLASS_ARMOR))
+    {
+        if(!GetOwner())
+            return true;
+        GetOwner()->CreateWowarmoryFeed(2, itemid, guidlow, itemProto->Quality);
+    }
     return true;
 }
 
@@ -464,6 +472,7 @@ bool Item::LoadFromDB(uint32 guid, uint64 owner_guid, Field* fields, uint32 entr
 /*static*/
 void Item::DeleteFromDB(SQLTransaction& trans, uint32 itemGuid)
 {
+    Transmogrification::DeleteFakeFromDB(itemGuid); // custom
     PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_ITEM_INSTANCE);
     stmt->setUInt32(0, itemGuid);
     trans->Append(stmt);

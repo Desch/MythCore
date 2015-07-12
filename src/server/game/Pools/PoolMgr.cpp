@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Copyright (C) 2012 SymphonyArt <http://symphonyart.com/>
  *
@@ -354,7 +354,7 @@ void PoolGroup<Creature>::Spawn1Object(PoolObject* obj)
         sObjectMgr->AddCreatureToGrid(obj->guid, data);
 
         // Spawn if necessary (loaded grids only)
-        Map* map = const_cast<Map*>(sMapMgr->CreateBaseMap(data->mapid));
+Map* map = sMapMgr->CreateBaseMap(data->mapid);
         // We use spawn coords to spawn
         if(!map->Instanceable() && map->IsLoaded(data->posX, data->posY))
         {
@@ -380,7 +380,7 @@ void PoolGroup<GameObject>::Spawn1Object(PoolObject* obj)
         sObjectMgr->AddGameobjectToGrid(obj->guid, data);
         // Spawn if necessary (loaded grids only)
         // this base map checked as non-instanced and then only existed
-        Map* map = const_cast<Map*>(sMapMgr->CreateBaseMap(data->mapid));
+        Map* map = sMapMgr->CreateBaseMap(data->mapid);
         // We use current coords to unspawn, not spawn coords since creature can have changed grid
         if(!map->Instanceable() && map->IsLoaded(data->posX, data->posY))
         {

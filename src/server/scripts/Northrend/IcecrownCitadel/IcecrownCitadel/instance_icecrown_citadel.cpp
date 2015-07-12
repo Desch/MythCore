@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -84,6 +84,7 @@ class instance_icecrown_citadel : public InstanceMapScript
                 TeamInInstance                  = 0;
                 HeroicAttempts                  = MaxHeroicAttempts;
                 LadyDeathwisperElevatorGUID     = 0;
+                GunShipBattleCacheAGuid         = 0;
                 DeathbringerSaurfangGUID        = 0;
                 DeathbringerSaurfangDoorGUID    = 0;
                 DeathbringerSaurfangEventGUID   = 0;
@@ -452,6 +453,18 @@ class instance_icecrown_citadel : public InstanceMapScript
                         FrostwingDoor = go->GetGUID();
                         AddDoor(go, true);
                         break;
+                    case GO_GUNSHIP_ARMORY_A_10:
+                    case GO_GUNSHIP_ARMORY_A_25:
+                    case GO_GUNSHIP_ARMORY_A_10H:
+                    case GO_GUNSHIP_ARMORY_A_25H:
+                        GunShipBattleCacheAGuid = go->GetGUID();
+                        break;
+                    case GO_GUNSHIP_ARMORY_H_10:
+                    case GO_GUNSHIP_ARMORY_H_25:
+                    case GO_GUNSHIP_ARMORY_H_10H:
+                    case GO_GUNSHIP_ARMORY_H_25H:
+                        GunShipBattleCacheAGuid = go->GetGUID();
+                        break;
                     case GO_DEATHBRINGER_S_CACHE_10N:
                     case GO_DEATHBRINGER_S_CACHE_25N:
                     case GO_DEATHBRINGER_S_CACHE_10H:
@@ -715,8 +728,18 @@ class instance_icecrown_citadel : public InstanceMapScript
 
                 switch(type)
                 {
+                    case DATA_GUNSHIP_EVENT:
+                        switch(state)
+                        {
+                            case DONE:
+                                DoRespawnGameObject(GunShipBattleCacheAGuid, 7*DAY);
+                                break;
+                            case NOT_STARTED:
+                                break;
+                        }
+                        break;
                     case DATA_LADY_DEATHWHISPER:
-                        SetBossState(DATA_GUNSHIP_EVENT, state); // TEMP HACK UNTIL GUNSHIP SCRIPTED
+                        //SetBossState(DATA_GUNSHIP_EVENT, state); // TEMP HACK UNTIL GUNSHIP SCRIPTED
                         if(state == DONE)
                         {
                             if(GameObject* pGO = instance->GetGameObject(LadyDeathwisperElevatorGUID))
@@ -1210,6 +1233,7 @@ class instance_icecrown_citadel : public InstanceMapScript
         protected:
             std::set<uint64> ColdflameJetGUIDs;
             uint64 LadyDeathwisperElevatorGUID;
+            uint64 GunShipBattleCacheAGuid;
             uint64 DeathbringerSaurfangGUID;
             uint64 DeathbringerSaurfangDoorGUID;
             uint64 DeathbringerSaurfangEventGUID; // Muradin Bronzebeard or High Overlord Saurfang

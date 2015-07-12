@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -30,13 +30,14 @@ class MapManager
     typedef std::vector<bool> InstanceIds;
 
     public:
-        Map* CreateMap(uint32, const WorldObject* obj, uint32 instanceId);
-        Map const* CreateBaseMap(uint32 id) const { return const_cast<MapManager*>(this)->_createBaseMap(id); }
-        Map* FindMap(uint32 mapid, uint32 instanceId = 0) const;
+        Map* CreateBaseMap(uint32 mapId);
+        Map* FindBaseNonInstanceMap(uint32 mapId) const;
+        Map* CreateMap(uint32 mapId, Player* player);
+		Map* FindMap(uint32 mapId, uint32 instanceId) const;
 
         uint16 GetAreaFlag(uint32 mapid, float x, float y, float z) const
         {
-            Map const* m = CreateBaseMap(mapid);
+            Map const* m = const_cast<MapManager*>(this)->CreateBaseMap(mapid);
             return m->GetAreaFlag(x, y, z);
         }
         uint32 GetAreaId(uint32 mapid, float x, float y, float z) const
@@ -148,16 +149,15 @@ class MapManager
         int i_GridStateErrorCount;
         MapManager();
         ~MapManager();
+		
+		Map* FindBaseMap(uint32 mapId) const
+		{
+			MapMapType::const_iterator iter = i_maps.find(mapId);
+			return (iter == i_maps.end() ? NULL : iter->second);
+		}
 
         MapManager(const MapManager &);
         MapManager& operator=(const MapManager &);
-
-        Map* _createBaseMap(uint32 id);
-        Map* _findMap(uint32 id) const
-        {
-            MapMapType::const_iterator iter = i_maps.find(id);
-            return (iter == i_maps.end() ? NULL : iter->second);
-        }
 
         ACE_Thread_Mutex Lock;
         uint32 i_gridCleanUpDelay;

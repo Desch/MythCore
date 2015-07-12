@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -418,6 +418,8 @@ void World::LoadConfigSettings(bool reload)
     rate_values[RATE_XP_KILL]     = sConfig->GetFloatDefault("Rate.XP.Kill", 1.0f);
     rate_values[RATE_XP_QUEST]    = sConfig->GetFloatDefault("Rate.XP.Quest", 1.0f);
     rate_values[RATE_XP_EXPLORE]  = sConfig->GetFloatDefault("Rate.XP.Explore", 1.0f);
+    rate_values[RATE_XP_WEEKEND]  = sConfig->GetFloatDefault("Rate.XP.Weekend", 2.0f);
+    m_int_configs[CONFIG_RATE_XP_WEEKEND_EVID] = sConfig->GetIntDefault("Rate.XP.Weekend.EVID", 75);
     rate_values[RATE_REPAIRCOST]  = sConfig->GetFloatDefault("Rate.RepairCost", 1.0f);
     if(rate_values[RATE_REPAIRCOST] < 0.0f)
     {
@@ -786,6 +788,19 @@ void World::LoadConfigSettings(bool reload)
         sLog->outError("MinPetitionSigns (%i) must be in range 0..9. Set to 9.", m_int_configs[CONFIG_MIN_PETITION_SIGNS]);
         m_int_configs[CONFIG_MIN_PETITION_SIGNS] = 9;
     }
+    
+    rate_values[RATE_PVP_RANK_EXTRA_HONOR] = sConfig->GetFloatDefault("PvPRank.Rate.ExtraHonor", 1);
+    std::string s_pvp_ranks = sConfig->GetStringDefault("PvPRank.HKPerRank", "10,50,100,200,450,750,1300,2000,3500,6000,9500,15000,21000,30000");
+    char *c_pvp_ranks = const_cast<char*>(s_pvp_ranks.c_str());
+    for (int i = 0; i !=HKRANKMAX; i++)
+    {
+        if (i==0)
+            pvp_ranks[0] = 0;
+        else if (i==1)
+            pvp_ranks[1] = atoi(strtok (c_pvp_ranks, ","));
+        else
+            pvp_ranks[i] = atoi(strtok (NULL, ","));
+    }
 
     m_int_configs[CONFIG_GM_LOGIN_STATE]        = sConfig->GetIntDefault("GM.LoginState", 2);
     m_int_configs[CONFIG_GM_VISIBLE_STATE]      = sConfig->GetIntDefault("GM.Visible", 2);
@@ -1119,6 +1134,30 @@ void World::LoadConfigSettings(bool reload)
     m_bool_configs[CONFIG_MOVEMENT_CHECKS_PLANE]        = sConfig->GetBoolDefault("MovementChecker.plane", true);
     m_bool_configs[CONFIG_MOVEMENT_CHECKS_WATERWALK]    = sConfig->GetBoolDefault("MovementChecker.waterwalk", true);
     m_bool_configs[CONFIG_MOVEMENT_CHECKS_MULTIJUMP]    = sConfig->GetBoolDefault("MovementChecker.multijump", true);
+    
+    // transmogrification system
+    m_int_configs[CONFIG_REQUIREGOLD] = (uint32)sConfig->GetIntDefault("Transmogrification.RequireGold", 1);
+    m_float_configs[CONFIG_GOLDMODIFIER] = sConfig->GetFloatDefault("Transmogrification.GoldModifier", 1.0f);
+    m_int_configs[CONFIG_GOLDCOST] = (uint32)sConfig->GetIntDefault("Transmogrification.GoldCost", 100000);
+
+    m_bool_configs[CONFIG_REQUIRETOKEN] = sConfig->GetBoolDefault("Transmogrification.RequireToken", false);
+    m_int_configs[CONFIG_TOKENENTRY] = (uint32)sConfig->GetIntDefault("Transmogrification.TokenEntry", 49426);
+    m_int_configs[CONFIG_TOKENAMOUNT] = (uint32)sConfig->GetIntDefault("Transmogrification.TokenAmount", 1);
+    m_bool_configs[CONFIG_ALLOWPOOR] = sConfig->GetBoolDefault("Transmogrification.AllowPoor", false);
+    m_bool_configs[CONFIG_ALLOWCOMMON] = sConfig->GetBoolDefault("Transmogrification.AllowCommon", false);
+    m_bool_configs[CONFIG_ALLOWUNCOMMON] = sConfig->GetBoolDefault("Transmogrification.AllowUncommon", true);
+    m_bool_configs[CONFIG_ALLOWRARE] = sConfig->GetBoolDefault("Transmogrification.AllowRare", true);
+    m_bool_configs[CONFIG_ALLOWEPIC] = sConfig->GetBoolDefault("Transmogrification.AllowEpic", true);
+    m_bool_configs[CONFIG_ALLOWLEGENDARY] = sConfig->GetBoolDefault("Transmogrification.AllowLegendary", false);
+    m_bool_configs[CONFIG_ALLOWARTIFACT] = sConfig->GetBoolDefault("Transmogrification.AllowArtifact", false);
+    m_bool_configs[CONFIG_ALLOWHEIRLOOM] = sConfig->GetBoolDefault("Transmogrification.AllowHeirloom", true);
+
+    //Reset Duel Cooldown
+    m_bool_configs[CONFIG_DUEL_RESET_COOLDOWN_ON_START] = sConfig->GetBoolDefault("DuelReset.Cooldown.OnStart", false);
+    m_bool_configs[CONFIG_DUEL_RESET_COOLDOWN_ON_FINISH] = sConfig->GetBoolDefault("DuelReset.Cooldown.OnFinish", false);
+    m_bool_configs[CONFIG_DUEL_RESET_ONLY_IN_WE_NEED] = sConfig->GetBoolDefault("DuelReset.Cooldown.Only.in.We.Need", false);
+    m_bool_configs[CONFIG_DUEL_RESET_COOLDOWN_RESET_ENERGY_ON_START] = sConfig->GetBoolDefault("DuelReset.Cooldown.Reset.Energy.OnStart", false);
+    m_bool_configs[CONFIG_DUEL_RESET_HP_MP_RESTORE] = sConfig->GetBoolDefault("DuelReset.Cooldown.Hp.Mp.Restore", false);
 
     sScriptMgr->OnConfigLoad(reload);
 }
@@ -1977,7 +2016,7 @@ void World::SendGlobalGMMessage(WorldPacket* packet, WorldSession* self, uint32 
             itr->second->GetPlayer() &&
             itr->second->GetPlayer()->IsInWorld() &&
             itr->second != self &&
-            itr->second->GetSecurity() > SEC_PLAYER &&
+            itr->second->GetSecurity() > SEC_MODERATOR &&
             (team == 0 || itr->second->GetPlayer()->GetTeam() == team))
         {
             itr->second->SendPacket(packet);

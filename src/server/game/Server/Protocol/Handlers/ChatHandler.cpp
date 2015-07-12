@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -32,6 +32,7 @@
 #include "SpellAuraEffects.h"
 #include "Util.h"
 #include "ScriptMgr.h"
+#include "Config.h"
 
 bool WorldSession::processChatmessageFurtherAfterSecurityChecks(std::string& msg, uint32 lang)
 {
@@ -41,8 +42,9 @@ bool WorldSession::processChatmessageFurtherAfterSecurityChecks(std::string& msg
         if(sWorld->getBoolConfig(CONFIG_CHAT_FAKE_MESSAGE_PREVENTING))
             stripLineInvisibleChars(msg);
 
-        if(sWorld->getIntConfig(CONFIG_CHAT_STRICT_LINK_CHECKING_SEVERITY) && GetSecurity() < SEC_MODERATOR
-                && !ChatHandler(this).isValidChatMessage(msg.c_str()))
+        if(!sConfig->GetBoolDefault("ChatLog.Enable", true) &&     // To prevent double checking (if chat log is used, message is automatically validated)
+            sWorld->getIntConfig(CONFIG_CHAT_STRICT_LINK_CHECKING_SEVERITY) && GetSecurity() < SEC_MODERATOR &&
+            !ChatHandler(this).isValidChatMessage(msg.c_str()))
         {
             sLog->outError("Player %s (GUID: %u) sent a chatmessage with an invalid link: %s", GetPlayer()->GetName(),
                     GetPlayer()->GetGUIDLow(), msg.c_str());

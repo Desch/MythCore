@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -90,7 +90,7 @@ void MapManager::LoadTransports()
             m_TransportsByMap[*i].insert(t);
 
         //If we someday decide to use the grid to track transports, here:
-        t->SetMap(sMapMgr->CreateMap(mapid, t, 0));
+        t->SetMap(sMapMgr->CreateBaseMap(mapid));
         t->AddToWorld();
 
         ++count;
@@ -483,7 +483,7 @@ void Transport::TeleportTransport(uint32 newMapid, float x, float y, float z)
 
     RemoveFromWorld();
     ResetMap();
-    Map * newMap = sMapMgr->CreateMap(newMapid, this, 0);
+    Map* newMap = sMapMgr->CreateBaseMap(newMapid);
     SetMap(newMap);
     ASSERT(GetMap());
     AddToWorld();

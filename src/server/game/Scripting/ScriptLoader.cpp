@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -10,6 +10,19 @@
  */
 
 #include "ScriptLoader.h"
+
+// Custom
+void AddSC_icc_rep_rings();
+void AddSC_npc_rapidchange();
+void AddSC_custom_totalizator();
+void AddSC_NPC_Transmogrify();
+void AddSC_npc_mounts_vendor();
+void AddSC_npc_emblem_vendor();
+void AddSC_DuelReset();
+void AddSC_npc_mount();
+void AddSC_npc_morph();
+void AddSC_npc_buffer();
+void AddSC_ItemUse_item_custom_mount();
 
 // spells
 void AddSC_deathknight_spell_scripts();
@@ -590,7 +603,7 @@ void AddSC_outdoorpvp_wg();
 void AddSC_wintergrasp();
 
 // player
-void AddSC_chat_log();
+void AddSC_lexics_chat_log();
 #endif
 
 void AddScripts()
@@ -605,6 +618,7 @@ void AddScripts()
     AddOutlandScripts();
     AddNorthrendScripts();
     AddOutdoorPvPScripts();
+    AddCustomScripts();
 #endif
 }
 
@@ -660,7 +674,7 @@ void AddWorldScripts()
     AddSC_npcs_special();
     AddSC_npc_taxi();
     AddSC_achievement_scripts();
-    AddSC_chat_log();
+    AddSC_lexics_chat_log();
     AddSC_brewfest_event();
     AddSC_pilgrims_event();
 #endif
@@ -1207,5 +1221,22 @@ void AddOutdoorPvPScripts()
     AddSC_outdoorpvp_tf();
     AddSC_outdoorpvp_zm();
     AddSC_outdoorpvp_wg();
+#endif
+}
+
+void AddCustomScripts()
+{
+#ifdef SCRIPTS
+    AddSC_icc_rep_rings();
+    AddSC_npc_rapidchange();
+    AddSC_custom_totalizator();
+    AddSC_NPC_Transmogrify();
+    AddSC_npc_mounts_vendor();
+    AddSC_npc_emblem_vendor();
+    AddSC_DuelReset();
+    AddSC_npc_mount();
+    AddSC_npc_morph();
+    AddSC_npc_buffer();
+    AddSC_ItemUse_item_custom_mount();
 #endif
 }

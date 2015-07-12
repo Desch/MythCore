@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -1615,7 +1615,7 @@ uint32 ObjectMgr::AddGOData(uint32 entry, uint32 mapId, float x, float y, float 
     if(!goinfo)
         return 0;
 
-    Map* map = const_cast<Map*>(sMapMgr->CreateBaseMap(mapId));
+    Map* map = sMapMgr->CreateBaseMap(mapId);
     if(!map)
         return 0;
 
@@ -1676,7 +1676,7 @@ bool ObjectMgr::MoveCreData(uint32 guid, uint32 mapId, Position pos)
     AddCreatureToGrid(guid, &data);
 
     // Spawn if necessary (loaded grids only)
-    if(Map* map = const_cast<Map*>(sMapMgr->CreateBaseMap(mapId)))
+    if(Map* map = sMapMgr->CreateBaseMap(mapId))
     {
         // We use spawn coords to spawn
         if(!map->Instanceable() && map->IsLoaded(data.posX, data.posY))
@@ -1729,7 +1729,7 @@ uint32 ObjectMgr::AddCreData(uint32 entry, uint32 /*team*/, uint32 mapId, float 
     AddCreatureToGrid(guid, &data);
 
     // Spawn if necessary (loaded grids only)
-    if(Map* map = const_cast<Map*>(sMapMgr->CreateBaseMap(mapId)))
+    if(Map* map = sMapMgr->CreateBaseMap(mapId))
     {
         // We use spawn coords to spawn
         if(!map->Instanceable() && !map->IsRemovalGrid(x, y))

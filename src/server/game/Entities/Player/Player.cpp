@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -64,6 +64,7 @@
 #include "WeatherMgr.h"
 #include "LFGMgr.h"
 #include "InstanceScript.h"
+#include "../../../scripts/Custom/Transmogrification.h"
 #include <cmath>
 
 #define ZONE_UPDATE_INTERVAL (1*IN_MILLISECONDS)
@@ -932,7 +933,7 @@ bool Player::Create(uint32 guidlow, CharacterCreateInfo* createInfo)
         return false;
     }
 
-    SetMap(sMapMgr->CreateMap(info->mapId, this, 0));
+    SetMap(sMapMgr->CreateMap(info->mapId, this));
 
     uint8 powertype = cEntry->powerType;
 
@@ -2180,10 +2181,11 @@ bool Player::TeleportTo(uint32 mapid, float x, float y, float z, float orientati
         if(!sMapMgr->CanPlayerEnter(mapid, this, false))
             return false;
 
+		//I think this always returns true. Correct me if I am wrong.
         // If the map is not created, assume it is possible to enter it.
         // It will be created in the WorldPortAck.
-        Map *map = sMapMgr->FindMap(mapid);
-        if(!map || map->CanEnter(this))
+		//Map *map = sMapMgr->FindMap(mapid);
+        //if(!map || map->CanEnter(this))
         {
             //lets reset near teleport flag if it wasn't reset during chained teleports
             SetSemaphoreTeleportNear(false);
@@ -2292,8 +2294,8 @@ bool Player::TeleportTo(uint32 mapid, float x, float y, float z, float orientati
             // code for finish transfer to new map called in WorldSession::HandleMoveWorldportAckOpcode at client packet
             SetSemaphoreTeleportFar(true);
         }
-        else
-            return false;
+        //else
+            //return false;
     }
     return true;
 }
@@ -4896,6 +4898,8 @@ void Player::DeleteFromDB(uint64 playerguid, uint32 accountId, bool updateRealmC
             trans->PAppend("DELETE FROM character_queststatus_daily WHERE `guid` = '%u'", guid);
             trans->PAppend("DELETE FROM character_talent WHERE `guid` = '%u'", guid);
             trans->PAppend("DELETE FROM character_skills WHERE `guid` = '%u'", guid);
+            trans->PAppend("DELETE FROM armory_character_stats WHERE guid = '%u'", guid);
+            trans->PAppend("DELETE FROM character_feed_log WHERE guid = '%u'", guid);
 
             CharacterDatabase.CommitTransaction(trans);
             break;
@@ -5691,35 +5695,37 @@ float Player::GetMeleeCritFromAgility()
     return crit*100.0f;
 }
 
-float Player::GetDodgeFromAgility()
+void Player::GetDodgeFromAgility(float &diminishing, float &nondiminishing)
 {
     // Table for base dodge values
-    float dodge_base[MAX_CLASSES] = {
-         0.0075f,   // Warrior
-         0.00652f,  // Paladin
-        -0.0545f,   // Hunter
-        -0.0059f,   // Rogue
-         0.03183f,  // Priest
-         0.0114f,   // DK
-         0.0167f,   // Shaman
-         0.034575f, // Mage
-         0.02011f,  // Warlock
-         0.0f,      // ??
-        -0.0187f    // Druid
+    const float dodge_base[MAX_CLASSES] =
+    {
+        0.036640f, // Warrior
+        0.034943f, // Paladi
+        -0.040873f, // Hunter
+        0.020957f, // Rogue
+        0.034178f, // Priest
+        0.036640f, // DK
+        0.021080f, // Shaman
+        0.036587f, // Mage
+        0.024211f, // Warlock
+        0.0f,      // ??
+        0.056097f  // Druid
     };
-    // Crit/agility to dodge/agility coefficient multipliers
-    float crit_to_dodge[MAX_CLASSES] = {
-         1.1f,      // Warrior
-         1.0f,      // Paladin
-         1.6f,      // Hunter
-         2.0f,      // Rogue
-         1.0f,      // Priest
-         1.0f,      // DK?
-         1.0f,      // Shaman
-         1.0f,      // Mage
-         1.0f,      // Warlock
-         0.0f,      // ??
-         1.7f       // Druid
+    // Crit/agility to dodge/agility coefficient multipliers; 3.2.0 increased required agility by 15%
+    const float crit_to_dodge[MAX_CLASSES] =
+    {
+        0.85f/1.15f,    // Warrior
+        1.00f/1.15f,    // Paladin
+        1.11f/1.15f,    // Hunter
+        2.00f/1.15f,    // Rogue
+        1.00f/1.15f,    // Priest
+        0.85f/1.15f,    // DK
+        1.60f/1.15f,    // Shaman
+        1.00f/1.15f,    // Mage
+        0.97f/1.15f,    // Warlock (?)
+        0.0f,      // ??
+        2.00f/1.15f     // Druid
     };
 
     uint8 level = getLevel();
@@ -5728,13 +5734,18 @@ float Player::GetDodgeFromAgility()
     if(level > GT_MAX_LEVEL)
         level = GT_MAX_LEVEL;
 
-    // Dodge per agility for most classes equal crit per agility (but for some classes need apply some multiplier)
+    // Dodge per agility is proportional to crit per agility, which is available from DBC files
     GtChanceToMeleeCritEntry  const *dodgeRatio = sGtChanceToMeleeCritStore.LookupEntry((pclass-1)*GT_MAX_LEVEL + level-1);
     if(dodgeRatio == NULL || pclass > MAX_CLASSES)
-        return 0.0f;
+        return;
 
-    float dodge=dodge_base[pclass-1] + GetStat(STAT_AGILITY) * dodgeRatio->ratio * crit_to_dodge[pclass-1];
-    return dodge*100.0f;
+    // TODO: research if talents/effects that increase total agility by x% should increase non-diminishing part
+    float base_agility = GetCreateStat(STAT_AGILITY) * m_auraModifiersGroup[UNIT_MOD_STAT_START + STAT_AGILITY][BASE_PCT];
+    float bonus_agility = GetStat(STAT_AGILITY) - base_agility;
+    
+    // calculate diminishing (green in char screen) and non-diminishing (white) contribution
+    diminishing = 100.0f * bonus_agility * dodgeRatio->ratio * crit_to_dodge[pclass-1];
+    nondiminishing = 100.0f * (dodge_base[pclass-1] + base_agility * dodgeRatio->ratio * crit_to_dodge[pclass-1]);
 }
 
 float Player::GetSpellCritFromIntellect()
@@ -7034,6 +7045,7 @@ bool Player::RewardHonor(Unit* uVictim, uint32 groupsize, int32 honor, bool pvpt
 
     uint64 victim_guid = 0;
     uint32 victim_rank = 0;
+    uint32 rank_diff = 0;
 
     // need call before fields update to have chance move yesterday data to appropriate fields before today data change.
     UpdateHonorFields();
@@ -7079,16 +7091,48 @@ bool Player::RewardHonor(Unit* uVictim, uint32 groupsize, int32 honor, bool pvpt
             //  title[1..14]  -> rank[5..18]
             //  title[15..28] -> rank[5..18]
             //  title[other]  -> 0
+            // PLAYER__FIELD_KNOWN_TITLES describe which titles player can use,
+            // so we must find biggest pvp title , even for killer to find extra honor value
+            uint32 vtitle = pVictim->GetUInt32Value(PLAYER__FIELD_KNOWN_TITLES);
+            //uint32 victim_title = 0;
+            uint32 ktitle = GetUInt32Value(PLAYER__FIELD_KNOWN_TITLES);
+            uint32 killer_title = 0;
+            if(PLAYER_TITLE_MASK_ALL_PVP & ktitle)
+                {
+                    for (int i = ((GetTeam() == ALLIANCE) ? 1:HKRANKMAX);i!=((GetTeam() == ALLIANCE) ? HKRANKMAX : (2*HKRANKMAX-1));i++)
+                    {
+                        if(ktitle & (1<<i))
+                            killer_title = i;
+                    }
+                }
+            if(PLAYER_TITLE_MASK_ALL_PVP & vtitle)
+                {
+                    for (int i = ((pVictim->GetTeam() == ALLIANCE) ? 1:HKRANKMAX);i!=((pVictim->GetTeam() == ALLIANCE) ? HKRANKMAX : (2*HKRANKMAX-1));i++)
+                    {
+                        if(vtitle & (1<<i))
+                            victim_title = i;
+                    }
+                }
+
             if(victim_title == 0)
                 victim_guid = 0;                        // Don't show HK: <rank> message, only log.
-            else if(victim_title < 15)
+            else if(victim_title < HKRANKMAX)
                 victim_rank = victim_title + 4;
-            else if(victim_title < 29)
-                victim_rank = victim_title - 14 + 4;
+            else if(victim_title < (2*HKRANKMAX-1))
+                victim_rank = victim_title - (HKRANKMAX-1) + 4;
             else
                 victim_guid = 0;                        // Don't show HK: <rank> message, only log.
+                
+            // now find rank difference
+            if (killer_title == 0 && victim_rank>4)
+                rank_diff = victim_rank - 4;
+            else if(killer_title < HKRANKMAX)
+                rank_diff = (victim_rank>(killer_title + 4))? (victim_rank - (killer_title + 4)) : 0;
+            else if(killer_title < (2*HKRANKMAX-1))
+                rank_diff = (victim_rank>(killer_title - (HKRANKMAX-1) +4))? (victim_rank - (killer_title - (HKRANKMAX-1) + 4)) : 0;
 
             honor_f = ceil(Trinity::Honor::hk_honor_at_level_f(k_level) * (v_level - k_grey) / (k_level - k_grey));
+            honor *= 1 + sWorld->getRate(RATE_PVP_RANK_EXTRA_HONOR)*(((float)rank_diff) / 10.0f);
 
             // count the number of playerkills in one day
             ApplyModUInt32Value(PLAYER_FIELD_KILLS, 1, true);
@@ -7097,9 +7141,12 @@ bool Player::RewardHonor(Unit* uVictim, uint32 groupsize, int32 honor, bool pvpt
             UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EARN_HONORABLE_KILL);
             UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_HK_CLASS, pVictim->getClass());
             UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_HK_RACE, pVictim->getRace());
+            UpdateKnownTitles();
             UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_HONORABLE_KILL_AT_AREA, GetAreaId());
             UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_HONORABLE_KILL, 1, 0, pVictim);
-        } else {
+        }
+        else 
+        {
             if(!uVictim->ToCreature()->isRacialLeader())
                 return false;
 
@@ -7166,6 +7213,30 @@ bool Player::RewardHonor(Unit* uVictim, uint32 groupsize, int32 honor, bool pvpt
     }
 
     return true;
+}
+
+void Player::UpdateKnownTitles()
+{
+    uint32 new_title = 0;
+    uint32 honor_kills = GetUInt32Value(PLAYER_FIELD_LIFETIME_HONORABLE_KILLS);
+    uint32 old_title = GetUInt32Value(PLAYER_CHOSEN_TITLE);
+    RemoveFlag64(PLAYER__FIELD_KNOWN_TITLES,PLAYER_TITLE_MASK_ALL_PVP);
+    if (honor_kills < 0)
+        return;
+    bool max_rank = ((honor_kills >= sWorld->pvp_ranks[HKRANKMAX-1]) ? true : false);
+    for (int i = HKRANK01; i != HKRANKMAX; ++i)
+    {
+        if (honor_kills < sWorld->pvp_ranks[i] || (max_rank))
+        {
+            new_title = ((max_rank) ? (HKRANKMAX-1) : (i-1));
+            if (new_title > 0)
+                new_title += ((GetTeam() == ALLIANCE) ? 0 : (HKRANKMAX-1));
+            break;
+        }
+    }
+    SetFlag64(PLAYER__FIELD_KNOWN_TITLES,uint64(1) << new_title);
+    if (old_title > 0 && old_title < (2*HKRANKMAX-1) && new_title > old_title)
+        SetUInt32Value(PLAYER_CHOSEN_TITLE,new_title);
 }
 
 void Player::SetHonorPoints(uint32 value)
@@ -11477,7 +11548,7 @@ InventoryResult Player::CanUnequipItem(uint16 pos, bool swap) const
     // item used
     if(pItem->m_lootGenerated)
         return EQUIP_ERR_ALREADY_LOOTED;
-
+    
     // Fix 100% crit bug.
     if(HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_DISARMED))
         return EQUIP_ERR_CANT_DO_RIGHT_NOW;
@@ -12170,7 +12241,11 @@ void Player::SetVisibleItemSlot(uint8 slot, Item *pItem)
 {
     if(pItem)
     {
-        SetUInt32Value(PLAYER_VISIBLE_ITEM_1_ENTRYID + (slot * 2), pItem->GetEntry());
+        // custom
+        if(Transmogrification::GetFakeEntry(pItem))
+            SetUInt32Value(PLAYER_VISIBLE_ITEM_1_ENTRYID + (slot * 2), Transmogrification::GetFakeEntry(pItem));
+        else
+            SetUInt32Value(PLAYER_VISIBLE_ITEM_1_ENTRYID + (slot * 2), pItem->GetEntry());
         SetUInt16Value(PLAYER_VISIBLE_ITEM_1_ENCHANTMENT + (slot * 2), 0, pItem->GetEnchantmentId(PERM_ENCHANTMENT_SLOT));
         SetUInt16Value(PLAYER_VISIBLE_ITEM_1_ENCHANTMENT + (slot * 2), 1, pItem->GetEnchantmentId(TEMP_ENCHANTMENT_SLOT));
     }
@@ -12295,6 +12370,7 @@ void Player::MoveItemFromInventory(uint8 bag, uint8 slot, bool update)
 {
     if(Item* it = GetItemByPos(bag, slot))
     {
+        Transmogrification::DeleteFakeFromDB(it->GetGUIDLow()); // custom
         ItemRemovedQuestCheck(it->GetEntry(), it->GetCount());
         RemoveItem(bag, slot, update);
         it->SetNotRefundable(this, false);
@@ -14898,7 +14974,7 @@ void Player::RewardQuest(Quest const *pQuest, uint32 reward, Object* questGiver,
     bool rewarded = (rewItr != m_RewardedQuests.end());
 
     // Not give XP in case already completed once repeatable quest
-    uint32 XP = rewarded ? 0 : uint32(pQuest->XPValue(this)*sWorld->getRate(RATE_XP_QUEST));
+    uint32 XP = rewarded ? 0 : uint32(pQuest->XPValue(this)*sWorld->getRate(RATE_XP_QUEST) * (IsEventActive(sWorld->getIntConfig(CONFIG_RATE_XP_WEEKEND_EVID)) ? sWorld->getRate(RATE_XP_WEEKEND) : 1.0f));
 
     // handle SPELL_AURA_MOD_XP_QUEST_PCT auras
     Unit::AuraEffectList const& ModXPPctAuras = GetAuraEffectsByType(SPELL_AURA_MOD_XP_QUEST_PCT);
@@ -16437,6 +16513,8 @@ bool Player::LoadFromDB(uint32 guid, SQLQueryHolder *holder)
         CharacterDatabase.PExecute("UPDATE characters SET at_login = at_login | '%u' WHERE `guid` ='%u'", uint32(AT_LOGIN_RENAME), guid);
         return false;
     }
+    // Cleanup old Wowarmory feeds
+    InitWowarmoryFeeds();
 
     // overwrite possible wrong/corrupted guid
     SetUInt64Value(OBJECT_FIELD_GUID, MAKE_NEW_GUID(guid, 0, HIGHGUID_PLAYER));
@@ -16720,7 +16798,7 @@ bool Player::LoadFromDB(uint32 guid, SQLQueryHolder *holder)
 
     // NOW player must have valid map
     // load the player's map here if it's not already loaded
-    Map *map = sMapMgr->CreateMap(mapId, this, instanceId);
+    Map* map = sMapMgr->CreateMap(mapId, this);
 
     if(!map)
     {
@@ -16738,14 +16816,14 @@ bool Player::LoadFromDB(uint32 guid, SQLQueryHolder *holder)
             RelocateToHomebind();
         }
 
-        map = sMapMgr->CreateMap(mapId, this, 0);
+        map = sMapMgr->CreateMap(mapId, this);
         if(!map)
         {
             PlayerInfo const *info = sObjectMgr->GetPlayerInfo(getRace(), getClass());
             mapId = info->mapId;
             Relocate(info->positionX, info->positionY, info->positionZ, 0.0f);
             sLog->outError("Player (guidlow %d) have invalid coordinates (X: %f Y: %f Z: %f O: %f). Teleport to default race/class locations.", guid, GetPositionX(), GetPositionY(), GetPositionZ(), GetOrientation());
-            map = sMapMgr->CreateMap(mapId, this, 0);
+            map = sMapMgr->CreateMap(mapId, this);
             if(!map)
             {
                 sLog->outError("Player (guidlow %d) has invalid default map coordinates (X: %f Y: %f Z: %f O: %f). or instance couldn't be created", guid, GetPositionX(), GetPositionY(), GetPositionZ(), GetOrientation());
@@ -18382,6 +18460,30 @@ void Player::SaveToDB()
         _SaveStats(trans);
 
     CharacterDatabase.CommitTransaction(trans);
+
+    /* World of Warcraft Armory */
+    // Place this code AFTER CharacterDatabase.CommitTransaction(); to avoid some character saving errors.
+    // Wowarmory feeds
+    std::ostringstream sWowarmory;
+    for (WowarmoryFeeds::iterator iter = m_wowarmory_feeds.begin(); iter < m_wowarmory_feeds.end(); ++iter) {
+        sWowarmory << "INSERT IGNORE INTO character_feed_log (guid,type,data,date,counter,difficulty,item_guid,item_quality) VALUES ";
+        //                      guid                    type                        data                    date                            counter                   difficulty                        item_guid                      item_quality
+        sWowarmory << "(" << (*iter).guid << ", " << (*iter).type << ", " << (*iter).data << ", " << uint64((*iter).date) << ", " << (*iter).counter << ", " << uint32((*iter).difficulty) << ", " << (*iter).item_guid << ", " << (*iter).item_quality <<  ");";
+        CharacterDatabase.PExecute(sWowarmory.str().c_str());
+        sWowarmory.str("");
+    }
+    // Clear old saved feeds from storage - they are not required for server core.
+    InitWowarmoryFeeds();
+    // Character stats
+    std::ostringstream ps;
+    time_t t = time(NULL);
+    CharacterDatabase.PExecute("DELETE FROM armory_character_stats WHERE guid = %u", GetGUIDLow());
+    ps << "INSERT INTO armory_character_stats (guid, data, save_date) VALUES (" << GetGUIDLow() << ", '";
+    for (uint16 i = 0; i < m_valuesCount; ++i)
+        ps << GetUInt32Value(i) << " ";
+    ps << "', " << uint64(t) << ");";
+    CharacterDatabase.PExecute(ps.str().c_str());
+    /* World of Warcraft Armory */
 
     // save pet (hunter pet level and experience and all type pets health/mana).
     if(Pet* pet = GetPet())
@@ -20511,7 +20613,7 @@ void Player::UpdateHomebindTime(uint32 time)
     else
     {
         // instance is invalid, start homebind timer
-        m_HomebindTimer = 60000;
+        m_HomebindTimer = 1;
         // send message to player
         WorldPacket data(SMSG_RAID_GROUP_ONLY, 4+4);
         data << uint32(m_HomebindTimer);
@@ -24709,6 +24811,47 @@ void Player::_SaveInstanceTimeRestrictions(SQLTransaction& trans)
         stmt->setUInt64(2, itr->second);
         trans->Append(stmt);
     }
+}
+
+void Player::InitWowarmoryFeeds()
+{
+    // Clear feeds
+    m_wowarmory_feeds.clear();
+}
+
+void Player::CreateWowarmoryFeed(uint32 type, uint32 data, uint32 item_guid, uint32 item_quality)
+{
+    /*
+        1 - TYPE_ACHIEVEMENT_FEED
+        2 - TYPE_ITEM_FEED
+        3 - TYPE_BOSS_FEED
+    */
+    if(GetGUIDLow() == 0)
+    {
+        sLog->outError("[Wowarmory]: player is not initialized, unable to create log entry!");
+        return;
+    }
+    if(type <= 0 || type > 3)
+    {
+        sLog->outError("[Wowarmory]: unknown feed type: %d, ignore.", type);
+        return;
+    }
+    if(data == 0)
+    {
+        sLog->outError("[Wowarmory]: empty data (GUID: %u), ignore.", GetGUIDLow());
+        return;
+    }
+    WowarmoryFeedEntry feed;
+    feed.guid = GetGUIDLow();
+    feed.type = type;
+    feed.data = data;
+    feed.difficulty = type == 3 ? GetMap()->GetDifficulty() : 0;
+    feed.item_guid  = item_guid;
+    feed.item_quality = item_quality;
+    feed.counter = 0;
+    feed.date = time(NULL);
+    sLog->outDebug(LOG_FILTER_UNITS, "[Wowarmory]: create wowarmory feed (GUID: %u, type: %d, data: %u).", feed.guid, feed.type, feed.data);
+    m_wowarmory_feeds.push_back(feed);
 }
 
 void Player::SetTimedAchievement(uint32 AchievementId,uint32 time, uint32 maxprogress)

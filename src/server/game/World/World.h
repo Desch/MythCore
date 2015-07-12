@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -153,6 +153,20 @@ enum WorldBoolConfigs
     CONFIG_MOVEMENT_CHECKS_PLANE,
     CONFIG_MOVEMENT_CHECKS_WATERWALK,
     CONFIG_MOVEMENT_CHECKS_MULTIJUMP,
+    CONFIG_ALLOWPOOR,
+	CONFIG_REQUIRETOKEN,
+	CONFIG_ALLOWCOMMON,
+	CONFIG_ALLOWUNCOMMON,
+	CONFIG_ALLOWRARE,
+	CONFIG_ALLOWEPIC,
+	CONFIG_ALLOWLEGENDARY,
+	CONFIG_ALLOWARTIFACT,
+	CONFIG_ALLOWHEIRLOOM,
+    CONFIG_DUEL_RESET_COOLDOWN_ON_START,
+    CONFIG_DUEL_RESET_COOLDOWN_ON_FINISH,
+    CONFIG_DUEL_RESET_ONLY_IN_WE_NEED,
+    CONFIG_DUEL_RESET_HP_MP_RESTORE,
+    CONFIG_DUEL_RESET_COOLDOWN_RESET_ENERGY_ON_START,
     BOOL_CONFIG_VALUE_COUNT
 };
 
@@ -169,6 +183,7 @@ enum WorldFloatConfigs
     CONFIG_CREATURE_FAMILY_ASSISTANCE_RADIUS,
     CONFIG_THREAT_RADIUS,
     CONFIG_CHANCE_OF_GM_SURVEY,
+    CONFIG_GOLDMODIFIER,
     FLOAT_CONFIG_VALUE_COUNT
 };
 
@@ -309,6 +324,11 @@ enum WorldIntConfigs
     CONFIG_OUTDOORPVP_WINTERGRASP_SAVESTATE_PERIOD,
     CONFIG_MAX_INSTANCES_PER_HOUR,
     CONFIG_MOVEMENT_CHECKS_ACCESSLEVEL,
+    CONFIG_REQUIREGOLD,
+    CONFIG_GOLDCOST,
+    CONFIG_TOKENENTRY,
+    CONFIG_TOKENAMOUNT,
+    CONFIG_RATE_XP_WEEKEND_EVID,
     INT_CONFIG_VALUE_COUNT
 };
 
@@ -368,8 +388,30 @@ enum Rates
     RATE_DURABILITY_LOSS_PARRY,
     RATE_DURABILITY_LOSS_ABSORB,
     RATE_DURABILITY_LOSS_BLOCK,
+    RATE_PVP_RANK_EXTRA_HONOR,
     RATE_MOVESPEED,
+    RATE_XP_WEEKEND,
     MAX_RATES
+};
+
+enum HonorKillPvPRank
+{
+    HKRANK00,
+    HKRANK01,
+    HKRANK02,
+    HKRANK03,
+    HKRANK04,
+    HKRANK05,
+    HKRANK06,
+    HKRANK07,
+    HKRANK08,
+    HKRANK09,
+    HKRANK10,
+    HKRANK11,
+    HKRANK12,
+    HKRANK13,
+    HKRANK14,
+    HKRANKMAX
 };
 
 /// Can be used in SMSG_AUTH_RESPONSE packet
@@ -621,6 +663,8 @@ public:
     void SendZoneMessage(uint32 zone, WorldPacket* packet, WorldSession* self = 0, uint32 team = 0);
     void SendZoneText(uint32 zone, const char *text, WorldSession* self = 0, uint32 team = 0);
     void SendServerMessage(ServerMessageType type, const char *text = "", Player* player = NULL);
+
+        uint32 pvp_ranks[HKRANKMAX];
 
     /// Are we in the middle of a shutdown?
     bool IsShutdowning() const { return m_ShutdownTimer > 0; }

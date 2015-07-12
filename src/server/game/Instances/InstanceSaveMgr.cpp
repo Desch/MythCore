@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -37,23 +37,21 @@ InstanceSaveManager::~InstanceSaveManager()
     lock_instLists = true;
     for(InstanceSaveHashMap::iterator itr = m_instanceSaveById.begin(); itr != m_instanceSaveById.end(); ++itr)
     {
-        if(InstanceSave* pInstanceSave = itr->second)
+        InstanceSave* pInstanceSave = itr->second;
+        for(InstanceSave::PlayerListType::iterator itr2 = pInstanceSave->m_playerList.begin(), next = itr2; itr2 != pInstanceSave->m_playerList.end(); itr2 = next)
         {
-            for(InstanceSave::PlayerListType::iterator itr2 = pInstanceSave->m_playerList.begin(), next = itr2; itr2 != pInstanceSave->m_playerList.end(); itr2 = next)
-            {
-                ++next;
-                (*itr2)->UnbindInstance(pInstanceSave->GetMapId(), pInstanceSave->GetDifficulty(), true);
-            }
-            pInstanceSave->m_playerList.clear();
-
-            for(InstanceSave::GroupListType::iterator itr2 = pInstanceSave->m_groupList.begin(), next = itr2; itr2 != pInstanceSave->m_groupList.end(); itr2 = next)
-            {
-                ++next;
-                (*itr2)->UnbindInstance(pInstanceSave->GetMapId(), pInstanceSave->GetDifficulty(), true);
-            }
-            pInstanceSave->m_groupList.clear();
-            delete pInstanceSave;
+            ++next;
+            (*itr2)->UnbindInstance(pInstanceSave->GetMapId(), pInstanceSave->GetDifficulty(), true);
         }
+        pInstanceSave->m_playerList.clear();
+        
+        for(InstanceSave::GroupListType::iterator itr2 = pInstanceSave->m_groupList.begin(), next = itr2; itr2 != pInstanceSave->m_groupList.end(); itr2 = next)
+        {
+            ++next;
+            (*itr2)->UnbindInstance(pInstanceSave->GetMapId(), pInstanceSave->GetDifficulty(), true);
+        }
+        pInstanceSave->m_groupList.clear();
+        delete pInstanceSave;
     }
 }
 
@@ -499,7 +497,7 @@ void InstanceSaveManager::_ResetSave(InstanceSaveHashMap::iterator &itr)
 void InstanceSaveManager::_ResetInstance(uint32 mapid, uint32 instanceId)
 {
     sLog->outDebug(LOG_FILTER_MAPS, "InstanceSaveMgr::_ResetInstance %u, %u", mapid, instanceId);
-    Map *map = (MapInstanced*)sMapMgr->CreateBaseMap(mapid);
+    Map const* map = sMapMgr->CreateBaseMap(mapid);
     if(!map->Instanceable())
         return;
 

@@ -1,0 +1,48 @@
+-- items
+insert into `player_factionchange_items` (`race_A`, `alliance_id`, `commentA`, `race_H`, `horde_id`, `commentH`) values('0','44503','Schematic: Mekgineers Chopper','0','44502','Schematic: Mechano-Hog');
+insert into `player_factionchange_items` (`race_A`, `alliance_id`, `commentA`, `race_H`, `horde_id`, `commentH`) values('0','47003','Dawnbreaker Greaves','0','47430','Dawnbreaker Sabatons');
+insert into `player_factionchange_items` (`race_A`, `alliance_id`, `commentA`, `race_H`, `horde_id`, `commentH`) values('0','48076','Velen\'s Mantle of Conquest','0','48101','Zabra\'s Mantle of Conquest');
+insert into `player_factionchange_items` (`race_A`, `alliance_id`, `commentA`, `race_H`, `horde_id`, `commentH`) values('0','48075','Velen\'s Raiments of Conquest','0','48100','Zabra\'s Raiments of Conquest');
+insert into `player_factionchange_items` (`race_A`, `alliance_id`, `commentA`, `race_H`, `horde_id`, `commentH`) values('0','48074','Velen\'s Pants of Conquest','0','48099','Zabra\'s Pants of Conquest');
+insert into `player_factionchange_items` (`race_A`, `alliance_id`, `commentA`, `race_H`, `horde_id`, `commentH`) values('0','48072','Velen\'s Handwraps of Conquest','0','48097','Zabra\'s Handwraps of Conquest');
+insert into `player_factionchange_items` (`race_A`, `alliance_id`, `commentA`, `race_H`, `horde_id`, `commentH`) values('0','48073','Velen\'s Circlet of Conquest','0','48098','Zabra\'s Circlet of Conquest');
+insert into `player_factionchange_items` (`race_A`, `alliance_id`, `commentA`, `race_H`, `horde_id`, `commentH`) values('0','47711','Girdle of the Nether Champion','0','47870','Belt of the Nether Championt');
+insert into `player_factionchange_items` (`race_A`, `alliance_id`, `commentA`, `race_H`, `horde_id`, `commentH`) values('0','44235','Reins of the Traveler\'s Tundra Mammoth','0','44234','Reins of the Traveler\'s Tundra Mammoth');
+insert into `player_factionchange_items` (`race_A`, `alliance_id`, `commentA`, `race_H`, `horde_id`, `commentH`) values('0','54651','Gnomeregan Pride','0','54653','Darkspear Pride');
+insert into `player_factionchange_items` (`race_A`, `alliance_id`, `commentA`, `race_H`, `horde_id`, `commentH`) values('0','15198','Knight\'s Colors','0','15199','Stone Guard\'s Herald');
+insert into `player_factionchange_items` (`race_A`, `alliance_id`, `commentA`, `race_H`, `horde_id`, `commentH`) values('0','47937','Girdle of the Nether Champion','0','48009','Belt of the Nether Champion');
+-- achievement
+insert into `player_factionchange_achievement` (`alliance_id`, `horde_id`) values('58','593');
+insert into `player_factionchange_achievement` (`alliance_id`, `horde_id`) values('434','445');
+insert into `player_factionchange_achievement` (`alliance_id`, `horde_id`) values('435','444');
+insert into `player_factionchange_achievement` (`alliance_id`, `horde_id`) values('436','447');
+insert into `player_factionchange_achievement` (`alliance_id`, `horde_id`) values('437','448');
+insert into `player_factionchange_achievement` (`alliance_id`, `horde_id`) values('438','469');
+insert into `player_factionchange_achievement` (`alliance_id`, `horde_id`) values('439','451');
+insert into `player_factionchange_achievement` (`alliance_id`, `horde_id`) values('442','454');
+insert into `player_factionchange_achievement` (`alliance_id`, `horde_id`) values('470','468');
+insert into `player_factionchange_achievement` (`alliance_id`, `horde_id`) values('473','446');
+insert into `player_factionchange_achievement` (`alliance_id`, `horde_id`) values('1280','1279');
+insert into `player_factionchange_achievement` (`alliance_id`, `horde_id`) values('1466','926');
+insert into `player_factionchange_achievement` (`alliance_id`, `horde_id`) values('2419','2497');
+insert into `player_factionchange_achievement` (`alliance_id`, `horde_id`) values('3356','3357');
+-- spells
+insert into `player_factionchange_spells` (`alliance_id`, `horde_id`) values('60867','60866');
+insert into `player_factionchange_spells` (`alliance_id`, `horde_id`) values('61425','61447');
+insert into `player_factionchange_spells` (`alliance_id`, `horde_id`) values('67064','67144');
+insert into `player_factionchange_spells` (`alliance_id`, `horde_id`) values('67065','67147');
+insert into `player_factionchange_spells` (`alliance_id`, `horde_id`) values('67066','67146');
+insert into `player_factionchange_spells` (`alliance_id`, `horde_id`) values('67079','67145');
+insert into `player_factionchange_spells` (`alliance_id`, `horde_id`) values('67080','67136');
+insert into `player_factionchange_spells` (`alliance_id`, `horde_id`) values('67082','67138');
+insert into `player_factionchange_spells` (`alliance_id`, `horde_id`) values('67083','67143');
+insert into `player_factionchange_spells` (`alliance_id`, `horde_id`) values('67084','67140');
+insert into `player_factionchange_spells` (`alliance_id`, `horde_id`) values('67085','67141');
+insert into `player_factionchange_spells` (`alliance_id`, `horde_id`) values('67086','67142');
+insert into `player_factionchange_spells` (`alliance_id`, `horde_id`) values('67087','67139');
+insert into `player_factionchange_spells` (`alliance_id`, `horde_id`) values('67091','67130');
+insert into `player_factionchange_spells` (`alliance_id`, `horde_id`) values('67092','67131');
+insert into `player_factionchange_spells` (`alliance_id`, `horde_id`) values('67093','67132');
+insert into `player_factionchange_spells` (`alliance_id`, `horde_id`) values('67095','67134');
+insert into `player_factionchange_spells` (`alliance_id`, `horde_id`) values('67096','67135');
+insert into `player_factionchange_spells` (`alliance_id`, `horde_id`) values ('60114','60116');

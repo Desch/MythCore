@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Copyright (C) 2012 SymphonyArt <http://symphonyart.com/>
  *
@@ -299,7 +299,7 @@ void FlightPathMovementGenerator::InitEndGridInfo()
 void FlightPathMovementGenerator::PreloadEndGrid()
 {
     // used to preload the final grid where the flightmaster is
-    Map* endMap = sMapMgr->FindMap(_endMapId);
+    Map* endMap = sMapMgr->FindBaseNonInstanceMap(_endMapId);
 
     // Load the grid
     if(endMap)

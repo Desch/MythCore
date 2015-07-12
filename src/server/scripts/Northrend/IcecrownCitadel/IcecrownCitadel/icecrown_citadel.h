@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -289,6 +289,16 @@ enum GameObjectsIds
     // Lady Deathwhisper
     GO_ORATORY_OF_THE_DAMNED_ENTRANCE       = 201563,
     GO_LADY_DEATHWHISPER_ELEVATOR           = 202220,
+
+    // Gunship loot
+    GO_GUNSHIP_ARMORY_A_10      = 201872,
+    GO_GUNSHIP_ARMORY_A_25      = 201873,
+    GO_GUNSHIP_ARMORY_A_10H     = 201874,
+    GO_GUNSHIP_ARMORY_A_25H     = 201875,
+    GO_GUNSHIP_ARMORY_H_10      = 202177,
+    GO_GUNSHIP_ARMORY_H_25      = 202178,
+    GO_GUNSHIP_ARMORY_H_10H     = 202179,
+    GO_GUNSHIP_ARMORY_H_25H     = 202180,
 
     // Deathbringer Saurfang
     GO_SAURFANG_S_DOOR                      = 201825,

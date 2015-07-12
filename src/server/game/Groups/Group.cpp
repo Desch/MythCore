@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -498,9 +498,10 @@ bool Group::ChangeLeader(const uint64 &guid)
     if(slot == m_memberSlots.end())
         return false;
 
-    Player* pPlayer = sObjectMgr->GetPlayer(slot->guid);
+    Player* player = sObjectMgr->GetPlayer(slot->guid);
+
     // Don't allow switching leader to offline players
-    if(!pPlayer)
+    if(!player)
         return false;
     
     if(isRaidGroup() && !isBGGroup())
@@ -508,11 +509,11 @@ bool Group::ChangeLeader(const uint64 &guid)
         uint32 counter = 0;
         for(uint8 i = 0; i < MAX_DIFFICULTY; ++i)
         {
-            Player::BoundInstancesMap &binds = pPlayer->GetBoundInstances(Difficulty(i));
+            Player::BoundInstancesMap &binds = player->GetBoundInstances(Difficulty(i));
             for(Player::BoundInstancesMap::const_iterator itr = binds.begin(); itr != binds.end(); ++itr)
             {
                 InstanceSave* save = itr->second.save;
-                if((itr->second.save->GetInstanceId() != pPlayer->GetInstanceId()) && (itr->second.save->GetDifficulty() == pPlayer->GetDifficulty(true)))
+                if((itr->second.save->GetInstanceId() != player->GetInstanceId()) && (itr->second.save->GetDifficulty() == player->GetDifficulty(true)))
                     return false;
                 counter++;
             }
@@ -539,19 +540,18 @@ bool Group::ChangeLeader(const uint64 &guid)
         }
 
         // Same in the database
-        CharacterDatabase.PExecute("DELETE FROM `group_instance` WHERE `guid` = '%u' AND (`permanent` = 1 OR `instance` IN \
-            (SELECT `instance` FROM `character_instance` WHERE `guid` = '%u'))",
-            m_dbStoreId, pPlayer->GetGUIDLow());
+        CharacterDatabase.PExecute("DELETE FROM group_instance WHERE guid=%u AND (permanent = 1 OR instance IN (SELECT instance FROM character_instance WHERE `guid` = '%u'))",
+            m_dbStoreId, player->GetGUIDLow());
 
         // Copy the permanent binds from the new leader to the group
-        Player::ConvertInstancesToGroup(pPlayer, this, true);
+        Player::ConvertInstancesToGroup(player, this, true);
 
         // update the group leader
-        CharacterDatabase.PExecute("UPDATE `groups` SET `leaderGuid` = '%u' WHERE `guid` = '%u'", pPlayer->GetGUIDLow(), m_dbStoreId);
+        CharacterDatabase.PExecute("UPDATE groups SET leaderGuid='%u' WHERE guid='%u'", player->GetGUIDLow(), m_dbStoreId);
     }
 
-    m_leaderGuid = pPlayer->GetGUID();
-    m_leaderName = pPlayer->GetName();
+    m_leaderGuid = player->GetGUID();
+    m_leaderName = player->GetName();
     ToggleGroupMemberFlag(slot, MEMBER_FLAG_ASSISTANT, false);
 
     WorldPacket data(SMSG_GROUP_SET_LEADER, m_leaderName.size()+1);

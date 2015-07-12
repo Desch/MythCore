@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -84,9 +84,9 @@ void MapManager::checkAndCorrectGridStatesArray()
         ++i_GridStateErrorCount;
 }
 
-Map* MapManager::_createBaseMap(uint32 id)
+Map* MapManager::CreateBaseMap(uint32 id)
 {
-    Map *m = _findMap(id);
+    Map* m = FindBaseMap(id);
 
     if(m == NULL)
     {
@@ -108,21 +108,27 @@ Map* MapManager::_createBaseMap(uint32 id)
     return m;
 }
 
-Map* MapManager::CreateMap(uint32 id, const WorldObject* obj, uint32 /*instanceId*/)
+Map* MapManager::FindBaseNonInstanceMap(uint32 mapId) const
 {
-    ASSERT(obj);
-    //if(!obj->IsInWorld()) sLog->outError("GetMap: called for map %d with object (typeid %d, guid %d, mapid %d, instanceid %d) who is not in world!", id, obj->GetTypeId(), obj->GetGUIDLow(), obj->GetMapId(), obj->GetInstanceId());
-    Map *m = _createBaseMap(id);
+    Map* map = FindBaseMap(mapId);
+    if(map && map->Instanceable())
+		return NULL;
 
-    if(m && obj->GetTypeId() == TYPEID_PLAYER && m->Instanceable())
-        m = ((MapInstanced*)m)->CreateInstanceForPlayer(id, (Player*)obj);
+	return map;
+}
 
-    return m;
+Map* MapManager::CreateMap(uint32 id, Player* player)
+{
+	Map* m = CreateBaseMap(id);
+	if (m && m->Instanceable())
+		m = ((MapInstanced*)m)->CreateInstanceForPlayer(id, player);
+		
+	return m;
 }
 
 Map* MapManager::FindMap(uint32 mapid, uint32 instanceId) const
 {
-    Map *map = _findMap(mapid);
+    Map* map = FindBaseMap(mapid);
     if(!map)
         return NULL;
 

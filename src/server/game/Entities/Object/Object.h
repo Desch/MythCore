@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -684,7 +684,12 @@ class WorldObject : public Object, public WorldLocation
         float GetDistanceZ(const WorldObject* obj) const;
 
         bool IsInMap(const WorldObject* pWO) const
-            { return pWO && IsInWorld() && pWO->IsInWorld() && (GetMap() == pWO->GetMap()) && InSamePhase(pWO); }
+            {
+                if(pWO)
+                    return IsInWorld() && pWO->IsInWorld() && (GetMap() == pWO->GetMap()) && InSamePhase(pWO);
+                else
+                    return false;
+            }
         bool IsWithinDist3d(float x, float y, float z, float dist) const
             { return IsInDist(x, y, z, dist + GetObjectSize()); }
         bool IsWithinDist3d(const Position *pos, float dist) const
