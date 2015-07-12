@@ -1,7 +1,7 @@
 MythCore
 ========
 
-MythCore v12.54 by Desch
+MythCore v12.54 Custom A by Desch
 
 zonewow.com 
 
