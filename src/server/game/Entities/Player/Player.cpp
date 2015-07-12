@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -9,6 +9,7 @@
  * You may not share Myth Project's sources! For personal use only.
  */
 
+#include "../../../scripts/Custom/Transmogrification.h"
 #include "Common.h"
 #include "Language.h"
 #include "DatabaseEnv.h"
@@ -2264,6 +2265,7 @@ bool Player::TeleportTo(uint32 mapid, float x, float y, float z, float orientati
 
             if(m_transport)
             {
+
                 final_x += m_movementInfo.t_pos.GetPositionX();
                 final_y += m_movementInfo.t_pos.GetPositionY();
                 final_z += m_movementInfo.t_pos.GetPositionZ();
@@ -2511,6 +2513,7 @@ void Player::Regenerate(Powers power)
         // Butchery requires combat for this effect
         if(power != POWER_RUNIC_POWER || isInCombat())
             addvalue += GetTotalAuraModifierByMiscValue(SPELL_AURA_MOD_POWER_REGEN, power) * ((power != POWER_ENERGY) ? m_regenTimerCount : m_regenTimer) / (5 * IN_MILLISECONDS);
+
     }
 
     if(addvalue < 0.0f)
@@ -4332,7 +4335,7 @@ bool Player::resetTalents(bool no_cost)
 {
     if(HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_DISARMED))
         return false;
-
+        
     sScriptMgr->OnPlayerTalentsReset(this, no_cost);
 
     if(HasAtLoginFlag(AT_LOGIN_RESET_TALENTS))
@@ -4896,7 +4899,10 @@ void Player::DeleteFromDB(uint64 playerguid, uint32 accountId, bool updateRealmC
             trans->PAppend("DELETE FROM character_queststatus_daily WHERE `guid` = '%u'", guid);
             trans->PAppend("DELETE FROM character_talent WHERE `guid` = '%u'", guid);
             trans->PAppend("DELETE FROM character_skills WHERE `guid` = '%u'", guid);
-
+             //ADDED FOR ARMORY
+            trans->PAppend("DELETE FROM armory_character_stats WHERE guid = '%u'",guid);
+            trans->PAppend("DELETE FROM character_feed_log WHERE guid = '%u'",guid);
+            //ADDED FOR ARMORY
             CharacterDatabase.CommitTransaction(trans);
             break;
         }
@@ -5264,6 +5270,7 @@ void Player::DurabilityPointsLossAll(int32 points, bool inventory)
     if(inventory)
     {
         // bags not have durability
+
         // for(int i = INVENTORY_SLOT_BAG_START; i < INVENTORY_SLOT_BAG_END; i++)
 
         for(uint8 i = INVENTORY_SLOT_ITEM_START; i < INVENTORY_SLOT_ITEM_END; i++)
@@ -5595,6 +5602,18 @@ void Player::LeaveLFGChannel()
 
 void Player::UpdateDefense()
 {
+    if(GetSession()->IsPremium())
+    {
+        uint32 defense_skill_gain = sWorld->getIntConfig(CONFIG_SKILL_GAIN_DEFENSE)*sWorld->getIntConfig(CONFIG_SKILL_GAIN_DEFENSE_PREMIUM);
+        if(UpdateSkill(SKILL_DEFENSE,defense_skill_gain))
+        {
+            // update dependent from defense skill part
+            UpdateDefenseBonusesMod();
+        }
+    }
+    else
+    {
+
     uint32 defense_skill_gain = sWorld->getIntConfig(CONFIG_SKILL_GAIN_DEFENSE);
 
     if(UpdateSkill(SKILL_DEFENSE, defense_skill_gain))
@@ -5602,6 +5621,7 @@ void Player::UpdateDefense()
         // update dependent from defense skill part
         UpdateDefenseBonusesMod();
     }
+}
 }
 
 void Player::HandleBaseModValue(BaseModGroup modGroup, BaseModType modType, float amount, bool apply)
@@ -6041,6 +6061,17 @@ bool Player::UpdateCraftSkill(uint32 spellid)
                     learnSpell(discoveredSpell, false);
             }
 
+             if(GetSession()->IsPremium())
+            {
+                uint32 craft_skill_gain = sWorld->getIntConfig(CONFIG_SKILL_GAIN_CRAFTING)*sWorld->getIntConfig(CONFIG_SKILL_GAIN_CRAFTING_PREMIUM);
+                return UpdateSkillPro(_spell_idx->second->skillId, SkillGainChance(SkillValue,
+                _spell_idx->second->max_value,
+                (_spell_idx->second->max_value + _spell_idx->second->min_value)/2,
+                _spell_idx->second->min_value),
+                craft_skill_gain);
+            }
+            else
+            {
             uint32 craft_skill_gain = sWorld->getIntConfig(CONFIG_SKILL_GAIN_CRAFTING);
 
             return UpdateSkillPro(_spell_idx->second->skillId, SkillGainChance(SkillValue,
@@ -6050,6 +6081,7 @@ bool Player::UpdateCraftSkill(uint32 spellid)
                 craft_skill_gain);
         }
     }
+  }  
     return false;
 }
 
@@ -6057,6 +6089,33 @@ bool Player::UpdateGatherSkill(uint32 SkillId, uint32 SkillValue, uint32 RedLeve
 {
     sLog->outDebug(LOG_FILTER_PLAYER_SKILLS, "UpdateGatherSkill(SkillId %d SkillLevel %d RedLevel %d)", SkillId, SkillValue, RedLevel);
 
+    if(GetSession()->IsPremium())
+    {
+        uint32 gathering_skill_gain = sWorld->getIntConfig(CONFIG_SKILL_GAIN_GATHERING)*sWorld->getIntConfig(CONFIG_SKILL_GAIN_GATHERING_PREMIUM);
+        // For skinning and Mining chance decrease with level. 1-74 - no decrease, 75-149 - 2 times, 225-299 - 8 times
+        switch (SkillId)
+        {
+            case SKILL_HERBALISM:
+            case SKILL_LOCKPICKING:
+            case SKILL_JEWELCRAFTING:
+            case SKILL_INSCRIPTION:
+                return UpdateSkillPro(SkillId, SkillGainChance(SkillValue, RedLevel+100, RedLevel+50, RedLevel+25)*Multiplicator,gathering_skill_gain);
+            case SKILL_SKINNING:
+                if (sWorld->getIntConfig(CONFIG_SKILL_CHANCE_SKINNING_STEPS) == 0)
+                    return UpdateSkillPro(SkillId, SkillGainChance(SkillValue, RedLevel+100, RedLevel+50, RedLevel+25)*Multiplicator,gathering_skill_gain);
+                else
+                    return UpdateSkillPro(SkillId, (SkillGainChance(SkillValue, RedLevel+100, RedLevel+50, RedLevel+25)*Multiplicator) >> (SkillValue/sWorld->getIntConfig(CONFIG_SKILL_CHANCE_SKINNING_STEPS)), gathering_skill_gain);
+            case SKILL_MINING:
+                if (sWorld->getIntConfig(CONFIG_SKILL_CHANCE_MINING_STEPS) == 0)
+                    return UpdateSkillPro(SkillId, SkillGainChance(SkillValue, RedLevel+100, RedLevel+50, RedLevel+25)*Multiplicator,gathering_skill_gain);
+                else
+                    return UpdateSkillPro(SkillId, (SkillGainChance(SkillValue, RedLevel+100, RedLevel+50, RedLevel+25)*Multiplicator) >> (SkillValue/sWorld->getIntConfig(CONFIG_SKILL_CHANCE_MINING_STEPS)),gathering_skill_gain);
+        }
+        return false;
+    }
+    else
+    {
+    
     uint32 gathering_skill_gain = sWorld->getIntConfig(CONFIG_SKILL_GAIN_GATHERING);
 
     // For skinning and Mining chance decrease with level. 1-74 - no decrease, 75-149 - 2 times, 225-299 - 8 times
@@ -6081,6 +6140,8 @@ bool Player::UpdateGatherSkill(uint32 SkillId, uint32 SkillValue, uint32 RedLeve
     return false;
 }
 
+}
+
 bool Player::UpdateFishingSkill()
 {
     sLog->outDebug(LOG_FILTER_PLAYER_SKILLS, "UpdateFishingSkill");
@@ -6089,10 +6150,16 @@ bool Player::UpdateFishingSkill()
 
     int32 chance = SkillValue < 75 ? 100 : 2500/(SkillValue-50);
 
-    uint32 gathering_skill_gain = sWorld->getIntConfig(CONFIG_SKILL_GAIN_GATHERING);
-
-    return UpdateSkillPro(SKILL_FISHING, chance*10, gathering_skill_gain);
+    if(GetSession()->IsPremium())
+    {
+        uint32 gathering_skill_gain = sWorld->getIntConfig(CONFIG_SKILL_GAIN_GATHERING)*sWorld->getIntConfig(CONFIG_SKILL_GAIN_GATHERING_PREMIUM);
+        return UpdateSkillPro(SKILL_FISHING, chance*10, gathering_skill_gain);
+    } else {
+        uint32 gathering_skill_gain = sWorld->getIntConfig(CONFIG_SKILL_GAIN_GATHERING);
+        return UpdateSkillPro(SKILL_FISHING,chance*10,gathering_skill_gain);
+    }
 }
+
 
 // levels sync. with spell requirement for skill levels to learn
 // bonus abilities in sSkillLineAbilityStore
@@ -6169,15 +6236,60 @@ void Player::UpdateWeaponSkill (WeaponAttackType attType)
     if(pVictim && pVictim->GetTypeId() == TYPEID_UNIT && (pVictim->ToCreature()->GetCreatureInfo()->flags_extra & CREATURE_FLAG_EXTRA_NO_SKILLGAIN))
         return;
 
-    uint32 weapon_skill_gain = sWorld->getIntConfig(CONFIG_SKILL_GAIN_WEAPON);
+    if(GetSession()->IsPremium())
+    {
+        uint32 weapon_skill_gain = sWorld->getIntConfig(CONFIG_SKILL_GAIN_WEAPON)* sWorld->getIntConfig(CONFIG_SKILL_GAIN_WEAPON_PREMIUM);
+        switch(attType)
+        {
+            case BASE_ATTACK:
+            {
+                Item *tmpitem = GetWeaponForAttack(attType,true);
+                if (!tmpitem)
+                    UpdateSkill(SKILL_UNARMED,weapon_skill_gain);
+                else if (tmpitem->GetTemplate()->SubClass != ITEM_SUBCLASS_WEAPON_FISHING_POLE)
+                    UpdateSkill(tmpitem->GetSkill(),weapon_skill_gain);
+                break;
+            }
+            case OFF_ATTACK:
+            case RANGED_ATTACK:
+            {
+                Item *tmpitem = GetWeaponForAttack(attType,true);
+                if (tmpitem)
+                    UpdateSkill(tmpitem->GetSkill(), weapon_skill_gain);
+                break;
+            }
+            default:
+                break;
+        }
+        UpdateAllCritPercentages();
+    } else {
+        uint32 weapon_skill_gain = sWorld->getIntConfig(CONFIG_SKILL_GAIN_WEAPON);
 
-    Item* tmpitem = GetWeaponForAttack(attType, true);
-    if(!tmpitem && attType == BASE_ATTACK)
-        UpdateSkill(SKILL_UNARMED, weapon_skill_gain);
-    else if(tmpitem && tmpitem->GetTemplate()->SubClass != ITEM_SUBCLASS_WEAPON_FISHING_POLE)
-        UpdateSkill(tmpitem->GetSkill(), weapon_skill_gain);
+        switch(attType)
+        {
+            case BASE_ATTACK:
+            {
+                Item *tmpitem = GetWeaponForAttack(attType, true);
 
-    UpdateAllCritPercentages();
+                if(!tmpitem)
+                    UpdateSkill(SKILL_UNARMED, weapon_skill_gain);
+                else if(tmpitem->GetTemplate()->SubClass != ITEM_SUBCLASS_WEAPON_FISHING_POLE)
+                    UpdateSkill(tmpitem->GetSkill(), weapon_skill_gain);
+                break;
+            }
+            case OFF_ATTACK:
+            case RANGED_ATTACK:
+            {
+                Item *tmpitem = GetWeaponForAttack(attType, true);
+                if(tmpitem)
+                    UpdateSkill(tmpitem->GetSkill(), weapon_skill_gain);
+                break;
+            }
+            default:
+                break;
+        }
+        UpdateAllCritPercentages();
+    }
 }
 
 void Player::UpdateCombatSkills(Unit* pVictim, WeaponAttackType attType, bool defence)
@@ -6692,6 +6804,7 @@ void Player::SendMessageToSetInRange(WorldPacket *data, float dist, bool self, b
 
 void Player::SendMessageToSet(WorldPacket *data, Player const* skipped_rcvr)
 {
+
     if(skipped_rcvr != this)
         GetSession()->SendPacket(data);
 
@@ -6786,6 +6899,8 @@ void Player::CheckAreaExploreAndOutdoor()
                 else
                 {
                     XP = uint32(sObjectMgr->GetBaseXP(p->area_level)*sWorld->getRate(RATE_XP_EXPLORE));
+                    if(GetSession()->IsPremium())
+                        XP *= uint32(sWorld->getRate(RATE_XP_EXPLORE_PREMIUM));
                 }
 
                 GiveXP(XP, NULL);
@@ -6912,6 +7027,7 @@ void Player::RewardReputation(Unit* pVictim, float rate)
         donerep1 = int32(donerep1*(rate + favored_rep_mult));
 
         if(recruitAFriend)
+
             donerep1 = int32(donerep1 * (1 + sWorld->getRate(RATE_REPUTATION_RECRUIT_A_FRIEND_BONUS)));
 
         FactionEntry const *factionEntry1 = sFactionStore.LookupEntry(ChampioningFaction ? ChampioningFaction : Rep->repfaction1);
@@ -7034,6 +7150,8 @@ bool Player::RewardHonor(Unit* uVictim, uint32 groupsize, int32 honor, bool pvpt
 
     uint64 victim_guid = 0;
     uint32 victim_rank = 0;
+    /********* Add Custom Pandaria PvP Rank ***************/
+    uint32 rank_diff = 0;
 
     // need call before fields update to have chance move yesterday data to appropriate fields before today data change.
     UpdateHonorFields();
@@ -7073,22 +7191,47 @@ bool Player::RewardHonor(Unit* uVictim, uint32 groupsize, int32 honor, bool pvpt
             //  [15..28] Horde honor titles and player name
             //  [29..38] Other title and player name
             //  [39+]    Nothing
-            uint32 victim_title = pVictim->GetUInt32Value(PLAYER_CHOSEN_TITLE);
-                                                        // Get Killer titles, CharTitlesEntry::bit_index
+            /********* Add Custom ADDR PvP Rank ***************/
+            // PLAYER__FIELD_KNOWN_TITLES describe which titles player can use,
+            // so we must find biggest pvp title , even for killer to find extra honor value
+            uint32 vtitle = pVictim->GetUInt32Value(PLAYER__FIELD_KNOWN_TITLES);
+            uint32 victim_title = 0;
+            uint32 ktitle = GetUInt32Value(PLAYER__FIELD_KNOWN_TITLES);
+            uint32 killer_title = 0;
+            if(PLAYER_TITLE_MASK_ALL_PVP & ktitle)
+            {
+                 for(int i = ((GetTeam() == ALLIANCE) ? 1:HKRANKMAX);i!=((GetTeam() == ALLIANCE) ? HKRANKMAX : (2*HKRANKMAX-1));i++)
+                 {
+                      if(ktitle & (1<<i))
+                          killer_title = i;
+                 }
+             }
+             if(PLAYER_TITLE_MASK_ALL_PVP & vtitle)
+             {
+
+                 for(int i = ((pVictim->GetTeam() == ALLIANCE) ? 1:HKRANKMAX);i!=((pVictim->GetTeam() == ALLIANCE) ? HKRANKMAX : (2*HKRANKMAX-1));i++)
+                 {
+                    if(vtitle & (1<<i))
+                       victim_title = i;
+                 }
+             }
+            // Get Killer titles, CharTitlesEntry::bit_index
             // Ranks:
             //  title[1..14]  -> rank[5..18]
             //  title[15..28] -> rank[5..18]
             //  title[other]  -> 0
-            if(victim_title == 0)
-                victim_guid = 0;                        // Don't show HK: <rank> message, only log.
-            else if(victim_title < 15)
-                victim_rank = victim_title + 4;
-            else if(victim_title < 29)
-                victim_rank = victim_title - 14 + 4;
-            else
-                victim_guid = 0;                        // Don't show HK: <rank> message, only log.
+            			/********* Add Custom ADDR PvP Rank ***************/
+            // now find rank difference
+            if (killer_title == 0 && victim_rank>4)
+                rank_diff = victim_rank - 4;
+            else if (killer_title < HKRANKMAX)
+                rank_diff = (victim_rank>(killer_title + 4))? (victim_rank - (killer_title + 4)) : 0;
+            else if (killer_title < (2*HKRANKMAX-1))
+                rank_diff = (victim_rank>(killer_title - (HKRANKMAX-1) +4))? (victim_rank - (killer_title - (HKRANKMAX-1) + 4)) : 0;
 
             honor_f = ceil(Trinity::Honor::hk_honor_at_level_f(k_level) * (v_level - k_grey) / (k_level - k_grey));
+                        			/********* Add Custom ADDR PvP Rank ***************/
+            honor_f *= int(1 + rank_diff * 0.1);
 
             // count the number of playerkills in one day
             ApplyModUInt32Value(PLAYER_FIELD_KILLS, 1, true);
@@ -7099,6 +7242,8 @@ bool Player::RewardHonor(Unit* uVictim, uint32 groupsize, int32 honor, bool pvpt
             UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_HK_RACE, pVictim->getRace());
             UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_HONORABLE_KILL_AT_AREA, GetAreaId());
             UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_HONORABLE_KILL, 1, 0, pVictim);
+                                    /********* Add Custom ADDR PvP Rank ***************/
+            UpdateKnownTitles();
         } else {
             if(!uVictim->ToCreature()->isRacialLeader())
                 return false;
@@ -7175,6 +7320,31 @@ void Player::SetHonorPoints(uint32 value)
     SetUInt32Value(PLAYER_FIELD_HONOR_CURRENCY, value);
     if(value)
         AddKnownCurrency(ITEM_HONOR_POINTS_ID);
+}
+/********* Add Custom ADDR PvP Rank ***************/
+
+void Player::UpdateKnownTitles()
+{
+   uint32 new_title = 0;
+   uint32 honor_kills = GetUInt32Value(PLAYER_FIELD_LIFETIME_HONORABLE_KILLS);
+   uint32 old_title = GetUInt32Value(PLAYER_CHOSEN_TITLE);
+   RemoveFlag64(PLAYER__FIELD_KNOWN_TITLES,PLAYER_TITLE_MASK_ALL_PVP);
+   if (honor_kills < 0)
+       return;
+   bool max_rank = ((honor_kills >= sWorld->pvp_ranks[HKRANKMAX-1]) ? true : false);
+       for (int i = HKRANK01; i != HKRANKMAX; ++i)
+       {
+       if (honor_kills < sWorld->pvp_ranks[i] || (max_rank))
+       {
+       new_title = ((max_rank) ? (HKRANKMAX-1) : (i-1));
+       if (new_title > 0)
+       new_title += ((GetTeam() == ALLIANCE) ? 0 : (HKRANKMAX-1));
+       break;
+       }
+       }
+   SetFlag64(PLAYER__FIELD_KNOWN_TITLES,uint64(1) << new_title);
+   if (old_title > 0 && old_title < (2*HKRANKMAX-1) && new_title > old_title)
+   SetUInt32Value(PLAYER_CHOSEN_TITLE,new_title);
 }
 
 void Player::SetArenaPoints(uint32 value)
@@ -8725,7 +8895,7 @@ void Player::SendLoot(uint64 guid, LootType loot_type)
                     loot->FillLoot(item->GetEntry(), LootTemplates_Milling, this, true);
                     break;
                 default:
-                    loot->generateMoneyLoot(item->GetTemplate()->MinMoneyLoot, item->GetTemplate()->MaxMoneyLoot);
+                    loot->generateMoneyLoot(item->GetTemplate()->MinMoneyLoot, item->GetTemplate()->MaxMoneyLoot, GetSession()->IsPremium());
                     loot->FillLoot(item->GetEntry(), LootTemplates_Item, this, true, loot->gold != 0);
                     break;
             }
@@ -8793,7 +8963,10 @@ void Player::SendLoot(uint64 guid, LootType loot_type)
                 // Generate extra money for pick pocket loot
                 const uint32 a = urand(0, creature->getLevel()/2);
                 const uint32 b = urand(0, getLevel()/2);
-                loot->gold = uint32(10 * (a + b) * sWorld->getRate(RATE_DROP_MONEY));
+                if (GetSession()->IsPremium())
+                     loot->gold = uint32(10 * (a + b) * sWorld->getRate(RATE_DROP_MONEY) * sWorld->getRate(RATE_DROP_MONEY_PREMIUM));
+                else
+                	 loot->gold = uint32(10 * (a + b) * sWorld->getRate(RATE_DROP_MONEY));
                 permission = OWNER_PERMISSION;
             }
         }
@@ -9675,6 +9848,7 @@ void Player::SetSheath(SheathState sheathed)
             SetVirtualItemSlot(2, GetWeaponForAttack(RANGED_ATTACK, true));
             break;
         default:
+
             SetVirtualItemSlot(0, NULL);
             SetVirtualItemSlot(1, NULL);
             SetVirtualItemSlot(2, NULL);
@@ -9903,6 +10077,7 @@ InventoryResult Player::CanUnequipItems(uint32 item, uint32 count) const
         if(Bag *pBag = GetBagByPos(i))
             for(uint32 j = 0; j < pBag->GetBagSize(); ++j)
                 if(Item *pItem = GetItemByPos(i, j))
+
                     if(pItem->GetEntry() == item)
                     {
                         tempcount += pItem->GetCount();
@@ -11840,6 +12015,8 @@ void Player::RemoveAmmo()
 {
     SetUInt32Value(PLAYER_AMMO_ID, 0);
 
+
+
     m_ammoDPS = 0.0f;
 
     if(CanModifyStats())
@@ -12170,7 +12347,11 @@ void Player::SetVisibleItemSlot(uint8 slot, Item *pItem)
 {
     if(pItem)
     {
-        SetUInt32Value(PLAYER_VISIBLE_ITEM_1_ENTRYID + (slot * 2), pItem->GetEntry());
+        // Transmogrification
+        if(Transmogrification::GetFakeEntry(pItem))
+            SetUInt32Value(PLAYER_VISIBLE_ITEM_1_ENTRYID + (slot * 2), Transmogrification::GetFakeEntry(pItem));
+        else
+            SetUInt32Value(PLAYER_VISIBLE_ITEM_1_ENTRYID + (slot * 2), pItem->GetEntry());
         SetUInt16Value(PLAYER_VISIBLE_ITEM_1_ENCHANTMENT + (slot * 2), 0, pItem->GetEnchantmentId(PERM_ENCHANTMENT_SLOT));
         SetUInt16Value(PLAYER_VISIBLE_ITEM_1_ENCHANTMENT + (slot * 2), 1, pItem->GetEnchantmentId(TEMP_ENCHANTMENT_SLOT));
     }
@@ -12295,6 +12476,8 @@ void Player::MoveItemFromInventory(uint8 bag, uint8 slot, bool update)
 {
     if(Item* it = GetItemByPos(bag, slot))
     {
+        // Transmogrification
+        Transmogrification::DeleteFakeFromDB(it->GetGUIDLow());
         ItemRemovedQuestCheck(it->GetEntry(), it->GetCount());
         RemoveItem(bag, slot, update);
         it->SetNotRefundable(this, false);
@@ -13231,6 +13414,7 @@ void Player::SendEquipError(InventoryResult msg, Item* pItem, Item* pItem2, uint
         data << uint64(pItem ? pItem->GetGUID() : 0);
         data << uint64(pItem2 ? pItem2->GetGUID() : 0);
         data << uint8(0);                                   // bag type subclass, used with EQUIP_ERR_EVENT_AUTOEQUIP_BIND_CONFIRM and EQUIP_ERR_ITEM_DOESNT_GO_INTO_BAG2
+
 
         switch(msg)
         {
@@ -14904,12 +15088,20 @@ void Player::RewardQuest(Quest const *pQuest, uint32 reward, Object* questGiver,
     Unit::AuraEffectList const& ModXPPctAuras = GetAuraEffectsByType(SPELL_AURA_MOD_XP_QUEST_PCT);
     for(Unit::AuraEffectList::const_iterator i = ModXPPctAuras.begin(); i != ModXPPctAuras.end(); ++i)
         AddPctN(XP, (*i)->GetAmount());
+        
+    if (GetSession()->IsPremium())
+        XP *= uint32(sWorld->getRate(RATE_XP_QUEST_PREMIUM));
 
     int32 moneyRew = 0;
     if(getLevel() < sWorld->getIntConfig(CONFIG_MAX_PLAYER_LEVEL))
         GiveXP(XP, NULL);
     else
-        moneyRew = int32(pQuest->GetRewMoneyMaxLevel() * sWorld->getRate(RATE_DROP_MONEY));
+    {
+        if (GetSession()->IsPremium())
+            moneyRew = int32(pQuest->GetRewMoneyMaxLevel() * sWorld->getRate(RATE_DROP_MONEY) * sWorld->getRate(RATE_DROP_MONEY_PREMIUM));
+        else
+        	moneyRew = int32(pQuest->GetRewMoneyMaxLevel() * sWorld->getRate(RATE_DROP_MONEY));
+    }    	
 
     // Give player extra money if GetRewOrReqMoney > 0 and get ReqMoney if negative
     if(pQuest->GetRewOrReqMoney())
@@ -16366,6 +16558,7 @@ void Player::SetHomebind(WorldLocation const& /*loc*/, uint32 /*area_id*/)
     stmt->setUInt16(1, m_homebindAreaId);
     stmt->setFloat (2, m_homebindX);
     stmt->setFloat (3, m_homebindY);
+
     stmt->setFloat (4, m_homebindZ);
     stmt->setUInt32(5, GetGUIDLow());
     CharacterDatabase.Execute(stmt);
@@ -16437,6 +16630,10 @@ bool Player::LoadFromDB(uint32 guid, SQLQueryHolder *holder)
         CharacterDatabase.PExecute("UPDATE characters SET at_login = at_login | '%u' WHERE `guid` ='%u'", uint32(AT_LOGIN_RENAME), guid);
         return false;
     }
+    
+        //ADDED FOR ARMORY
+        InitWowarmoryFeeds();
+        //ADDED FOR ARMORY
 
     // overwrite possible wrong/corrupted guid
     SetUInt64Value(OBJECT_FIELD_GUID, MAKE_NEW_GUID(guid, 0, HIGHGUID_PLAYER));
@@ -16903,6 +17100,7 @@ bool Player::LoadFromDB(uint32 guid, SQLQueryHolder *holder)
     _LoadRandomBGStatus(holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOADRANDOMBG));
 
     // after spell and quest load
+
     InitTalentForLevel();
     learnDefaultSpells();
 
@@ -18206,6 +18404,7 @@ void Player::SaveToDB()
     sLog->outDebug(LOG_FILTER_UNITS, "The value of player %s at save: ", m_name.c_str());
     outDebugValues();
 
+
     std::string sql_name = m_name;
     CharacterDatabase.EscapeString(sql_name);
 
@@ -18382,7 +18581,29 @@ void Player::SaveToDB()
         _SaveStats(trans);
 
     CharacterDatabase.CommitTransaction(trans);
-
+    /* World of Warcraft Armory */
+    // Place this code AFTER CharacterDatabase.CommitTransaction(); to avoid some character saving errors.
+    // Wowarmory feeds
+    std::ostringstream sWowarmory;
+    for (WowarmoryFeeds::iterator iter = m_wowarmory_feeds.begin(); iter < m_wowarmory_feeds.end(); ++iter) {
+        sWowarmory << "INSERT IGNORE INTO character_feed_log (guid,type,data,date,counter,difficulty,item_guid,item_quality) VALUES ";
+        //                      guid                    type                        data                    date                            counter                   difficulty                        item_guid                      item_quality
+        sWowarmory << "(" << (*iter).guid << ", " << (*iter).type << ", " << (*iter).data << ", " << uint64((*iter).date) << ", " << (*iter).counter << ", " << uint32((*iter).difficulty) << ", " << (*iter).item_guid << ", " << (*iter).item_quality <<  ");";
+        CharacterDatabase.PExecute(sWowarmory.str().c_str());
+        sWowarmory.str("");
+     }
+     // Clear old saved feeds from storage - they are not required for server core.
+     InitWowarmoryFeeds();
+     // Character stats
+     std::ostringstream ps;
+     time_t t = time(NULL);
+     CharacterDatabase.PExecute("DELETE FROM armory_character_stats WHERE guid = %u", GetGUIDLow());
+     ps << "INSERT INTO armory_character_stats (guid, data, save_date) VALUES (" << GetGUIDLow() << ", '";
+     for (uint16 i = 0; i < m_valuesCount; ++i)
+         ps << GetUInt32Value(i) << " ";
+     ps << "', " << uint64(t) << ");";
+     CharacterDatabase.PExecute(ps.str().c_str());
+     /* World of Warcraft Armory */
     // save pet (hunter pet level and experience and all type pets health/mana).
     if(Pet* pet = GetPet())
         pet->SavePetToDB(PET_SAVE_AS_CURRENT);
@@ -20209,6 +20430,7 @@ void Player::InitDataForForm(bool reapplyMods)
         }
         case FORM_BEAR:
         case FORM_DIREBEAR:
+
         {
             if(getPowerType() != POWER_RAGE)
                 setPowerType(POWER_RAGE);
@@ -23945,6 +24167,7 @@ void Player::BuildEnchantmentsInfoData(WorldPacket *data)
     size_t slotUsedMaskPos = data->wpos();
     *data << uint32(slotUsedMask);                          // slotUsedMask < 0x80000
 
+
     for(uint32 i = 0; i < EQUIPMENT_SLOT_END; ++i)
     {
         Item *item = GetItemByPos(INVENTORY_SLOT_BAG_0, i);
@@ -24709,6 +24932,45 @@ void Player::_SaveInstanceTimeRestrictions(SQLTransaction& trans)
         stmt->setUInt64(2, itr->second);
         trans->Append(stmt);
     }
+    }
+
+void Player::InitWowarmoryFeeds() {
+    // Clear feeds
+    m_wowarmory_feeds.clear();
+}
+
+void Player::CreateWowarmoryFeed(uint32 type, uint32 data, uint32 item_guid, uint32 item_quality) {
+    /*
+        1 - TYPE_ACHIEVEMENT_FEED
+        2 - TYPE_ITEM_FEED
+        3 - TYPE_BOSS_FEED
+    */
+    if (GetGUIDLow() == 0)
+    {
+        sLog->outError("[Wowarmory]: player is not initialized, unable to create log entry!");
+        return;
+    }
+    if (type <= 0 || type > 3)
+    {
+        sLog->outError("[Wowarmory]: unknown feed type: %d, ignore.", type);
+        return;
+    }
+    if (data == 0)
+    {
+        sLog->outError("[Wowarmory]: empty data (GUID: %u), ignore.", GetGUIDLow());
+        return;
+    }
+    WowarmoryFeedEntry feed;
+    feed.guid = GetGUIDLow();
+    feed.type = type;
+    feed.data = data;
+    feed.difficulty = type == 3 ? GetMap()->GetDifficulty() : 0;
+    feed.item_guid  = item_guid;
+    feed.item_quality = item_quality;
+    feed.counter = 0;
+    feed.date = time(NULL);
+    sLog->outDebug(LOG_FILTER_UNITS, "[Wowarmory]: create wowarmory feed (GUID: %u, type: %d, data: %u).", feed.guid, feed.type, feed.data);
+    m_wowarmory_feeds.push_back(feed);
 }
 
 void Player::SetTimedAchievement(uint32 AchievementId,uint32 time, uint32 maxprogress)

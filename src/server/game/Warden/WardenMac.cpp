@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -226,9 +226,9 @@ void WardenMac::HandleData(ByteBuffer &buff)
 
     if(found && needBan && sWorld->getIntConfig(CONFIG_INT_WARDEN_BANDAY) > 0)
     {
-        std::string sDuratuin   = (std::string(sConfig->GetStringDefault("Warden.BanDay", "")) + "d");
-        std::string sText       = ("Player: " + std::string(Client->GetPlayerName()) + " have used Cheating software and have banned for " + sDuratuin.c_str());
-        sWorld->SendGMText(LANG_GM_BROADCAST, sText.c_str());
+        std::string sDuratuin = (std::string(sConfig->GetStringDefault("Warden.BanDay", "")) + "Jour");
+        std::string sText = ("Le Joueur: " + std::string(Client->GetPlayerName()) + " a utilisé un logiciel de triche et est banni pour " + sDuratuin.c_str());
+        sWorld->SendGMText(LANG_SYSTEMMESSAGE, sText.c_str());
         sWorld->BanAccount(BAN_CHARACTER, Client->GetPlayerName(), sDuratuin.c_str(), "Cheating software user", "Server Guard");
     } else if(found && sWorld->getBoolConfig(CONFIG_BOOL_WARDEN_KICK))
         Client->KickPlayer();

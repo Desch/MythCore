@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -110,7 +110,7 @@ public:
         if(!instanceScript)
             return true;
 
-        char const* _message = "We are ready!";
+        char const* _message = "Nous sommes Prêt a relever le Défi du Tournois!";
 
         if(pPlayer->isInCombat() || instanceScript->IsEncounterInProgress() || instanceScript->GetData(TYPE_EVENT))
             return true;
@@ -202,6 +202,7 @@ public:
                 break;
             case GOSSIP_ACTION_INFO_DEF+5:
             {
+
                 if(instanceScript->GetData(TYPE_LICH_KING) != DONE && !pPlayer->isGameMaster())
                     return true;
 

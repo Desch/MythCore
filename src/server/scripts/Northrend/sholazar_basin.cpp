@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -12,8 +12,8 @@
 #include "ScriptPCH.h"
 #include "ScriptedEscortAI.h"
 
-#define GOSSIP_ITEM1 "I am ready to travel to your village now."
-#define GOSSIP_ITEM2 "<Reach down and pull the Injured Rainspeaker Oracle to its feet.>"
+#define GOSSIP_ITEM1 "Je suis prêt à Voyage vers votre village maintenant."
+#define GOSSIP_ITEM2 "<Se déployer et tirer sur l'Oracle parlepluie blessé à ses pieds.>"
 
 enum eRainspeaker
 {
@@ -156,8 +156,8 @@ public:
     }
 };
 
-#define GOSSIP_VEKJIK_ITEM1 "Shaman Vekjik, I have spoken with the big-tongues and they desire peace. I have brought this offering on their behalf."
-#define GOSSIP_VEKJIK_ITEM2 "No no... I had no intentions of betraying your people. I was only defending myself. it was all a misunderstanding."
+#define GOSSIP_VEKJIK_ITEM1 "Shaman Vekjik, j'ai parlé avec les grand-langues et ils veulent la paix. Je vous ai apporté cette offrande en leur nom."
+#define GOSSIP_VEKJIK_ITEM2 "Non, non ... Je n'avais pas l'intention de trahir votre peuple. Je ne faisais que me défendre. Tout cela n'était qu'un malentendu."
 
 enum eVekjik
 {
@@ -213,9 +213,9 @@ public:
     }
 };
 
-#define GOSSIP_ITEM_AOF1 "I want to stop the Scourge as much as you do. How can I help?"
-#define GOSSIP_ITEM_AOF2 "You can trust me. I am no friend of the Lich King."
-#define GOSSIP_ITEM_AOF3 "I will not fail."
+#define GOSSIP_ITEM_AOF1 "Je veux arrêter le Fléau autant que vous. Comment puis-je vous aider ?"
+#define GOSSIP_ITEM_AOF2 "Vous pouvez me faire confiance. Je ne suis pas un ami du Roi Liche."
+#define GOSSIP_ITEM_AOF3 "Je n'y manquerai pas."
 
 enum eFreya
 {
@@ -421,14 +421,14 @@ public:
 };
 
 #define SAY_OFFER     "Care to try Grimbooze Thunderbrew's new jungle punch?"
-#define SAY_HEMET_1   "Aye, I'll try it."
-#define SAY_HEMET_2   "That's exactly what I needed!"
+#define SAY_HEMET_1   "Oui, je vais l'essayer."
+#define SAY_HEMET_2   "C'est exactement ce dont j'avais besoin!"
 #define SAY_HEMET_3   "It's got my vote! That'll put hair on your chest like nothing else will."
-#define SAY_HADRIUS_1 "I'm always up for something of Grimbooze's."
-#define SAY_HADRIUS_2 "Well, so far, it tastes like something my wife would drink..."
-#define SAY_HADRIUS_3 "Now, there's the kick I've come to expect from Grimbooze's drinks! I like it!"
-#define SAY_TAMARA_1  "Sure!"
-#define SAY_TAMARA_2  "Oh my..."
+#define SAY_HADRIUS_1 "Je suis toujours partant pour quelque chose de Tristevin"
+#define SAY_HADRIUS_2 "Eh bien, jusqu'ici, ça a le gout de quelques chose que ma femme voudrais boire..."
+#define SAY_HADRIUS_3 "Maintenant, il a le coup j'en suis venu à attendre des boissons de Tristevin! J'aime ça!"
+#define SAY_TAMARA_1  "Bien sûr!"
+#define SAY_TAMARA_2  "Oh mon..."
 #define SAY_TAMARA_3  "Tastes like I'm drinking... engine degreaser!"
 
 enum utils
@@ -559,9 +559,9 @@ public:
     }
 };
 
-#define GOSSIP_OPTION_ORANGE    "Can you spare an orange?"
-#define GOSSIP_OPTION_BANANAS   "Have a spare bunch of bananas?"
-#define GOSSIP_OPTION_PAPAYA    "I could really use a papaya."
+#define GOSSIP_OPTION_ORANGE    "Pouvez-vous épargner une orange ?"
+#define GOSSIP_OPTION_BANANAS   "Avez-vous un bouquet de banane ?"
+#define GOSSIP_OPTION_PAPAYA    "Je pourrais vraiment utiliser une papaye."
 
 enum eAdventurousDwarf
 {

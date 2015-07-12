@@ -25,6 +25,15 @@
 #   CUSTOM SERVER OPTIONS
 ###################################################################################################
 
+Rate.XP.Kill.Premium    = 3
+Rate.XP.Quest.Premium   = 3
+Rate.XP.Explore.Premium = 3
+SkillGain.Crafting.Premium = 3
+SkillGain.Defense.Premium = 3
+SkillGain.Gathering.Premium = 3
+SkillGain.Weapon.Premium = 3
+Rate.Drop.Money.Premium = 3
+
 ###################################################################################################
 # ANTI-CHEAT
 #
@@ -107,7 +116,7 @@ MovementChecker.waterwalk = 1
 #        Important:   RealmID must match the realmlist inside the realmd database.
 #        Default:     1
 
-RealmID = 1
+RealmID = 2
 
 #
 #    DataDir
@@ -399,7 +408,7 @@ MapUpdate.Threads = 4
 #        Example:     "./worldd.pid" - (Enabled)
 #        Default:     ""             - (Disabled)
 
-PidFile = ""
+PidFile = "world3.pid"
 
 #
 #    LogLevel
@@ -493,7 +502,7 @@ WorldLogFile = ""
 #        Default:     "DBErrors.log" - (Enabled)
 #                     ""             - (Disabled)
 
-DBErrorLogFile = "DBErrors.log"
+DBErrorLogFile = ""
 
 #
 #    CharLogFile
@@ -834,7 +843,7 @@ GameType = 1
 #                     28 - (QA Server     - any language)
 #                     29 - (CN9           - basic-Latin at create, any at login)
 
-RealmZone = 1
+RealmZone = 10
 
 #
 #    StrictPlayerNames
@@ -963,6 +972,8 @@ CharacterCreating.Disabled = 0
 #                     4    - (Disabled, Dwarf)
 #                     8    - (Disabled, Night Elf)
 #                     16   - (Disabled, Undead)
+
+
 #                     32   - (Disabled, Tauren)
 #                     64   - (Disabled, Gnome)
 #                     128  - (Disabled, Troll)
@@ -1039,7 +1050,7 @@ MinDualSpecLevel = 40
 #        Range:       1-MaxPlayerLevel
 #        Default:     1
 
-StartPlayerLevel = 1
+StartPlayerLevel = 80
 
 #
 #    StartHeroicPlayerLevel
@@ -1130,7 +1141,7 @@ DisableWaterBreath = 4
 #        Default:     0 - (Disabled)
 #                     1 - (Enabled)
 
-AllFlightPaths = 0
+AllFlightPaths = 1
 
 #
 #    InstantFlightPaths
@@ -1293,7 +1304,7 @@ MailDeliveryDelay = 3600
 #        Default:     0 - (Disabled)
 #                     1 - (Enabled)
 
-SkillChance.Prospecting = 0
+SkillChance.Prospecting = 1
 
 #
 #    SkillChance.Milling
@@ -1301,7 +1312,7 @@ SkillChance.Prospecting = 0
 #        Default:     0 - (Disabled)
 #                     1 - (Enabled)
 
-SkillChance.Milling = 0
+SkillChance.Milling = 1
 
 #
 #    OffhandCheckAtSpellUnlearn
@@ -1335,7 +1346,7 @@ Event.Announce = 0
 #        Example:     "Welcome to John\'s Server@This server runs on Trinity Core."
 #        Default:     "Welcome to a Trinity Core server."
 
-Motd = "Welcome to a Myth Project WoW Server."
+Motd = "Bienvenue sur le Serveur Fun PvP d'AuDelaDuReve"
 
 #
 #    Server.LoginInfo
@@ -1395,7 +1406,7 @@ AllowTwoSide.Accounts = 1
 #        Default:     0 - (Disabled)
 #                     1 - (Enabled)
 
-AllowTwoSide.Interaction.Chat = 0
+AllowTwoSide.Interaction.Chat = 1
 
 #
 #    AllowTwoSide.Interaction.Channel
@@ -1403,7 +1414,7 @@ AllowTwoSide.Interaction.Chat = 0
 #        Default:     0 - (Disabled)
 #                     1 - (Enabled)
 
-AllowTwoSide.Interaction.Channel = 0
+AllowTwoSide.Interaction.Channel = 1
 
 #
 #    AllowTwoSide.Interaction.Group
@@ -1411,7 +1422,7 @@ AllowTwoSide.Interaction.Channel = 0
 #        Default:     0 - (Disabled)
 #                     1 - (Enabled)
 
-AllowTwoSide.Interaction.Group = 0
+AllowTwoSide.Interaction.Group = 1
 
 #
 #    AllowTwoSide.Interaction.Guild
@@ -1427,7 +1438,7 @@ AllowTwoSide.Interaction.Guild = 0
 #        Default:     0 - (Disabled)
 #                     1 - (Enabled)
 
-AllowTwoSide.Interaction.Auction = 0
+AllowTwoSide.Interaction.Auction = 1
 
 #
 #    AllowTwoSide.Interaction.Mail
@@ -1435,7 +1446,7 @@ AllowTwoSide.Interaction.Auction = 0
 #        Default:     0 - (Disabled)
 #                     1 - (Enabled)
 
-AllowTwoSide.Interaction.Mail = 0
+AllowTwoSide.Interaction.Mail = 1
 
 #
 #    AllowTwoSide.WhoList
@@ -1443,7 +1454,7 @@ AllowTwoSide.Interaction.Mail = 0
 #        Default:     0 - (Disabled)
 #                     1 - (Enabled)
 
-AllowTwoSide.WhoList = 0
+AllowTwoSide.WhoList = 1
 
 #
 #    AllowTwoSide.AddFriend
@@ -1451,7 +1462,7 @@ AllowTwoSide.WhoList = 0
 #        Default:     0 - (Disabled)
 #                     1 - (Enabled)
 
-AllowTwoSide.AddFriend = 0
+AllowTwoSide.AddFriend = 1
 
 #
 #    AllowTwoSide.Trade
@@ -1459,7 +1470,7 @@ AllowTwoSide.AddFriend = 0
 #        Default:     0 - (Disabled)
 #                     1 - (Enabled)
 
-AllowTwoSide.Trade = 0
+AllowTwoSide.Trade = 1
 
 #
 #    TalentsInspecting
@@ -1838,7 +1849,7 @@ GM.StartLevel = 80
 #        Default:     0 - (Disabled)
 #                     1 - (Enabled)
 
-GM.AllowInvite = 0
+GM.AllowInvite = 1
 
 #
 #    GM.AllowFriend
@@ -1846,7 +1857,7 @@ GM.AllowInvite = 0
 #        Default:     0 - (Disabled)
 #                     1 - (Enabled)
 
-GM.AllowFriend = 0
+GM.AllowFriend = 1
 
 #
 #    GM.LowerSecurity
@@ -1944,15 +1955,15 @@ Rate.Skill.Discovery = 1
 #                     1 - (Rate.Drop.Item.Referenced)
 #                     1 - (Rate.Drop.Money)
 
-Rate.Drop.Item.Poor             = 1
-Rate.Drop.Item.Normal           = 1
-Rate.Drop.Item.Uncommon         = 1
-Rate.Drop.Item.Rare             = 1
-Rate.Drop.Item.Epic             = 1
-Rate.Drop.Item.Legendary        = 1
-Rate.Drop.Item.Artifact         = 1
-Rate.Drop.Item.Referenced       = 1
-Rate.Drop.Money                 = 1
+Rate.Drop.Item.Poor             = 4
+Rate.Drop.Item.Normal           = 4
+Rate.Drop.Item.Uncommon         = 20
+Rate.Drop.Item.Rare             = 10
+Rate.Drop.Item.Epic             = 2.5
+Rate.Drop.Item.Legendary        = 4
+Rate.Drop.Item.Artifact         = 4
+Rate.Drop.Item.Referenced       = 4
+Rate.Drop.Money                 = 30
 
 #
 #    Rate.Drop.Item.ReferencedAmount
@@ -1970,9 +1981,9 @@ Rate.Drop.Item.ReferencedAmount = 1
 #                     1 - (Rate.XP.Quest)
 #                     1 - ( Rate.XP.Explore)
 
-Rate.XP.Kill    = 1
-Rate.XP.Quest   = 1
-Rate.XP.Explore = 1
+Rate.XP.Kill    = 20
+Rate.XP.Quest   = 25
+Rate.XP.Explore = 10
 
 #
 #    Rate.RepairCost
@@ -1990,9 +2001,9 @@ Rate.RepairCost = 1
 #                     1 - (Rate.Rest.Offline.InTavernOrCity)
 #                     1 - (Rate.Rest.Offline.InWilderness)
 
-Rate.Rest.InGame                 = 1
-Rate.Rest.Offline.InTavernOrCity = 1
-Rate.Rest.Offline.InWilderness   = 1
+Rate.Rest.InGame                 = 5
+Rate.Rest.Offline.InTavernOrCity = 10
+Rate.Rest.Offline.InWilderness   = 7
 
 #
 #    Rate.Damage.Fall
@@ -2011,16 +2022,16 @@ Rate.Damage.Fall = 1
 #                     1 - (Rate.Auction.Deposit)
 #                     1 - (Rate.Auction.Cut)
 
-Rate.Auction.Time    = 1
-Rate.Auction.Deposit = 1
-Rate.Auction.Cut     = 1
+Rate.Auction.Time    = 7
+Rate.Auction.Deposit = 0
+Rate.Auction.Cut     = 0
 
 #
 #    Rate.Honor
 #        Description: Honor gain rate.
 #        Default:     1
 
-Rate.Honor = 1
+Rate.Honor = 2
 
 #
 #    Rate.Mining.Amount
@@ -2048,7 +2059,7 @@ Rate.Talent = 1
 #        Description: Reputation gain rate.
 #        Default:     1
 
-Rate.Reputation.Gain = 1
+Rate.Reputation.Gain = 5
 
 #
 #    Rate.Reputation.LowLevel.Kill
@@ -2116,7 +2127,7 @@ SkillGain.Weapon    = 1
 SkillChance.Orange = 100
 SkillChance.Yellow = 75
 SkillChance.Green  = 25
-SkillChance.Grey   = 0
+SkillChance.Grey   = 10
 
 #
 #    SkillChance.MiningSteps
@@ -2134,7 +2145,7 @@ SkillChance.SkinningSteps = 0
 #        Default:     0 - (Disabled)
 #                     1 - (Enabled)
 
-DurabilityLoss.InPvP = 0
+DurabilityLoss.InPvP = 1
 
 #
 #    DurabilityLoss.OnDeath
@@ -2194,7 +2205,7 @@ Death.SicknessLevel = 11
 #                     0 - (Disabled)
 
 Death.CorpseReclaimDelay.PvP = 1
-Death.CorpseReclaimDelay.PvE = 0
+Death.CorpseReclaimDelay.PvE = 1
 
 #
 #    Death.Bones.World
@@ -2227,7 +2238,7 @@ Die.Command.Mode = 1
 #        Default:     0 - (Disabled)
 #                     1 - (Enabled)
 
-AutoBroadcast.On = 0
+AutoBroadcast.On = 1
 
 #
 #    AutoBroadcast.Center
@@ -2243,7 +2254,7 @@ AutoBroadcast.Center = 0
 #        Description: Timer (in milliseconds) for auto broadcasts.
 #        Default:     60000 - (60 seconds)
 
-AutoBroadcast.Timer = 60000
+AutoBroadcast.Timer = 1800000
 
 #
 ###################################################################################################
@@ -2256,7 +2267,7 @@ AutoBroadcast.Timer = 60000
 #        Default:     1 - (Enabled)
 #                     0 - (Disabled)
 
-Battleground.CastDeserter = 1
+Battleground.CastDeserter = 0
 
 #
 #    Battleground.QueueAnnouncer.Enable
@@ -2264,7 +2275,7 @@ Battleground.CastDeserter = 1
 #        Default:     0 - (Disabled)
 #                     1 - (Enabled)
 
-Battleground.QueueAnnouncer.Enable = 0
+Battleground.QueueAnnouncer.Enable = 1
 
 #
 #    Battleground.QueueAnnouncer.PlayerOnly
@@ -2410,7 +2421,7 @@ Arena.ArenaStartMatchmakerRating = 0
 #        Description: Number of threads for network.
 #         Default:    1 - (Recommended 1 thread per 1000 connections)
 
-Network.Threads = 1
+Network.Threads = 2
 
 #
 #    Network.OutKBuff
@@ -2484,7 +2495,7 @@ Ra.MinLevel = 5
 #        Default:     0 - (Disabled)
 #                     1 - (Enabled)
 
-SOAP.Enabled = 1
+SOAP.Enabled = 0
 
 #
 #    SOAP.IP
@@ -2498,7 +2509,7 @@ SOAP.IP = "127.0.0.1"
 #        Description: TCP port to reach the SOAP service.
 #        Default:     7878
 
-SOAP.Port = 7878
+SOAP.Port = 7879
 
 #
 ###################################################################################################
@@ -2629,7 +2640,7 @@ NoResetTalentsCost      = 0
 #        Default:     0 - (Disabled)
 #                     1 - (Enabled)
 
-ShowKickInWorld         = 0
+ShowKickInWorld = 1
 
 #
 #     RecordUpdateTimeDiffInterval
@@ -2731,7 +2742,7 @@ OutdoorPvP.Wintergrasp.Interval                     = 150
 #                 1 = Enable
 #
 
-OutdoorPvP.Wintergrasp.CustomHonorRewards           = 0
+OutdoorPvP.Wintergrasp.CustomHonorRewards           = 1
 
 #
 #   OutdoorPvP.Wintergrasp.CustomHonorBattleWin
@@ -2790,8 +2801,146 @@ OutdoorPvP.Wintergrasp.CustomHonorDamagedBuilding   = 750
 #       Requires OutdoorPvP.Wintergrasp.CustomHonorRewards = 1.
 #       Default: 1500
 #
-
-OutdoorPvP.Wintergrasp.CustomHonorIntactBuilding    = 1500
-
-#
 ##########################################################
+
+##############################################################################################################################################################
+#BuffNPC
+BuffNPC.OnlyGMs = 0
+BuffNPC.EnableSmallBuff = 1
+BuffNPC.EnableGreatBuff = 1
+BuffNPC.EnableGMBuff = 0
+BuffNPC.EnablePlayerTools = 0
+BuffNPC.EnableGivemeGold = 0
+BuffNPC.EnableRemoveResSickness = 0
+BuffGoldCost = 0 (2 Gold)
+GMVendor.OnlyGMs = 0
+#ProfessionNPC
+ProfessionNPC.OnlyGMs = 0
+ProfessionNPC.EnableProfessions = 1
+ProfessionNPC.EnableSecondarySkills = 1
+SkillPoints = 450
+SkillGoldCost = 0 (2 Gold)
+#ProfessionPVP
+ProfessionPVP.OnlyGMs = 0
+ProfessionPVP.EnableProfessions = 1
+ProfessionPVP.EnableProfessions = 1
+##############################################################################################################################################################
+
+
+##############################################################################################################################################################
+################# Changement de faction, Changement de race, Customization                                                          ##########################
+##############################################################################################################################################################
+Change.Faction.Item.Requis = 44990
+Change.Faction.Horde.To.Alliance.Item.Requis.Count = 300
+Change.Faction.Alliance.To.Horde.Item.Requis.Count = 300
+Change.Faction.Horde.To.Alliance.Menu = "Changer de Faction contre 300 sceau de champion"
+Change.Faction.Alliance.To.Horde.Menu = "Changer de Faction contre 200 sceau de champion"
+
+Change.Race.Item.Requis = 44990
+Change.Race.Item.Requis.Count = 50
+Change.Race.Menu = "Changer de race contre 50 sceau de champion"
+
+Change.Customize.Item.Requis = 44990
+Change.Customize.Item.Requis.Count = 20
+Change.Customize.Menu = "Renomer le et donnez lui un nouveau look  ou sexe contre 20 sceau champion"
+
+##############################################################################################################################################################
+
+##############################################################################################################################################################
+################ Transmogrification                                                                                                 ##########################
+##############################################################################################################################################################
+#
+#    GOLD COST
+#
+#    Transmogrification.RequireGold
+#        Description: 0 No gold cost, 1 scaling gold cost, 2 custom gold cost
+#        Default:    1
+#
+#    Transmogrification.GoldModifier
+#        Description: A multiplier for the default gold cost (Transmogrification.RequireGold is 1)
+#        Default:    1.0
+#
+#    Transmogrification.GoldCost
+#        Description: Cost of transmogrification in copper for custom gold cost (Transmogrification.RequireGold is 2)
+#        Default:    100000
+##############################################################################################################################################################
+
+Transmogrification.RequireGold = 1
+Transmogrification.GoldModifier = 1.0
+Transmogrification.GoldCost = 100000
+
+###############################################################################################################################################################
+#    TOKEN COST
+#
+#    Transmogrification.RequireToken
+#        Description: Adds/disables token cost
+#        Default:    0
+#
+#    Transmogrification.TokenEntry
+#        Description: Entry of the token item
+#        Default:    49426
+#
+#    Transmogrification.TokenAmount
+#        Description: Amount of tokens required
+#        Default:    1
+##############################################################################################################################################################
+
+Transmogrification.RequireToken = 0
+Transmogrification.TokenEntry = 49426
+Transmogrification.TokenAmount = 1
+
+###############################################################################################################################################################
+#    QUALITIES
+#
+#    Transmogrification.AllowPoor
+#        Description: Allow poor quality items to be used as source and target items
+#        Default:    0
+#
+#    Transmogrification.AllowCommon
+#        Description: Allow common quality items to be used as source and target items
+#        Default:    0
+#
+#    Transmogrification.AllowUncommon
+#        Description: Allow uncommon quality items to be used as source and target items
+#        Default:    1
+#
+#    Transmogrification.AllowRare
+#        Description: Allow rare quality items to be used as source and target items
+#        Default:    1
+#
+#    Transmogrification.AllowEpic
+#        Description: Allow epic quality items to be used as source and target items
+#        Default:    1
+#
+#    Transmogrification.AllowLegendary
+#        Description: Allow legendary quality items to be used as source and target items
+#        Default:    0
+#
+#    Transmogrification.AllowArtifact
+#        Description: Allow artifact quality items to be used as source and target items
+#        Default:    0
+#
+#    Transmogrification.AllowHeirloom
+#        Description: Allow heirloom quality items to be used as source and target items
+#        Default:    1
+##############################################################################################################################################################
+
+Transmogrification.AllowPoor = 0
+Transmogrification.AllowCommon = 0
+Transmogrification.AllowUncommon = 1
+Transmogrification.AllowRare = 1
+Transmogrification.AllowEpic = 1
+Transmogrification.AllowLegendary = 0
+Transmogrification.AllowArtifact = 0
+Transmogrification.AllowHeirloom = 1
+
+##############################################################################################################################################################
+
+
+
+
+
+
+
+
+

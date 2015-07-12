@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -43,6 +43,7 @@ class icecrown_citadel_teleport : public GameObjectScript
                     player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_TEXT(GOSSIP_TELEPORT_ORATORY_OF_THE_DAMNED), GOSSIP_SENDER_ICC_PORT, ORATORY_OF_THE_DAMNED_TELEPORT);
                 if(instance->GetBossState(DATA_LADY_DEATHWHISPER) == DONE)
                     player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_TEXT(GOSSIP_TELEPORT_RAMPART_OF_SKULLS), GOSSIP_SENDER_ICC_PORT, RAMPART_OF_SKULLS_TELEPORT);
+                //if(instance->GetBossState(DATA_GUNSHIP_EVENT) == DONE && instance->GetBossState(DATA_DEATHBRINGER_SAURFANG) == DONE)
                 if(instance->GetBossState(DATA_GUNSHIP_EVENT) == DONE)
                     player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_TEXT(GOSSIP_TELEPORT_DEATHBRINGERS_RISE), GOSSIP_SENDER_ICC_PORT, DEATHBRINGER_S_RISE_TELEPORT);
                 if(instance->GetData(DATA_COLDFLAME_JETS) == DONE)

@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -107,12 +107,15 @@ public:
         Map *map = chr->GetMap();
 
         if(chr->GetTransport())
-        {
-            uint32 tguid = chr->GetTransport()->AddNPCPassenger(0, id, chr->GetTransOffsetX(), chr->GetTransOffsetY(), chr->GetTransOffsetZ(), chr->GetTransOffsetO());
-            if(tguid > 0)
-                WorldDatabase.PQuery("INSERT INTO creature_transport (guid, npc_entry, transport_entry,  TransOffsetX, TransOffsetY, TransOffsetZ, TransOffsetO) values (%u, %u, %f, %f, %f, %f, %u)", tguid, id, chr->GetTransport()->GetEntry(), chr->GetTransOffsetX(), chr->GetTransOffsetY(), chr->GetTransOffsetZ(), chr->GetTransOffsetO());
-
-            return true;
+       {
+            if(!map->ToInstanceMap())
+            {
+                if(chr->GetTransport()->AddNPCPassenger(0, id, chr->GetTransOffsetX(), chr->GetTransOffsetY(), chr->GetTransOffsetZ(), chr->GetTransOffsetO()))
+                {
+                    WorldDatabase.PQuery("INSERT INTO creature_transport (guid, transport_entry, npc_entry, TransOffsetX, TransOffsetY, TransOffsetZ, TransOffsetO, emote) values (%u, %u, %u, %f, %f, %f, %f, 0)", 0, chr->GetTransport()->GetEntry(),id, chr->GetTransOffsetX(), chr->GetTransOffsetY(), chr->GetTransOffsetZ(), chr->GetTransOffsetO());
+                    return true;
+                }
+            } else chr->GetTransport()->AddNPCPassengerInInstance(0, id, chr->GetTransOffsetX(), chr->GetTransOffsetY(), chr->GetTransOffsetZ(), chr->GetTransOffsetO());
         }
 
         Creature* creature = new Creature;

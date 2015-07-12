@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -107,8 +107,8 @@ enum Events
 };
 
 /****************************************SYLVANAS************************************/
-#define GOSSIP_SYLVANAS_ITEM    "What would you have of me, Banshee Queen?"
-#define GOSSIP_JAINA_ITEM       "What would you have of me, my lady?"
+#define GOSSIP_SYLVANAS_ITEM    "Qu'attendez-vous de moi, Reine banshee ?"
+#define GOSSIP_JAINA_ITEM       "Qu'attendez-vous de moi, ma dame ?"
 
 enum Yells
 {

@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -202,6 +202,10 @@ enum ScoreType
     //SOTA
     SCORE_DESTROYED_DEMOLISHER  = 18,
     SCORE_DESTROYED_WALL        = 19,
+    /** World of Warcraft Armory **/
+    SCORE_DAMAGE_TAKEN          = 20,
+    SCORE_HEALING_TAKEN         = 21
+    /** World of Warcraft Armory **/
 };
 
 enum ArenaType
@@ -286,6 +290,10 @@ public:
     uint32 BonusHonor;
     uint32 DamageDone;
     uint32 HealingDone;
+    /** World of Warcraft Armory **/
+    uint32 DamageTaken;
+    uint32 HealingTaken;
+    /** World of Warcraft Armory **/
 };
 
 enum BGHonorMode

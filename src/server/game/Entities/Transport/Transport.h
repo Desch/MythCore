@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -37,10 +37,13 @@ class Transport : public GameObject
 
         typedef std::set<Creature*> CreatureSet;
         CreatureSet m_NPCPassengerSet;
-        uint32 AddNPCPassenger(uint32 tguid, uint32 entry, float x, float y, float z, float o, uint32 anim=0);
+        Creature* AddNPCPassenger(uint32 tguid, uint32 entry, float x, float y, float z, float o, uint32 anim=0);
+        Creature* AddNPCPassengerInInstance(uint32 entry, float x, float y, float z, float o, uint32 anim=0);
         void UpdatePosition(MovementInfo *mi);
         void UpdateNPCPositions();
+        void UpdatePlayerPositions();
         void BuildStartMovePacket(Map const *targetMap);
+        void BuildWaitMovePacket(Map const* targermap);
         void BuildStopMovePacket(Map const *targetMap);
         uint32 GetScriptId() const { return ScriptId; }
     private:

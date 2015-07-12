@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -1734,7 +1734,7 @@ bool WorldObject::canDetect(WorldObject const* obj, bool ignoreStealth) const
     if(obj->isAlwaysDetectableFor(seer))
         return true;
 
-    if (!ignoreStealth && !seer->canDetectInvisibilityOf(obj))
+    if(!seer->canDetectInvisibilityOf(obj))
         return false;
 
     if(!ignoreStealth && !seer->canDetectStealthOf(obj))
@@ -2145,7 +2145,6 @@ TempSummon* Map::SummonCreature(uint32 entry, Position const& pos, SummonPropert
                         mask = UNIT_MASK_GUARDIAN;
                         break;
                     case SUMMON_TYPE_TOTEM:
-                    case SUMMON_TYPE_LIGHTWELL:
                         mask = UNIT_MASK_TOTEM;
                         break;
                     case SUMMON_TYPE_VEHICLE:

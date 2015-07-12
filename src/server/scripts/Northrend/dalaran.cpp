@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -101,7 +101,7 @@ enum eHiraSnowdawn
     SPELL_COLD_WEATHER_FLYING                   = 54197
 };
 
-#define GOSSIP_TEXT_TRAIN_HIRA "I seek training to ride a steed."
+#define GOSSIP_TEXT_TRAIN_HIRA "Je souhaite un entrainement pour monter à cheval."
 
 class npc_hira_snowdawn : public CreatureScript
 {

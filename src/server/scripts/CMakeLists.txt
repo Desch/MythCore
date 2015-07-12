@@ -1,7 +1,7 @@
 #
 # Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
 #
-# Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
+# Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
 #
 # Myth Project's source is based on the Trinity Project source, you can find the
 # link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -42,6 +42,11 @@ set(scripts_STAT_SRCS
   ${scripts_spells}
   ${scripts_outdoorpvp}
   ${scripts_commands}
+  Custom/npc_teleport.cpp
+  Custom/Transmogrification.h
+  Custom/Transmogrification.cpp
+  ../game/AI/ScriptedAI/sc_npc_teleport.cpp
+  ../game/AI/ScriptedAI/sc_npc_teleport.h
   ../game/AI/ScriptedAI/ScriptedEscortAI.cpp
   ../game/AI/ScriptedAI/ScriptedCreature.cpp
   ../game/AI/ScriptedAI/ScriptedFollowerAI.cpp

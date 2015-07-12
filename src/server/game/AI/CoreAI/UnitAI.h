@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -104,6 +104,17 @@ struct DefaultTargetSelector : public std::unary_function<Unit*, bool>
 
         return true;
     }
+};
+
+struct NonTankTargetSelector : public std::unary_function<Unit*, bool>
+{
+public:
+    NonTankTargetSelector(Creature* source, bool playerOnly = true) : _source(source), _playerOnly(playerOnly) { }
+    bool operator()(Unit const* target) const;
+
+private:
+    Creature const* _source;
+    bool _playerOnly;
 };
 
 class UnitAI

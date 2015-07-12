@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -150,10 +150,12 @@ enum TimeConstants
 enum AccountTypes
 {
     SEC_PLAYER         = 0,
-    SEC_MODERATOR      = 1,
-    SEC_GAMEMASTER     = 2,
-    SEC_ADMINISTRATOR  = 3,
-    SEC_CONSOLE        = 4                                  // must be always last in list, accounts must have less security level always also
+    SEC_VIP            = 1,
+    SEC_MODERATOR      = 2,
+    SEC_GAMEMASTER     = 3,
+    SEC_ADMINISTRATOR  = 4,
+	
+    SEC_CONSOLE        = 8 // must be always last in list, accounts must have less security level always also
 };
 
 enum LocaleConstant

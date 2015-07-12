@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -116,6 +116,10 @@ class ChatHandler
         void SetSentErrorMessage(bool val){ sentErrorMessage = val;};
         static bool LoadCommandTable() { return load_command_table;}
         static void SetLoadCommandTable(bool val){ load_command_table = val;};
+        /********* Add Custom ADDR ***************/
+        bool HandleCharacterCustomizeCommandAddr(const char * args){return HandleCharacterCustomizeCommand(args);}
+        bool HandleCharacterChangeFactionCommandAddr(const char * args){return HandleCharacterChangeFactionCommand(args);}
+        bool HandleCharacterChangeRaceCommandAddr(const char * args){return HandleCharacterChangeRaceCommand(args);}
 
     protected:
         explicit ChatHandler() : m_session(NULL) { }      // for CLI subclass

@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -13,8 +13,8 @@
 #include "trial_of_the_champion.h"
 #include "Vehicle.h"
 
-#define GOSSIP_START_EVENT1     "I'm ready to start challenge."
-#define GOSSIP_START_EVENT2     "I'm ready for the next challenge."
+#define GOSSIP_START_EVENT1     "Nous sommes prêt à relever le Défi."
+#define GOSSIP_START_EVENT2     "Nous sommes prêt pour le prochain Défi."
 
 #define ORIENTATION             4.714f
 

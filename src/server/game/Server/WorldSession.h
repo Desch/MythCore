@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -208,7 +208,7 @@ class WorldSession
 {
     friend class WardenBase;
     public:
-        WorldSession(uint32 id, WorldSocket* pWS, AccountTypes sec, uint8 expansion, time_t mute_time, LocaleConstant locale, uint32 recruiter);
+        WorldSession(uint32 id, WorldSocket* pWS, AccountTypes sec, bool ispremium, uint8 expansion, time_t mute_time, LocaleConstant locale, uint32 recruiter);
         ~WorldSession();
 
         bool PlayerLoading() const { return m_playerLoading; }
@@ -236,6 +236,7 @@ class WorldSession
         void SendClientCacheVersion(uint32 version);
 
         AccountTypes GetSecurity() const { return _security; }
+        bool IsPremium() const { return _ispremium; }
         uint32 GetAccountId() const { return _accountId; }
         Player* GetPlayer() const { return _player; }
         char const* GetPlayerName() const;
@@ -325,6 +326,8 @@ class WorldSession
         }
         //used with item_page table
         bool SendItemInfo(uint32 itemid, WorldPacket data);
+        // external mail
+        static void SendExternalMails();
         //auction
         void SendAuctionHello(uint64 guid, Creature* unit);
         void SendAuctionCommandResult(uint32 auctionId, uint32 Action, uint32 ErrorCode, uint32 bidError = 0);
@@ -935,6 +938,7 @@ class WorldSession
         AccountTypes _security;
         uint32 _accountId;
         uint8 m_expansion;
+        bool _ispremium;
 
         time_t _logoutTime;
         bool m_inQueue;                                     // session wait in auth.queue

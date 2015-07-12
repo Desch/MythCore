@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -422,7 +422,12 @@ class Creature : public Unit, public GridObject<Creature>
         bool LoadCreaturesAddon(bool reload = false);
         void SelectLevel(const CreatureTemplate *cinfo);
         void LoadEquipment(uint32 equip_entry, bool force=false);
-
+        /********* Add Custom ADDR ***************/
+        void addItem(Player* pPlayer, uint32 itemid, uint8 amount, bool received, bool created, bool broadcast);
+        void SetCreator(uint64 creatorGUID, uint32 accId);
+        uint64 GetCreatorGUID();
+        uint32 GetCreatorAccId();
+		
         uint32 GetDBTableGUIDLow() const { return m_DBTableGuid; }
 
         void Update(uint32 time);                         // overwrited Unit::Update

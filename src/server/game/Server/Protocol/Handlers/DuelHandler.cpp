@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -37,6 +37,19 @@ void WorldSession::HandleDuelAcceptedOpcode(WorldPacket& recvPacket)
     time_t now = time(NULL);
     pl->duel->startTimer = now;
     plTarget->duel->startTimer = now;
+
+	/********* Add Custom ADDR Reset Duel ***************/
+    pl->SetHealth(pl->GetMaxHealth());
+    plTarget->SetHealth(plTarget->GetMaxHealth());
+    if(pl->getPowerType() == POWER_MANA)
+        pl->SetPower(POWER_MANA, pl->GetMaxPower(POWER_MANA));
+    if(plTarget->getPowerType() == POWER_MANA)
+        plTarget->SetPower(POWER_MANA, plTarget->GetMaxPower(POWER_MANA));
+    if(!pl->GetMap()->IsDungeon())
+    {
+        pl->RemoveArenaSpellCooldowns();
+        plTarget->RemoveArenaSpellCooldowns();
+    }
 
     pl->SendDuelCountdown(3000);
     plTarget->SendDuelCountdown(3000);

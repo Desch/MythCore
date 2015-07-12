@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -935,7 +935,7 @@ public:
                         SetGazeOn(pTarget);
                     DoScriptText(SAY_TRAMPLE_START, me);
                     me->AddUnitState(UNIT_STAT_IGNORE_PATHFINDING); //generate straight path to prevent buggering
-                    me->GetMotionMaster()->MoveCharge(tramplePos.GetPositionX(), tramplePos.GetPositionY(), tramplePos.GetPositionZ(), 21.0f);
+                    me->GetMotionMaster()->MoveCharge(tramplePos.GetPositionX(), tramplePos.GetPositionY(), tramplePos.GetPositionZ(), 42.0f);
                     me->ClearUnitState(UNIT_STAT_IGNORE_PATHFINDING);
                     m_uiTrampleTimer = IN_MILLISECONDS;
                     m_uiStage = 5;

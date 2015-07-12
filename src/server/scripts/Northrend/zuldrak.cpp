@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -147,9 +147,9 @@ enum eRageclaw
     SPELL_KNEEL                = 39656
 };
 
-const char * SAY_RAGECLAW_1 =      "I poop on you, trollses!";
+const char * SAY_RAGECLAW_1 =      "Je chie sur vous, trolls !";
 const char * SAY_RAGECLAW_2 =      "ARRRROOOOGGGGAAAA!";
-const char * SAY_RAGECLAW_3 =      "No more mister nice wolvar!";
+const char * SAY_RAGECLAW_3 =      "Pas plus Monsieur gentil varleu!";
 
 #define SAY_RAGECLAW RAND(SAY_RAGECLAW_1, SAY_RAGECLAW_2, SAY_RAGECLAW_3)
 
@@ -219,7 +219,7 @@ public:
     }
 };
 
-#define    GOSSIP_ITEM_G "I'm ready, Gymer. Let's go!"
+#define    GOSSIP_ITEM_G "Je suis prêt, Gymer. Allons-y !"
 
 enum eGymer
 {
@@ -476,7 +476,7 @@ public:
                                 if(!player)
                                     return;
 
-                                std::string sText = ("The grand Amphitheater of Anguish awaits, " + std::string(player->GetName()) + ". Remember, once a battle starts you have to stay in the area. WIN OR DIE!");
+                                std::string sText = ("Le grand amphithéâtre de l'Angoisse attend, " + std::string(player->GetName()) + ". Rappelez-vous, qu'une fois la bataille commencée, vous devez rester dans la zone. Vaincre ou mourir !");
 
                                 me->MonsterSay(sText.c_str(), LANG_UNIVERSAL, 0);
                                 uiTimer = 5000;
@@ -488,7 +488,7 @@ public:
                                if(!player)
                                    return;
 
-                                std::string sText = ("Prepare to make you stand, " + std::string(player->GetName()) + "! Get in the Amphitheater and stand ready! Remember, you and your opponent must stay in the arena at all times or you will be disqualified!");
+                                std::string sText = ("Préparez-vous à vous démarquer, " + std::string(player->GetName()) + "! Entrez dans l'amphithéâtre et nous serons prêts! Rappelez-vous, vous et votre adversaire devez rester dans l'arène à tout moment, ou vous serez disqualifié !");
                                 me->MonsterSay(sText.c_str(), LANG_UNIVERSAL, 0);
                                 uiTimer = 3000;
                                 uiPhase = 8;
@@ -504,7 +504,7 @@ public:
                                 if(!player)
                                     return;
 
-                                std::string sText = ("Here we are once again, ladies and gentlemen. The epic struggle between life and death in the Amphitheater of Anguish! For this round we have " + std::string(player->GetName()) + " versus the hulking jormungar, Yg... Yggd? Yggdoze? Who comes up with these names?! " + std::string(player->GetName()) + " versus big worm!");
+                                std::string sText = ("Nous voici ici une fois de plus, mesdames et messieurs. La lutte épique entre la vie et la mort dans l'amphithéâtre de l'Angoisse! Pour ce matches, nous avons " + std::string(player->GetName()) + " contre le hulking jormungar, Yg... Yggd? Yggdoze? Qui vient avec ce noms ?! " + std::string(player->GetName()) + " contre gros ver!");
                                 me->MonsterYell(sText.c_str(), LANG_UNIVERSAL, 0);
                                 uiTimer = 10000;
                                 uiPhase = 10;
@@ -525,7 +525,7 @@ public:
                             if(!player)
                                 return;
 
-                            std::string sText = ("Prepare to make you stand, " + std::string(player->GetName()) + "! Get in the Amphitheater and stand ready! Remember, you and your opponent must stay in the arena at all times or you will be disqualified!");
+                            std::string sText = ("Préparez-vous à vous démarquer, " + std::string(player->GetName()) + "! Entrez dans l'amphithéâtre et nous serons prêts! Rappelez-vous, vous et votre adversaire devez rester dans l'arène à tout moment, ou vous serez disqualifié !");
                             me->MonsterSay(sText.c_str(), LANG_UNIVERSAL, 0);
                             uiTimer = 5000;
                             uiPhase = 13;
@@ -879,7 +879,7 @@ public:
         {
             if(Unit* summoner = me->ToTempSummon()->GetSummoner())
             {
-                std::string sText = (std::string(killer->GetName()) + " has defeated Yg.. Yggg-really big worm!");
+                std::string sText = (std::string(killer->GetName()) + " a vaincu Yg ..  Yggg-vraiment un gros ver !");
                 summoner->MonsterYell(sText.c_str(), LANG_UNIVERSAL, 0);
             }
 
@@ -1018,7 +1018,7 @@ public:
             if(Player* player = killer->GetCharmerOrOwnerPlayerOrPlayerItself())
                 player->GetCharmerOrOwnerPlayerOrPlayerItself()->GroupEventHappens(QUEST_AMPHITHEATER_ANGUISH_MAGNATAUR, killer);
 
-            std::string sText = ("And with AUTHORITY, " + std::string(killer->GetName()) + " dominates the magnataur lord! Stinkbeard's clan is gonna miss him back home in the Dragonblight!");
+            std::string sText = ("Et avec autorité, " + std::string(killer->GetName()) + " domine le seigneur magnataur! Le Clan Stinkbeard va être rappelé dans la région des Désolation des dragons!");
             me->MonsterYell(sText.c_str(), LANG_UNIVERSAL, 0);
         }
     };
@@ -1157,7 +1157,7 @@ public:
             if(Player* player = killer->GetCharmerOrOwnerPlayerOrPlayerItself())
                 player->GetCharmerOrOwnerPlayerOrPlayerItself()->GroupEventHappens(QUEST_AMPHITHEATER_ANGUISH_FROM_BEYOND, killer);
 
-            std::string sText = (std::string(killer->GetName()) + " is victorious once more!");
+            std::string sText = (std::string(killer->GetName()) + " est victorieux une fois de plus !");
 
             if(Unit* summoner = me->ToTempSummon()->GetSummoner())
                 summoner->MonsterYell(sText.c_str(), LANG_UNIVERSAL, 0);
@@ -1274,7 +1274,7 @@ enum eCrusade_recruit
     SAY_RECRUIT_3                                 = -1571038
 };
 
-#define GOSSIP_ITEM_1 "Get out there and make those Scourge wish they were never reborn!"
+#define GOSSIP_ITEM_1 "Allez-y et faites-en sorte que ce Fléau ne renaisse jamais !"
 
 class npc_crusade_recruit : public CreatureScript
 {

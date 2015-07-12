@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -3106,7 +3106,7 @@ enum SummonType
     SUMMON_TYPE_WILD3       = 8,
     SUMMON_TYPE_VEHICLE     = 9,
     SUMMON_TYPE_VEHICLE2    = 10,
-    SUMMON_TYPE_LIGHTWELL   = 11,
+    SUMMON_TYPE_OBJECT      = 11,
 };
 
 enum EventId

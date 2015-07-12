@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Copyright (C) 2012 SymphonyArt <http://symphonyart.com/>
  *
@@ -4308,6 +4308,12 @@ void SpellMgr::LoadSpellCustomAttr()
             case 54171: // Divine Storm (Main)
             case 54172: // Divine Storm (Heal)
                 spellInfo->MaxAffectedTargets = 3;
+                break;
+            case 68645: // Rocket Pack!
+                //spellInfo->EffectMiscValueB[0] = 70;
+                spellInfo->Effect[0] = SPELL_EFFECT_KNOCK_BACK_DEST;
+                spellInfo->EffectMiscValue[0] = -250;
+                spellInfo->EffectBasePoints[0] = 150;
                 break;
             case 38310: // Multi-Shot
             case 53385: // Divine Storm (Damage)

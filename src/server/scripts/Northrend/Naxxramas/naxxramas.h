@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -36,11 +36,13 @@ enum Data
 {
     DATA_HEIGAN_ERUPT         = 0,
     DATA_GOTHIK_GATE          = 1,
-    DATA_SAPPHIRON_BIRTH      = 2,
-    DATA_HORSEMEN0            = 3,
-    DATA_HORSEMEN1            = 4,
-    DATA_HORSEMEN2            = 5,
-    DATA_HORSEMEN3            = 6,
+	DATA_GOTHIK_ROOM          = 2,
+	DATA_GOTHIK_PASSAGE       = 3,
+    DATA_SAPPHIRON_BIRTH      = 4,
+    DATA_HORSEMEN0            = 5,
+    DATA_HORSEMEN1            = 6,
+    DATA_HORSEMEN2            = 7,
+    DATA_HORSEMEN3            = 8,
     DATA_GO_ROOM_HEIGAN       = 15,
     DATA_GO_PASSAGE_HEIGAN    = 16,
     DATA_PLAYER_DEATHS        = 17

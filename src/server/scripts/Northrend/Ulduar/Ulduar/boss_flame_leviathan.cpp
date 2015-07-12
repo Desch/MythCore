@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -118,9 +118,9 @@ enum Vehicles
     VEHICLE_DEMOLISHER    = 33109,
 };
 
-#define EMOTE_PURSUE      "Flame Leviathan pursues $N."
-#define EMOTE_OVERLOAD    "Flame Leviathan's circuits overloaded."
-#define EMOTE_REPAIR      "Automatic repair sequence initiated."
+#define EMOTE_PURSUE      "Flame Leviathan poursuit $N."
+#define EMOTE_OVERLOAD    "Les Circuits de Flame Leviathan sont surchargé."
+#define EMOTE_REPAIR      "Séquence de réparation automatique lancé."
 #define DATA_SHUTOUT      29112912 // 2911, 2912 are achievement IDs
 #define DATA_UNBROKEN     29052906 // 2905, 2906 are achievement IDs
 #define DATA_ORBIT_ACHIEVEMENTS    1
@@ -1086,8 +1086,8 @@ class npc_freya_ward_summon : public CreatureScript
 };
 
 //npc lore keeper
-#define GOSSIP_ITEM_1  "Activate secondary defensive systems"
-#define GOSSIP_ITEM_2  "Confirmed"
+#define GOSSIP_ITEM_1  "Activer les systèmes défensifs secondaire"
+#define GOSSIP_ITEM_2  "Confirmer"
 
 class npc_lorekeeper : public CreatureScript
 {

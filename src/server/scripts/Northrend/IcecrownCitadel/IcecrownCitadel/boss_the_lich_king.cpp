@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -20,7 +20,7 @@
 
 #define GOSSIP_MENU 10600
 //#define GOSSIP_MENU "Long have I waited for this day, hero. Are you and your allies prepared to bring the Lich King to justice? We charge on your command!"
-#define GOSSIP_START_EVENT "We are prepared, Highlord. Let us battle for the fate of Azeroth! For the light of dawn!"
+#define GOSSIP_START_EVENT "Nous sommes prêts, généralissime. Laissez-nous la bataille pour le destin d'Azeroth! Pour la lumière de l'aube!"
 
 enum eEnums
 {
@@ -638,6 +638,7 @@ public:
                 }
                 case ACTION_PHASE_SWITCH_1:
                 {
+				    if(GetPhase(events) == PHASE_1) events.CancelEvent(EVENT_NECROTIC_PLAGUE);
                     uint32 nextPhase = PHASE_2_TRANSITION;
                     if(GetPhase(events) == PHASE_3)
                         nextPhase = PHASE_4_TRANSITION;
@@ -1408,21 +1409,21 @@ public:
         if(unfriendlyPlayer)
         {
             char buf[255] = {0};
-            sprintf(buf, "Sorry, but everyone in raid should have at least friendly reputation with the Argent Crusade to participate in the final battle. Player '%s' doesn't meet this requirement.", unfriendlyPlayer->GetName());
+            sprintf(buf, "Désolé, mais tout le monde dans le raid doit avoir au moins la réputation amicale avec la Croisade d'argent pour participer à la bataille finale. Le joueur '%s' ne répond pas à cette exigence.", unfriendlyPlayer->GetName());
             creature->MonsterSay(buf, LANG_UNIVERSAL, player->GetGUID());
             return true;
         }
 
         if(_instance->GetBossState(DATA_THE_LICH_KING) == DONE)
         {
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "The Lich King was already defeated here. Teleport me back to the Light's Hammer", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+4);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Le Roi liche a déjà été vaincu ici. Me téléporter au Marteau de la Lumière", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+4);
             player->SEND_GOSSIP_MENU(GOSSIP_MENU, creature->GetGUID());
             return true;
         }
 
         if((!player->GetGroup() || !player->GetGroup()->IsLeader(player->GetGUID())) && !player->isGameMaster())
         {
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Sorry, I'm not the raid leader", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+2);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Désolé, je ne suis pas le chef de raid", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+2);
             player->SEND_GOSSIP_MENU(GOSSIP_MENU, creature->GetGUID());
             return true;
         }
@@ -1440,7 +1441,7 @@ public:
         switch(uiAction)
         {
             case GOSSIP_ACTION_INFO_DEF+2:
-                creature->MonsterSay("OK, I'll wait for raid leader", LANG_UNIVERSAL, player->GetGUID());
+                creature->MonsterSay("OK, je vais attendre le chef de raid", LANG_UNIVERSAL, player->GetGUID());
                 break;
             case GOSSIP_ACTION_INFO_DEF+4:
                 creature->CastSpell(player,LIGHT_S_HAMMER_TELEPORT, true); player->GetGUID();
@@ -1451,7 +1452,7 @@ public:
                 player->CLOSE_GOSSIP_MENU();
                 break;
             default:
-                creature->MonsterSay("You've just found a bug. Contact server admin and explain what to do to reproduce this bug", LANG_UNIVERSAL, player->GetGUID());
+                creature->MonsterSay("Vous avez trouvé une erreur. Contactez administrateur du serveur et expliquez ce qu'il faut faire pour reproduire ce bug", LANG_UNIVERSAL, player->GetGUID());
                 break;
         }
         return true;
@@ -1934,6 +1935,7 @@ class spell_lich_king_necrotic_plague : public SpellScriptLoader
                         if(u->GetTypeId() != TYPEID_UNIT)
                             return false;
                         //Ignore totems
+
                         if(((Creature*)u)->isTotem())
                             return false;
                         //Ignore pets
@@ -2912,6 +2914,7 @@ public:
                         {
                             m_victimGuid = victim->GetGUID();
                             me->GetMotionMaster()->MoveChase(victim);
+		                    AttackStart(victim);
                             //AttackStart(victim);
                             DoCast(victim, SPELL_ICE_PULSE, true);
                         }

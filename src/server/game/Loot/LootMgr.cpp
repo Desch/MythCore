@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Copyright (C) 2012 SymphonyArt <http://symphonyart.com/>
  *
@@ -625,16 +625,25 @@ void Loot::NotifyQuestItemRemoved(uint8 questIndex)
     }
 }
 
-void Loot::generateMoneyLoot(uint32 minAmount, uint32 maxAmount)
+void Loot::generateMoneyLoot(uint32 minAmount, uint32 maxAmount, bool IsPremium)
 {
     if(maxAmount > 0)
     {
         if(maxAmount <= minAmount)
-            gold = uint32(maxAmount * sWorld->getRate(RATE_DROP_MONEY));
+            if (IsPremium)
+                gold = uint32(maxAmount * sWorld->getRate(RATE_DROP_MONEY) * sWorld->getRate(RATE_DROP_MONEY_PREMIUM));
+            else
+                gold = uint32(maxAmount * sWorld->getRate(RATE_DROP_MONEY));
         else if((maxAmount - minAmount) < 32700)
-            gold = uint32(urand(minAmount, maxAmount) * sWorld->getRate(RATE_DROP_MONEY));
+            if (IsPremium)
+                gold = uint32(urand(minAmount, maxAmount) * sWorld->getRate(RATE_DROP_MONEY) * sWorld->getRate(RATE_DROP_MONEY_PREMIUM));
+            else
+                gold = uint32(urand(minAmount, maxAmount) * sWorld->getRate(RATE_DROP_MONEY));
         else
-            gold = uint32(urand(minAmount >> 8, maxAmount >> 8) * sWorld->getRate(RATE_DROP_MONEY)) << 8;
+            if (IsPremium)
+                gold = uint32(urand(minAmount >> 8, maxAmount >> 8) * sWorld->getRate(RATE_DROP_MONEY) * sWorld->getRate(RATE_DROP_MONEY_PREMIUM)) << 8;
+            else
+                gold = uint32(urand(minAmount >> 8, maxAmount >> 8) * sWorld->getRate(RATE_DROP_MONEY)) << 8;
     }
 }
 

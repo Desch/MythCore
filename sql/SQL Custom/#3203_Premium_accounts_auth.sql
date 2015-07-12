@@ -1,0 +1,1 @@
+ALTER TABLE `account` ADD `premium` bigint(40) NOT NULL DEFAULT '0';

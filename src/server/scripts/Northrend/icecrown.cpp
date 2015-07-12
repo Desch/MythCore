@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -136,9 +136,9 @@ enum eSoldier
     QUEST_THE_BROKEN_FRONT_H                     = 13228,
 };
 
-#define GOSSIP_ITEM_DYING_SOLDIER "Travel well, hero of the Alliance!"
-#define GOSSIP_ITEM_DYING_SOLDIER1 "Stay with me, friend. I must know what happened here."
-#define GOSSIP_ITEM_DYING_BERSERKER "Stay with me, friend. I must know what happened here."
+#define GOSSIP_ITEM_DYING_SOLDIER "Bon Voyage, héros de l'Alliance!"
+#define GOSSIP_ITEM_DYING_SOLDIER1 "Reste avec moi, mon ami. Je dois savoir ce qui s'est passé ici."
+#define GOSSIP_ITEM_DYING_BERSERKER "Reste avec moi, mon ami. Je dois savoir ce qui s'est passé ici."
 
 class npc_dying_soldier : public CreatureScript
 {
@@ -362,13 +362,13 @@ public:
     }
 };
 
-#define GOSSIP_ARETE_ITEM1 "Lord-Commander, I would hear your tale."
-#define GOSSIP_ARETE_ITEM2 "<You nod slightly but do not complete the motion as the Lord-Commander narrows his eyes before he continues.>"
-#define GOSSIP_ARETE_ITEM3 "I thought that they now called themselves the Scarlet Onslaught?"
-#define GOSSIP_ARETE_ITEM4 "Where did the grand admiral go?"
-#define GOSSIP_ARETE_ITEM5 "That's fine. When do I start?"
-#define GOSSIP_ARETE_ITEM6 "Let's finish this!"
-#define GOSSIP_ARETE_ITEM7 "That's quite a tale, Lord-Commander."
+#define GOSSIP_ARETE_ITEM1 "Seigneur-commandant, je voudrais entendre votre histoire."
+#define GOSSIP_ARETE_ITEM2 "<Vous baissez légèrement le regards, mais pas complètement, quand le Seigneur Commandant ferme les yeux avant de continuer.>"
+#define GOSSIP_ARETE_ITEM3 "Je pensais qu'ils s'appelaient désormais eux-mêmes l'Assaut écarlate ?"
+#define GOSSIP_ARETE_ITEM4 "Où est aller le grand amiral ?"
+#define GOSSIP_ARETE_ITEM5 "C'est très bien. Quand dois-je commencer ?"
+#define GOSSIP_ARETE_ITEM6 "Finissons-en !"
+#define GOSSIP_ARETE_ITEM7 "C'est tout à fait un conte, Seigneur-commandant."
 
 enum eArete
 {
@@ -481,8 +481,8 @@ enum eSquireDavid
     GOSSIP_TEXTID_SQUIRE                                = 14407
 };
 
-#define GOSSIP_SQUIRE_ITEM_1 "I am ready to fight!"
-#define GOSSIP_SQUIRE_ITEM_2 "How do the Argent Crusader raiders fight?"
+#define GOSSIP_SQUIRE_ITEM_1 "Je suis prêt à me battre !"
+#define GOSSIP_SQUIRE_ITEM_2 "Comment les Raiders de la Croisade d'Argent se battent ils ?"
 
 class npc_squire_david : public CreatureScript
 {
@@ -525,7 +525,7 @@ struct QUEST_VALIANTS_CHALLENGE
 };
 
 QUEST_VALIANTS_CHALLENGE m_quest[] = {13727, 13728, 13729, 13731, 13726, 13725, 13713, 13723, 13724, 13699};
-#define GOSSIP_SQUIRE_ITEM_1 "I am ready to fight!"
+#define GOSSIP_SQUIRE_ITEM_1 "Je suis prêt à me battre !"
 
 class npc_squire_danny : public CreatureScript
 {
@@ -1128,7 +1128,7 @@ enum evaliants
     GOSSIP_TEXTID_VALIANTS = 14407
 };
 
-#define GOSSIP_VALIANTS_ITEM "I am ready to fight!"
+#define GOSSIP_VALIANTS_ITEM "Je suis prêt à me battre !"
 
 enum Says
 {
@@ -1315,7 +1315,7 @@ enum Champions
     GOSSIP_TEXTID_CHAMPIONS = 14407
 };
 
-#define GOSSIP_CHAMPIONS_ITEM "I am ready to fight!"
+#define GOSSIP_CHAMPIONS_ITEM "Je suis prêt à me battre !"
 
 enum Say
 {
@@ -1469,10 +1469,10 @@ const Position ScourgePos =
     6460.16f,  403.45f, 490.07f, 2.700f //Scourge Spawn
 };
 
-#define SAY_PRE_1               "BY THE LIGHT! Those damned monsters! Look at what they've done to our people!"
-#define SAY_PRE_2               "Burn it down, boys. Burn it all down."
-#define SAY_START               "Let 'em come. They'll pay for what they've done!"
-#define YELL_FINISHED           "We've done it, lads! We've taken the pinnacle from the Scourge! Report to Father Gustav at once and tell him the good news! We're gonna get to buildin' and settin' up! Go!"
+#define SAY_PRE_1               "PAR LA LUMIÈRE! Ces maudits monstres! Regardez ce qu'ils ont fait à notre peuple!"
+#define SAY_PRE_2               "Mettez le feu, les gars. Brûlez tout cela."
+#define SAY_START               "Laissez-les venir. Ils vont payer pour ce qu'ils ont fait!"
+#define YELL_FINISHED           "Nous avons réussi, les gars! Nous avons pris le sommet du Fléau! Faites un rapport au père Gustav, et dite-lui la bonne nouvelle! Nous arrivons à la construction et la mise en place! Aller!"
 
 // Script for Battle for Crusaders' Pinnacle Controller
 class npc_blessed_banner : public CreatureScript

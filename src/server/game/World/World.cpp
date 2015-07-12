@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -66,10 +66,19 @@
 #include "OutdoorPvPWG.h"
 #include "CalendarMgr.h"
 #include "WardenDataStorage.h"
+/********* Add Custom ADDR ***************/
+#include "UnicodeConvert.h"
+
+
 
 volatile bool World::m_stopEvent              = false;
 uint8 World::m_ExitCode                       = SHUTDOWN_EXIT_CODE;
 volatile uint32 World::m_worldLoopCounter     = 0;
+/********* Add Custom ADDR ***************/
+extern char FactionHordeToAllianceChar[255];
+extern char FactionAllianceToHordeChar[255];
+extern char CustomizeChar[255];
+extern char RaceChar[255] ;
 
 float World::m_MaxVisibleDistanceOnContinents = DEFAULT_VISIBILITY_DISTANCE;
 float World::m_MaxVisibleDistanceInInstances  = DEFAULT_VISIBILITY_INSTANCE;
@@ -415,9 +424,13 @@ void World::LoadConfigSettings(bool reload)
     rate_values[RATE_DROP_ITEM_REFERENCED] = sConfig->GetFloatDefault("Rate.Drop.Item.Referenced", 1.0f);
     rate_values[RATE_DROP_ITEM_REFERENCED_AMOUNT] = sConfig->GetFloatDefault("Rate.Drop.Item.ReferencedAmount", 1.0f);
     rate_values[RATE_DROP_MONEY]  = sConfig->GetFloatDefault("Rate.Drop.Money", 1.0f);
+    rate_values[RATE_DROP_MONEY_PREMIUM]  = sConfig->GetFloatDefault("Rate.Drop.Money.Premium", 3.0f);
     rate_values[RATE_XP_KILL]     = sConfig->GetFloatDefault("Rate.XP.Kill", 1.0f);
+    rate_values[RATE_XP_KILL_PREMIUM]    = sConfig->GetFloatDefault("Rate.XP.Kill.Premium", 3.0f);
     rate_values[RATE_XP_QUEST]    = sConfig->GetFloatDefault("Rate.XP.Quest", 1.0f);
+    rate_values[RATE_XP_QUEST_PREMIUM]   = sConfig->GetFloatDefault("Rate.XP.Quest.Premium", 3.0f);
     rate_values[RATE_XP_EXPLORE]  = sConfig->GetFloatDefault("Rate.XP.Explore", 1.0f);
+    rate_values[RATE_XP_EXPLORE_PREMIUM] = sConfig->GetFloatDefault("Rate.XP.Explore.Premium", 3.0f);
     rate_values[RATE_REPAIRCOST]  = sConfig->GetFloatDefault("Rate.RepairCost", 1.0f);
     if(rate_values[RATE_REPAIRCOST] < 0.0f)
     {
@@ -852,13 +865,17 @@ void World::LoadConfigSettings(bool reload)
     m_bool_configs[CONFIG_SKILL_PROSPECTING] = sConfig->GetBoolDefault("SkillChance.Prospecting", false);
     m_bool_configs[CONFIG_SKILL_MILLING] = sConfig->GetBoolDefault("SkillChance.Milling", false);
 
-    m_int_configs[CONFIG_SKILL_GAIN_CRAFTING]  = sConfig->GetIntDefault("SkillGain.Crafting", 1);
-
-    m_int_configs[CONFIG_SKILL_GAIN_DEFENSE]  = sConfig->GetIntDefault("SkillGain.Defense", 1);
-
-    m_int_configs[CONFIG_SKILL_GAIN_GATHERING]  = sConfig->GetIntDefault("SkillGain.Gathering", 1);
-
-    m_int_configs[CONFIG_SKILL_GAIN_WEAPON]  = sConfig->GetIntDefault("SkillGain.Weapon", 1);
+    m_int_configs[CONFIG_SKILL_GAIN_CRAFTING]  = sConfig->GetIntDefault("SkillGain.Crafting", 3);
+    m_int_configs[CONFIG_SKILL_GAIN_CRAFTING_PREMIUM]  = sConfig->GetIntDefault("SkillGain.Crafting.Premium", 3);
+ 
+    m_int_configs[CONFIG_SKILL_GAIN_DEFENSE]  = sConfig->GetIntDefault("SkillGain.Defense", 3);
+    m_int_configs[CONFIG_SKILL_GAIN_DEFENSE_PREMIUM]  = sConfig->GetIntDefault("SkillGain.Defense.Premium", 3);
+ 
+    m_int_configs[CONFIG_SKILL_GAIN_GATHERING]  = sConfig->GetIntDefault("SkillGain.Gathering", 3);
+    m_int_configs[CONFIG_SKILL_GAIN_GATHERING_PREMIUM]  = sConfig->GetIntDefault("SkillGain.Gathering.Premium", 3);
+ 
+    m_int_configs[CONFIG_SKILL_GAIN_WEAPON]  = sConfig->GetIntDefault("SkillGain.Weapon", 3);
+    m_int_configs[CONFIG_SKILL_GAIN_WEAPON_PREMIUM]  = sConfig->GetIntDefault("SkillGain.Weapon.Premium", 3);
 
     m_int_configs[CONFIG_MAX_OVERSPEED_PINGS] = sConfig->GetIntDefault("MaxOverspeedPings", 2);
     if(m_int_configs[CONFIG_MAX_OVERSPEED_PINGS] != 0 && m_int_configs[CONFIG_MAX_OVERSPEED_PINGS] < 2)
@@ -1120,8 +1137,58 @@ void World::LoadConfigSettings(bool reload)
     m_bool_configs[CONFIG_MOVEMENT_CHECKS_WATERWALK]    = sConfig->GetBoolDefault("MovementChecker.waterwalk", true);
     m_bool_configs[CONFIG_MOVEMENT_CHECKS_MULTIJUMP]    = sConfig->GetBoolDefault("MovementChecker.multijump", true);
 
+        /********* Add Custom Pandaria Transmogrification ***************/
+    m_int_configs[CONFIG_REQUIREGOLD]     = (uint32)sConfig->GetIntDefault("Transmogrification.RequireGold", 1);
+    m_float_configs[CONFIG_GOLDMODIFIER]  = sConfig->GetFloatDefault("Transmogrification.GoldModifier", 1.0f);
+    m_int_configs[CONFIG_GOLDCOST]        = (uint32)sConfig->GetIntDefault("Transmogrification.GoldCost", 100000);
+    m_bool_configs[CONFIG_REQUIRETOKEN]   = sConfig->GetBoolDefault("Transmogrification.RequireToken", false);
+    m_int_configs[CONFIG_TOKENENTRY]      = (uint32)sConfig->GetIntDefault("Transmogrification.TokenEntry", 49426);
+    m_int_configs[CONFIG_TOKENAMOUNT]     = (uint32)sConfig->GetIntDefault("Transmogrification.TokenAmount", 1);
+    m_bool_configs[CONFIG_ALLOWPOOR]      = sConfig->GetBoolDefault("Transmogrification.AllowPoor", false);
+    m_bool_configs[CONFIG_ALLOWCOMMON]    = sConfig->GetBoolDefault("Transmogrification.AllowCommon", false);
+    m_bool_configs[CONFIG_ALLOWUNCOMMON]  = sConfig->GetBoolDefault("Transmogrification.AllowUncommon", true);
+    m_bool_configs[CONFIG_ALLOWRARE]      = sConfig->GetBoolDefault("Transmogrification.AllowRare", true);
+    m_bool_configs[CONFIG_ALLOWEPIC]      = sConfig->GetBoolDefault("Transmogrification.AllowEpic", true);
+    m_bool_configs[CONFIG_ALLOWLEGENDARY] = sConfig->GetBoolDefault("Transmogrification.AllowLegendary", false);
+    m_bool_configs[CONFIG_ALLOWARTIFACT]  = sConfig->GetBoolDefault("Transmogrification.AllowArtifact", false);
+    m_bool_configs[CONFIG_ALLOWHEIRLOOM]  = sConfig->GetBoolDefault("Transmogrification.AllowHeirloom", true);
+    
+	/********* Add Custom Pandaria ***************/
+    m_int_configs[CONFIG_CHANGE_FACTION_ITEM]	                       = sConfig->GetIntDefault("Change.Faction.Item.Requis", 44990);
+    m_int_configs[CONFIG_CHANGE_FACTION_ITEM_COUNT_HORDE_TO_ALLIANCE]  = sConfig->GetIntDefault("Change.Faction.Horde.To.Alliance.Item.Requis.Count", 1);
+    m_int_configs[CONFIG_CHANGE_FACTION_ITEM_COUNT_ALLIANCE_TO_HORDE]  = sConfig->GetIntDefault("Change.Faction.Alliance.To.Horde.Item.Requis.Count", 1);
+    m_int_configs[CONFIG_CHANGE_RACE_ITEM]                             = sConfig->GetIntDefault("Change.Race.Item.Requis", 44990);
+    m_int_configs[CONFIG_CHANGE_RACE_ITEM_COUNT]                       = sConfig->GetIntDefault("Change.Race.Item.Requis.Count", 1);
+    m_int_configs[CONFIG_CHANGE_CUSTOMIZE_ITEM]                        = sConfig->GetIntDefault("Change.Customize.Item.Requis", 44990);
+    m_int_configs[CONFIG_CHANGE_CUSTOMIZE_ITEM_COUNT]                  = sConfig->GetIntDefault("Change.Customize.Item.Requis.Count", 1);
+
+
+	std::string tmp_string = sConfig->GetStringDefault("Change.Faction.Horde.To.Alliance.Menu","Changer de faction.");
+	ConvertASCIIToUTF8(tmp_string.c_str(), tmp_string.length() +1,FactionHordeToAllianceChar);
+
+	tmp_string = sConfig->GetStringDefault("Change.Faction.Alliance.To.Horde.Menu","Changer de faction.");
+	ConvertASCIIToUTF8(tmp_string.c_str(), tmp_string.length() +1,FactionAllianceToHordeChar);
+
+	tmp_string = sConfig->GetStringDefault("Change.Race.Menu","Changer de Race.");
+	ConvertASCIIToUTF8(tmp_string.c_str(), tmp_string.length() +1, RaceChar);
+
+	tmp_string = sConfig->GetStringDefault("Change.Customize.Menu","Customizer votre perso.");
+	ConvertASCIIToUTF8(tmp_string.c_str(), tmp_string.length() +1, CustomizeChar);
+	
+	/********* Add Custom Pandaria PvP Rank ***************/
+    std::string s_pvp_ranks = "10,50,100,200,450,750,1300,2000,3500,6000,9500,15000,21000,30000";
+    char *c_pvp_ranks = const_cast<char*>(s_pvp_ranks.c_str());
+    for (int i = 0; i !=HKRANKMAX; i++)
+    {
+    if (i==0)
+      pvp_ranks[0] = 0;
+    else if (i==1)
+      pvp_ranks[1] = atoi(strtok (c_pvp_ranks, ","));
+    else
+      pvp_ranks[i] = atoi(strtok (NULL, ","));
+    }
     sScriptMgr->OnConfigLoad(reload);
-}
+    }
 
 extern void LoadGameObjectModelList();
 
@@ -1565,10 +1632,31 @@ void World::SetInitialWorldSettings()
 
     sLog->outString("Loading SmartAI scripts...");
     sSmartScriptMgr->LoadSmartAIFromDB();
-
+	
     sLog->outString("Loading Calendar data...");
     sCalendarMgr->LoadFromDB();
     
+/********* Add Custom ADDR ***************/
+    m_int_configs[CONFIG_CHANGE_FACTION_ITEM]			= sConfig->GetIntDefault("Change.Faction.Item.Requis", 44990);
+    m_int_configs[CONFIG_CHANGE_FACTION_ITEM_COUNT_HORDE_TO_ALLIANCE]		= sConfig->GetIntDefault("Change.Faction.Horde.To.Alliance.Item.Requis.Count", 1);
+    m_int_configs[CONFIG_CHANGE_FACTION_ITEM_COUNT_ALLIANCE_TO_HORDE]		= sConfig->GetIntDefault("Change.Faction.Alliance.To.Horde.Item.Requis.Count", 1);
+    m_int_configs[CONFIG_CHANGE_RACE_ITEM]				= sConfig->GetIntDefault("Change.Race.Item.Requis", 44990);
+    m_int_configs[CONFIG_CHANGE_RACE_ITEM_COUNT]		= sConfig->GetIntDefault("Change.Race.Item.Requis.Count", 1);
+    m_int_configs[CONFIG_CHANGE_CUSTOMIZE_ITEM]			= sConfig->GetIntDefault("Change.Customize.Item.Requis", 44990);
+    m_int_configs[CONFIG_CHANGE_CUSTOMIZE_ITEM_COUNT]	= sConfig->GetIntDefault("Change.Customize.Item.Requis.Count", 1);
+
+    std::string tmp_string = sConfig->GetStringDefault("Change.Faction.Horde.To.Alliance.Menu","Changer de faction.");
+    ConvertASCIIToUTF8(tmp_string.c_str(), tmp_string.length() +1,FactionHordeToAllianceChar);
+
+    tmp_string = sConfig->GetStringDefault("Change.Faction.Alliance.To.Horde.Menu","Changer de faction.");
+    ConvertASCIIToUTF8(tmp_string.c_str(), tmp_string.length() +1,FactionAllianceToHordeChar);
+
+    tmp_string = sConfig->GetStringDefault("Change.Race.Menu","Changer de Race.");
+    ConvertASCIIToUTF8(tmp_string.c_str(), tmp_string.length() +1, RaceChar);
+
+    tmp_string = sConfig->GetStringDefault("Change.Customize.Menu","Customizer votre perso.");
+    ConvertASCIIToUTF8(tmp_string.c_str(), tmp_string.length() +1, CustomizeChar);
+	
     ///- Initialize game time and timers
     sLog->outString("Initialize game time and timers");
     m_gameTime = time(NULL);
@@ -1861,7 +1949,8 @@ void World::Update(uint32 diff)
 
         m_timers[WUPDATE_UPTIME].Reset();
         LoginDatabase.PExecute("UPDATE uptime SET uptime = %u, maxplayers = %u WHERE realmid = %u AND starttime = " UI64FMTD, tmpDiff, maxOnlinePlayers, realmID, uint64(m_startTime));
-    }
+        WorldSession::SendExternalMails();
+       }
 
     /// Clean logs table
     if(sWorld->getIntConfig(CONFIG_LOGDB_CLEARTIME) > 0) // if not enabled, ignore the timer

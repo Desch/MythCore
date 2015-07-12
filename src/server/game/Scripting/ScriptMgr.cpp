@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -16,6 +16,7 @@
 #include "ObjectMgr.h"
 #include "OutdoorPvPMgr.h"
 #include "ScriptLoader.h"
+#include "sc_npc_teleport.h"
 #include "ScriptSystem.h"
 #include "Transport.h"
 
@@ -136,6 +137,7 @@ void ScriptMgr::Initialize()
     uint32 oldMSTime = getMSTime();
 
     LoadDatabase();
+    LoadNpcTele();
 
     sLog->outString("Loading C++ scripts");
 
@@ -719,6 +721,7 @@ bool ScriptMgr::OnQuestReward(Player* player, Creature* creature, Quest const* q
     player->PlayerTalkClass->ClearMenus();
     return tmpscript->OnQuestReward(player, creature, quest, opt);
 }
+
 
 uint32 ScriptMgr::GetDialogStatus(Player* player, Creature* creature)
 {

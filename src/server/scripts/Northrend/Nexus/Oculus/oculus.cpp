@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -12,13 +12,13 @@
 #include "ScriptPCH.h"
 #include "oculus.h"
 
-#define GOSSIP_ITEM_DRAKES         "So where do we go from here?"
-#define GOSSIP_ITEM_BELGARISTRASZ1 "I want to fly on the wings of the Red Flight"
-#define GOSSIP_ITEM_BELGARISTRASZ2 "What abilities do Ruby Drakes have?"
-#define GOSSIP_ITEM_VERDISA1       "I want to fly on the wings of the Green Flight"
-#define GOSSIP_ITEM_VERDISA2       "What abilities do Emerald Drakes have?"
-#define GOSSIP_ITEM_ETERNOS1       "I want to fly on the wings of the Bronze Flight"
-#define GOSSIP_ITEM_ETERNOS2       "What abilities do Amber Drakes have?"
+#define GOSSIP_ITEM_DRAKES         "Alors, où allons-nous maintenant ?"
+#define GOSSIP_ITEM_BELGARISTRASZ1 "Je veux voler sur les ailes d'un vol Rouge"
+#define GOSSIP_ITEM_BELGARISTRASZ2 "Quelles sont les aptitudes que possèdent les Dragons de ruby ? (Tank)"
+#define GOSSIP_ITEM_VERDISA1       "Je veux voler sur les ailes d'un vol vert"
+#define GOSSIP_ITEM_VERDISA2       "Quelles sont les aptitudes que possèdent les Dragons d'émeraude ? (Healer)"
+#define GOSSIP_ITEM_ETERNOS1       "Je veux voler sur les ailes d'un vol de bronze"
+#define GOSSIP_ITEM_ETERNOS2       "Quelles sont les aptitudes que possèdent les Dragons de bronze ? (DPS)"
 
 #define HAS_ESSENCE(a) ((a)->HasItemCount(ITEM_EMERALD_ESSENCE, 1) || (a)->HasItemCount(ITEM_AMBER_ESSENCE, 1) || (a)->HasItemCount(ITEM_RUBY_ESSENCE, 1))
 

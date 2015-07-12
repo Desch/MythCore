@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -166,8 +166,12 @@ public:
 
             me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_OOC_NOT_ATTACKABLE|UNIT_FLAG_DISABLE_MOVE);
             me->SetReactState(REACT_PASSIVE);
-            if(instance)
+            if (instance)
+			{
                 instance->SetData(DATA_GOTHIK_GATE, GO_STATE_ACTIVE);
+				instance->SetData(DATA_GOTHIK_ROOM, GO_STATE_ACTIVE);
+				instance->SetData(DATA_GOTHIK_PASSAGE, GO_STATE_READY);
+			}	
             _Reset();
             mergedSides             = false;
             phaseTwo                = false;
@@ -197,8 +201,12 @@ public:
             events.ScheduleEvent(EVENT_SUMMON, 30000);
             DoTeleportTo(PosPlatform);
             DoScriptText(SAY_SPEECH, me);
-            if(instance)
+            if (instance)
+			{
                 instance->SetData(DATA_GOTHIK_GATE, GO_STATE_READY);
+				instance->SetData(DATA_GOTHIK_ROOM, GO_STATE_READY);
+				instance->SetData(DATA_GOTHIK_PASSAGE, GO_STATE_READY);
+			}	
         }
 
         void JustSummoned(Creature* pSummoned)
@@ -231,8 +239,12 @@ public:
             DeadTriggerGUID.clear();
             _JustDied();
             DoScriptText(SAY_DEATH, me);
-            if(instance)
+            if (instance)
+			{
                 instance->SetData(DATA_GOTHIK_GATE, GO_STATE_ACTIVE);
+                instance->SetData(DATA_GOTHIK_ROOM, GO_STATE_ACTIVE);
+				instance->SetData(DATA_GOTHIK_PASSAGE, GO_STATE_ACTIVE);
+			}
         }
 
         void DoGothikSummon(uint32 entry)
@@ -364,10 +376,10 @@ public:
             switch(spell->Id)
             {
                 case SPELL_INFORM_DEAD_TRAINEE:
-                    DoSummon(MOB_DEAD_TRAINEE, pTarget, 0);
+                    DoSummon(MOB_DEAD_TRAINEE, pTarget, 1.0f);
                     break;
                 case SPELL_INFORM_DEAD_KNIGHT:
-                    DoSummon(MOB_DEAD_KNIGHT, pTarget, 0);
+                    DoSummon(MOB_DEAD_KNIGHT, pTarget, 1.0f);
                     break;
                 case SPELL_INFORM_DEAD_RIDER:
                     DoSummon(MOB_DEAD_RIDER, pTarget, 1.0f);

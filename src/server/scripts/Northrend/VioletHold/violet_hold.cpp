@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -15,9 +15,9 @@
 #include "GroupReference.h"
 #include "Group.h"
 
-#define GOSSIP_START_EVENT  "Get your people to safety, we'll keep the Blue Dragonflight's forces at bay."
-#define GOSSIP_ITEM_1       "Activate the crystals when we get in trouble, right"
-#define GOSSIP_I_WANT_IN    "I'm not fighting, so send me in now!"
+#define GOSSIP_START_EVENT  "Obtenez la sécurité pour votre peuple, nous allons garder les forces du Vol Bleu à distance."
+#define GOSSIP_ITEM_1       "Activer les cristaux quand nous serons en difficulté, d'accord"
+#define GOSSIP_I_WANT_IN    "Je ne me bats pas, alors envoyez-moi dès maintenant!"
 #define SPAWN_TIME          20000
 
 enum PortalCreatures

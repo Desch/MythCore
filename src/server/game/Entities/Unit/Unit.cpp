@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -664,15 +664,23 @@ uint32 Unit::DealDamage(Unit* pVictim, uint32 damage, CleanDamage const* pCleanD
 
     if(GetTypeId() == TYPEID_PLAYER && this != pVictim)
     {
-        Player* pKiller = ToPlayer();
+        Player* pPlayer = ToPlayer();
 
         // in bg, count dmg if pVictim is also a player
         if(pVictim->GetTypeId() == TYPEID_PLAYER)
-            if(Battleground* pBG = pKiller->GetBattleground())
-                pBG->UpdatePlayerScore(pKiller, SCORE_DAMAGE_DONE, damage);
+        {
+            if(Battleground* pBG = pPlayer->GetBattleground())
+            {
+                pBG->UpdatePlayerScore(pPlayer, SCORE_DAMAGE_DONE, damage);
+                /** World of Warcraft Armory **/
+                if(Battleground *bgV = ((Player*)pVictim)->GetBattleground())
+                    bgV->UpdatePlayerScore(((Player*)pVictim), SCORE_DAMAGE_TAKEN, damage);
+                /** World of Warcraft Armory **/
+            }
+         }
 
-        pKiller->UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_DAMAGE_DONE, damage, 0, pVictim);
-        pKiller->UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_HIGHEST_HIT_DEALT, damage);
+        pPlayer->UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_DAMAGE_DONE, damage, 0, pVictim);
+        pPlayer->UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_HIGHEST_HIT_DEALT, damage);
     }
 
     if(pVictim->GetTypeId() == TYPEID_PLAYER)
@@ -9857,10 +9865,6 @@ bool Unit::Attack(Unit* victim, bool meleeAttack)
     if(GetTypeId() == TYPEID_PLAYER && IsMounted())
         return false;
 
-    // Check if is pacified and avoid actions
-    if (HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PACIFIED))
-        return false;
-
     // nobody can attack GM in GM-mode
     if(victim->GetTypeId() == TYPEID_PLAYER)
     {
@@ -10478,6 +10482,10 @@ int32 Unit::DealHeal(Unit* victim, uint32 addhealth)
     {
         player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_TOTAL_HEALING_RECEIVED, gain);
         player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_HIGHEST_HEALING_RECEIVED, addhealth);
+        /** World of Warcraft Armory **/
+        if(Battleground* pBG = player->GetBattleground())
+            pBG->UpdatePlayerScore((Player*)victim, SCORE_HEALING_TAKEN, gain);
+        /** World of Warcraft Armory **/
     }
 
     return gain;
@@ -15834,7 +15842,7 @@ void Unit::Kill(Unit* pVictim, bool durabilityLoss)
             if(uint32 lootid = pCreature->GetCreatureInfo()->lootid)
                 pLoot->FillLoot(lootid, LootTemplates_Creature, pLooter, false, false, pCreature->GetLootMode());
 
-            pLoot->generateMoneyLoot(pCreature->GetCreatureInfo()->mingold, pCreature->GetCreatureInfo()->maxgold);
+            pLoot->generateMoneyLoot(pCreature->GetCreatureInfo()->mingold, pCreature->GetCreatureInfo()->maxgold, pPlayer->GetSession()->IsPremium());
         }
 
         pPlayer->RewardPlayerAndGroupAtKill(pVictim, false);
@@ -15962,7 +15970,10 @@ void Unit::Kill(Unit* pVictim, bool durabilityLoss)
                 if(instanceMap->IsRaidOrHeroicDungeon())
                 {
                     if(pCreature->GetCreatureInfo()->flags_extra & CREATURE_FLAG_EXTRA_INSTANCE_BIND)
+                    {
                         ((InstanceMap*)instanceMap)->PermBindAllPlayers(creditedPlayer);
+                        creditedPlayer->CreateWowarmoryFeed(3, pCreature->GetCreatureInfo()->Entry, 0, 0);
+                    }
                 } else {
                     time_t resettime = pCreature->GetRespawnTimeEx() + 2 * HOUR;
                     if(InstanceSave *save = sInstanceSaveMgr->GetInstanceSave(pCreature->GetInstanceId()))

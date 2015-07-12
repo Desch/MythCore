@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -3170,9 +3170,6 @@ void Spell::EffectSummonType(SpellEffIndex effIndex)
                 case SUMMON_TYPE_VEHICLE2:
                     summon = m_caster->GetMap()->SummonCreature(entry, pos, properties, duration, m_originalCaster, m_spellInfo->Id);
                     break;
-                // Summon Lightwell and add MaxHealth Value
-                case SUMMON_TYPE_LIGHTWELL:
-                    damage = m_caster->CountPctFromMaxHealth(50);
                 case SUMMON_TYPE_TOTEM:
                 {
                     summon = m_caster->GetMap()->SummonCreature(entry, pos, properties, duration, m_originalCaster, m_spellInfo->Id);

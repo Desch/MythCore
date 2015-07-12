@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -125,7 +125,7 @@ enum Data
     DATA_CANT_DO_THAT
 };
 
-#define EMOTE_OVERLOAD                           "Stormcaller Brundir begins to Overload!" // Move it to DB
+#define EMOTE_OVERLOAD                           "Mande-foudre Brundir Lance Surcharge !" // Move it to DB
 #define FLOOR_Z                                  427.28f
 #define FINAL_FLIGHT_Z                           435.0f
 

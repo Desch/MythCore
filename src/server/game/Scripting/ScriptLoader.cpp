@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -29,6 +29,7 @@ void AddSC_item_spell_scripts();
 void AddSC_SmartSCripts();
 
 //Commands
+void AddSC_vip_commandscript();
 void AddSC_account_commandscript();
 void AddSC_achievement_commandscript();
 void AddSC_debug_commandscript();
@@ -49,6 +50,27 @@ void AddSC_gps_commandscript();
 
 #ifdef SCRIPTS
 //world
+void AddSC_buffnpc();
+void AddSC_npc_welcome();
+void AddSC_custom_npc();
+void AddSC_professionnpc();
+void AddSC_npc_rapidchange();
+void AddSC_npc_beastmaster();
+void AddSC_Change_Character();
+void AddSC_npc_honneur_sceau_de_champion_fun();
+void AddSC_Item_reset_instance();
+void AddSC_Reset_Pvp();
+void AddSC_npc_shop();
+void AddSC_npc_marquegoulet();
+void AddSC_npc_magicien();
+void AddSC_npc_roinagas();
+void AddSC_reputation();
+void AddSC_npc_shadowmourn();
+void AddSC_npcevent();
+void AddSC_npcevent2();
+void AddSC_bienvenue();
+void AddSC_npc_teleport();
+void AddSC_NPC_Transmogrify();
 void AddSC_areatrigger_scripts();
 void AddSC_emerald_dragons();
 void AddSC_generic_creature();
@@ -468,6 +490,7 @@ void AddSC_boss_marwyn();
 void AddSC_boss_lich_king_hr();
 void AddSC_boss_lord_marrowgar();       // Icecrown Citadel
 void AddSC_boss_lady_deathwhisper();
+void AddSC_boss_gunship_battle();
 void AddSC_boss_deathbringer_saurfang();
 void AddSC_boss_festergut();
 void AddSC_boss_rotface();
@@ -535,7 +558,7 @@ void AddSC_instance_slave_pens();
 void AddSC_boss_gruul();                     //Gruul's Lair
 void AddSC_boss_high_king_maulgar();
 void AddSC_instance_gruuls_lair();
-void AddSC_boss_broggok();                   //HC Blood Furnace
+void AddSC_boss_broggok();                  //HC Blood Furnace
 void AddSC_boss_kelidan_the_breaker();
 void AddSC_boss_the_maker();
 void AddSC_instance_blood_furnace();
@@ -591,6 +614,7 @@ void AddSC_wintergrasp();
 
 // player
 void AddSC_chat_log();
+
 #endif
 
 void AddScripts()
@@ -627,6 +651,7 @@ void AddSpellScripts()
 
 void AddCommandScripts()
 {
+    AddSC_vip_commandscript();
     AddSC_account_commandscript();
     AddSC_achievement_commandscript();
     AddSC_debug_commandscript();
@@ -649,6 +674,27 @@ void AddCommandScripts()
 void AddWorldScripts()
 {
 #ifdef SCRIPTS
+    AddSC_buffnpc();
+    AddSC_npc_welcome();
+    AddSC_custom_npc();
+    AddSC_professionnpc();
+    AddSC_npc_rapidchange();
+    AddSC_npc_beastmaster();
+    AddSC_Change_Character();
+    AddSC_npc_honneur_sceau_de_champion_fun();
+    AddSC_Item_reset_instance();
+    AddSC_Reset_Pvp();
+    AddSC_npc_shop();
+    AddSC_npc_marquegoulet();
+    AddSC_npc_magicien();
+    AddSC_npc_roinagas();
+    AddSC_reputation();
+    AddSC_npc_shadowmourn();
+    AddSC_npcevent();
+    AddSC_npcevent2();
+    AddSC_bienvenue();
+    AddSC_npc_teleport();
+    AddSC_NPC_Transmogrify();
     AddSC_areatrigger_scripts();
     AddSC_emerald_dragons();
     AddSC_generic_creature();
@@ -706,6 +752,7 @@ void AddEasternKingdomsScripts()
     AddSC_boss_ebonroc();
     AddSC_boss_flamegor();
     AddSC_boss_chromaggus();
+
     AddSC_boss_nefarian();
     AddSC_boss_victor_nefarius();
     AddSC_boss_mr_smite();
@@ -1169,6 +1216,7 @@ void AddNorthrendScripts()
     AddSC_boss_lich_king_hr();
     AddSC_boss_lord_marrowgar();        // Icecrown Citadel
     AddSC_boss_lady_deathwhisper();
+    AddSC_boss_gunship_battle();
     AddSC_boss_deathbringer_saurfang();
     AddSC_boss_festergut();
     AddSC_boss_rotface();

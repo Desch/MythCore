@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -73,8 +73,8 @@ enum Yells
     SAY_YS_HELP                                 = -1603287
 };
 
-#define EMOTE_BARRIER                           "Runic Colossus surrounds itself with a crackling Runic Barrier!"
-#define EMOTE_MIGHT                             "Ancient Rune Giant fortifies nearby allies with runic might!"
+#define EMOTE_BARRIER                           "Le Colosse runique s'entoure d'une barrière crépitante runique!"
+#define EMOTE_MIGHT                             "L'Ancien géant runique fortifie les alliés à proximité avec la puissance runique!"
 
 // Thorim Pre-Phase Adds
 enum PreAdds

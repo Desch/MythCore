@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -153,6 +153,15 @@ enum WorldBoolConfigs
     CONFIG_MOVEMENT_CHECKS_PLANE,
     CONFIG_MOVEMENT_CHECKS_WATERWALK,
     CONFIG_MOVEMENT_CHECKS_MULTIJUMP,
+    CONFIG_ALLOWPOOR,
+    CONFIG_REQUIRETOKEN,
+    CONFIG_ALLOWCOMMON,
+    CONFIG_ALLOWUNCOMMON,
+    CONFIG_ALLOWRARE,
+    CONFIG_ALLOWEPIC,
+    CONFIG_ALLOWLEGENDARY,
+    CONFIG_ALLOWARTIFACT,
+    CONFIG_ALLOWHEIRLOOM,
     BOOL_CONFIG_VALUE_COUNT
 };
 
@@ -169,6 +178,7 @@ enum WorldFloatConfigs
     CONFIG_CREATURE_FAMILY_ASSISTANCE_RADIUS,
     CONFIG_THREAT_RADIUS,
     CONFIG_CHANCE_OF_GM_SURVEY,
+    CONFIG_GOLDMODIFIER,
     FLOAT_CONFIG_VALUE_COUNT
 };
 
@@ -230,9 +240,13 @@ enum WorldIntConfigs
     CONFIG_SKILL_CHANCE_MINING_STEPS,
     CONFIG_SKILL_CHANCE_SKINNING_STEPS,
     CONFIG_SKILL_GAIN_CRAFTING,
+    CONFIG_SKILL_GAIN_CRAFTING_PREMIUM,
     CONFIG_SKILL_GAIN_DEFENSE,
+    CONFIG_SKILL_GAIN_DEFENSE_PREMIUM,
     CONFIG_SKILL_GAIN_GATHERING,
+    CONFIG_SKILL_GAIN_GATHERING_PREMIUM,
     CONFIG_SKILL_GAIN_WEAPON,
+    CONFIG_SKILL_GAIN_WEAPON_PREMIUM,
     CONFIG_MAX_OVERSPEED_PINGS,
     CONFIG_EXPANSION,
     CONFIG_CHATFLOOD_MESSAGE_COUNT,
@@ -309,6 +323,20 @@ enum WorldIntConfigs
     CONFIG_OUTDOORPVP_WINTERGRASP_SAVESTATE_PERIOD,
     CONFIG_MAX_INSTANCES_PER_HOUR,
     CONFIG_MOVEMENT_CHECKS_ACCESSLEVEL,
+
+	/********* Add Custom Pandaria ***************/
+    CONFIG_CHANGE_FACTION_ITEM,
+    CONFIG_CHANGE_FACTION_ITEM_COUNT_HORDE_TO_ALLIANCE,
+    CONFIG_CHANGE_FACTION_ITEM_COUNT_ALLIANCE_TO_HORDE,
+    CONFIG_CHANGE_RACE_ITEM,
+    CONFIG_CHANGE_RACE_ITEM_COUNT,
+    CONFIG_CHANGE_CUSTOMIZE_ITEM,
+    CONFIG_CHANGE_CUSTOMIZE_ITEM_COUNT,
+    CONFIG_REQUIREGOLD,
+    CONFIG_GOLDCOST,
+    CONFIG_TOKENENTRY,
+    CONFIG_TOKENAMOUNT,
+	
     INT_CONFIG_VALUE_COUNT
 };
 
@@ -326,9 +354,13 @@ enum Rates
     RATE_DROP_ITEM_REFERENCED,
     RATE_DROP_ITEM_REFERENCED_AMOUNT,
     RATE_DROP_MONEY,
+    RATE_DROP_MONEY_PREMIUM,
     RATE_XP_KILL,
+    RATE_XP_KILL_PREMIUM,
     RATE_XP_QUEST,
+    RATE_XP_QUEST_PREMIUM,
     RATE_XP_EXPLORE,
+    RATE_XP_EXPLORE_PREMIUM,
     RATE_REPAIRCOST,
     RATE_REPUTATION_GAIN,
     RATE_REPUTATION_LOWLEVEL_KILL,
@@ -370,6 +402,26 @@ enum Rates
     RATE_DURABILITY_LOSS_BLOCK,
     RATE_MOVESPEED,
     MAX_RATES
+};
+/********* Add Custom Pandaria PvP Rank ***************/
+enum HonorKillPvPRank
+{
+   HKRANK00,
+   HKRANK01,
+   HKRANK02,
+   HKRANK03,
+   HKRANK04,
+   HKRANK05,
+   HKRANK06,
+   HKRANK07,
+   HKRANK08,
+   HKRANK09,
+   HKRANK10,
+   HKRANK11,
+   HKRANK12,
+   HKRANK13,
+   HKRANK14,
+   HKRANKMAX
 };
 
 /// Can be used in SMSG_AUTH_RESPONSE packet
@@ -621,6 +673,9 @@ public:
     void SendZoneMessage(uint32 zone, WorldPacket* packet, WorldSession* self = 0, uint32 team = 0);
     void SendZoneText(uint32 zone, const char *text, WorldSession* self = 0, uint32 team = 0);
     void SendServerMessage(ServerMessageType type, const char *text = "", Player* player = NULL);
+		
+		        /********* Add Custom Pandaria PvP Rank ***************/
+        uint32 pvp_ranks[HKRANKMAX];
 
     /// Are we in the middle of a shutdown?
     bool IsShutdowning() const { return m_ShutdownTimer > 0; }

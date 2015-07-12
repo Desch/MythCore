@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -58,7 +58,7 @@ enum LoginResult
     LOGIN_LOCKED_ENFORCED                        = 0x10,
 };
 
-#define POST_BC_ACCEPTED_CLIENT_BUILD            {12340, 11723, 11403, 11159, 10571, 10505, 10146, 9947, 8606, 0}
+#define POST_BC_ACCEPTED_CLIENT_BUILD            {15595, 14545, 13623, 12340, 11723, 11403, 11159, 10571, 10505, 10146, 9947, 8606, 0}
 #define PRE_BC_ACCEPTED_CLIENT_BUILD             {5875, 6005, 0}
 
 enum ExpansionFlags

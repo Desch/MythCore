@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -41,6 +41,11 @@ int m_ServiceStatus = -1;
 WorldDatabaseWorkerPool WorldDatabase;                      ///< Accessor to the world database
 CharacterDatabaseWorkerPool CharacterDatabase;              ///< Accessor to the character database
 LoginDatabaseWorkerPool LoginDatabase;                      ///< Accessor to the realm/login database
+/********* Add Custom ADDR ***************/
+char FactionHordeToAllianceChar[255];
+char FactionAllianceToHordeChar[255];
+char CustomizeChar[255];
+char RaceChar[255] ;
 
 uint32 realmID;                                             ///< Id of the realm
 

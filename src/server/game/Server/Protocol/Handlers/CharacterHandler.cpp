@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -846,6 +846,20 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder * holder)
         SendPacket(&data);
         sLog->outDebug(LOG_FILTER_NETWORKIO, "WORLD: Sent motd (SMSG_MOTD)");
 
+        if (pCurrChar->GetSession()->IsPremium())
+        {
+            QueryResult premiumQuery = LoginDatabase.PQuery ("SELECT premium FROM account WHERE id = '%u' LIMIT 1", GetAccountId());
+            Field* fields = premiumQuery->Fetch();
+            uint32 premiumResult = fields[0].GetUInt32();
+
+            time_t premiumTmp = premiumResult;
+            tm *lpTimeStamp = localtime(&premiumTmp);
+            char premiumTime[18];
+            strftime(premiumTime, 18, "%d.%m.%Y, %H:%M", lpTimeStamp);
+
+            SendNotification(15000, premiumTime);
+        }
+        
         // send server info
         if(sWorld->getIntConfig(CONFIG_ENABLE_SINFO_LOGIN) == 1)
             chH.PSendSysMessage(_FULLVERSION);

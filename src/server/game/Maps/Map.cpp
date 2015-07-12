@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -360,6 +360,31 @@ void Map::LoadGrid(float x, float y)
     EnsureGridLoaded(cell);
 }
 
+void Map::SendInitTransportsInInstance(Player* player)
+{
+    // Hack to send out transports
+    MapManager::TransportMap& tmap = sMapMgr->m_TransportsByInstanceIdMap;
+
+    // no transports at map
+    if(tmap.find(player->GetInstanceId()) == tmap.end())
+        return;
+
+    UpdateData transData;
+
+    MapManager::TransportSet& tset = tmap[player->GetInstanceId()];
+
+    for(MapManager::TransportSet::const_iterator i = tset.begin(); i != tset.end(); ++i)
+    {
+    // send data for current transport in other place
+        if((*i) != player->GetTransport() && (*i)->GetInstanceId() == GetInstanceId())
+            (*i)->BuildCreateUpdateBlockForPlayer(&transData, player);
+    }
+
+    WorldPacket packet;
+    transData.BuildPacket(&packet);
+    player->GetSession()->SendPacket(&packet);
+}
+
 bool Map::Add(Player* pPlayer)
 {
     ASSERT(pPlayer->GetMap() == this);
@@ -382,6 +407,9 @@ bool Map::Add(Player* pPlayer)
 
     SendInitSelf(pPlayer);
     SendInitTransports(pPlayer);
+    // And send init transport in instance
+     if(Instanceable())
+         SendInitTransportsInInstance(pPlayer);
 
     pPlayer->m_clientGUIDs.clear();
     pPlayer->UpdateObjectVisibility(false);

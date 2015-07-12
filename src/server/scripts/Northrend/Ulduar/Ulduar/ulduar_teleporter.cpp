@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -97,27 +97,27 @@ class ulduar_teleporter : public GameObjectScript
 
         bool OnGossipHello(Player* player, GameObject* gameObject)
         {
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Teleport to the Expedition Base Camp", GOSSIP_SENDER_MAIN, BASE_CAMP);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Téléportation vers le Camp de base de l'Expédition.", GOSSIP_SENDER_MAIN, BASE_CAMP);
             if(InstanceScript* instance = gameObject->GetInstanceScript())
             {
                 if(instance->GetData(DATA_COLOSSUS) >= 2 || player->isGameMaster()) //count of 2 collossus death
-                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Teleport to the Formation Grounds", GOSSIP_SENDER_MAIN, GROUNDS);
+                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Téléportation vers le Champ d'Entraînement.", GOSSIP_SENDER_MAIN, GROUNDS);
                 if(instance->GetBossState(BOSS_LEVIATHAN) == DONE || player->isGameMaster())
-                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Teleport to the Colossal Forge", GOSSIP_SENDER_MAIN, FORGE);
+                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Téléportation vers la Forge Colossale.", GOSSIP_SENDER_MAIN, FORGE);
                 if(instance->GetBossState(BOSS_XT002) == DONE || player->isGameMaster())
                 {
-                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Teleport to the Scrapyard", GOSSIP_SENDER_MAIN, SCRAPYARD);
-                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Teleport to the Antechamber of Ulduar", GOSSIP_SENDER_MAIN, ANTECHAMBER);
+                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Téléportation vers la Ferraillerie.", GOSSIP_SENDER_MAIN, SCRAPYARD);
+                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Téléportation vers L'Antichambre d'Ulduar.", GOSSIP_SENDER_MAIN, ANTECHAMBER);
                 }
                 if(instance->GetBossState(BOSS_KOLOGARN) == DONE || player->isGameMaster())
-                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Teleport to the Shattered Walkway", GOSSIP_SENDER_MAIN, WALKWAY);
+                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Téléportation vers le Passage Brisé.", GOSSIP_SENDER_MAIN, WALKWAY);
                 if(instance->GetBossState(BOSS_AURIAYA) == DONE || player->isGameMaster())
-                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Teleport to the Conservatory of Life", GOSSIP_SENDER_MAIN, CONSERVATORY);
+                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Téléportation vers le Conservatoire de Vie.", GOSSIP_SENDER_MAIN, CONSERVATORY);
                 if(instance->GetBossState(BOSS_MIMIRON) == FAIL || instance->GetBossState(BOSS_MIMIRON) == DONE || player->isGameMaster())
                 {
-                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Teleport to the Spark of Imagination", GOSSIP_SENDER_MAIN, SPARK_IMAGINATION);
+                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Téléportation vers l'étincelle de l'Imagination", GOSSIP_SENDER_MAIN, SPARK_IMAGINATION);
                     if(instance->GetBossState(BOSS_VEZAX) == DONE || player->isGameMaster())
-                        player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Teleport to the Descent into Madness", GOSSIP_SENDER_MAIN, DESCENT_MADNESS);
+                        player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Téléportation vers la Descente dans la Folie", GOSSIP_SENDER_MAIN, DESCENT_MADNESS);
                 }
             }
 

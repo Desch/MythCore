@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -2455,4 +2455,26 @@ bool Creature::checkCanReachTargetAndRemoveIfNot(Unit* pTarget)
     }
 
     return true;
+}
+
+/********* Add Custom ADDR ***************/
+void Creature::addItem(Player* pPlayer, uint32 itemid, uint8 amount, bool received, bool created, bool broadcast)
+{
+    ItemPosCountVec dest;
+    uint32 no_space = 0;
+    InventoryResult msg = pPlayer->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, itemid, amount, &no_space);
+
+    if (msg != EQUIP_ERR_OK)
+    {
+        pPlayer->SendEquipError(msg, NULL, NULL);
+        return;
+    }
+
+    Item* pItem = pPlayer->StoreNewItem(dest, itemid, true, Item::GenerateItemRandomPropertyId(itemid));
+    if (!pItem)
+    {
+        pPlayer->SendEquipError(EQUIP_ERR_ITEM_NOT_FOUND, NULL, NULL);
+        return;
+    }
+    pPlayer->SendNewItem(pItem, amount, received, created, broadcast);
 }

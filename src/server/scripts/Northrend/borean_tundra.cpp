@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -168,7 +168,7 @@ enum eKeristrasza
     SPELL_TELEPORT_TO_SARAGOSA = 46772
 };
 
-#define GOSSIP_HELLO_KERI   "I am prepared to face Saragosa!"
+#define GOSSIP_HELLO_KERI   "Je suis prêt à affronter Saragosa!"
 
 class npc_keristrasza : public CreatureScript
 {
@@ -245,7 +245,7 @@ public:
     }
 };
 
-#define GOSSIP_ITEM_I  "<Search corpse for Issliruk's Totem.>"
+#define GOSSIP_ITEM_I  "<Rechercher le totem d'Issliruk sur son cadavre.>"
 
 enum eIruk
 {
@@ -874,7 +874,7 @@ enum eThassarian
     SAY_THASSARIAN_7        = -1571023,
 };
 
-#define GOSSIP_ITEM_T   "Let's do this, Thassarian. It's now or never."
+#define GOSSIP_ITEM_T   "Faisons-le, Thassarian. C'est maintenant ou jamais."
 
 class npc_thassarian : public CreatureScript
 {
@@ -2197,9 +2197,9 @@ enum eHiddenCultist
     SAY_HIDDEN_CULTIST_4                        = -1571047
 };
 
-const char* GOSSIP_ITEM_TOM_HEGGER = "What do you know about the Cult of the Damned?";
-const char* GOSSIP_ITEM_GUARD_MITCHELLS = "How long have you worked for the Cult of the Damned?";
-const char* GOSSIP_ITEM_SALTY_JOHN_THORPE = "I have a reason to believe you're involved in the cultist activity";
+const char* GOSSIP_ITEM_TOM_HEGGER = "Que savez-vous sur le Culte des damnés ?";
+const char* GOSSIP_ITEM_GUARD_MITCHELLS = "Combien de temps avez-vous travaillé pour le Culte des damnés ?";
+const char* GOSSIP_ITEM_SALTY_JOHN_THORPE = "J'ai des raisons de croire que vous êtes impliqué dans l'activité du Culte";
 
 class npc_hidden_cultist : public CreatureScript
 {

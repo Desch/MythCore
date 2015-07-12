@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -315,8 +315,8 @@ public:
     }
 };
 
-#define GOSSIP_RAZAEL_REPORT "High Executor Anselm wants a report on the situation."
-#define GOSSIP_LYANA_REPORT "High Executor Anselm requests your report."
+#define GOSSIP_RAZAEL_REPORT "Le Grand exécuteur Anselm veut un rapport sur la situation."
+#define GOSSIP_LYANA_REPORT "Le Grand exécuteur Anselm demandes votre rapport."
 
 enum eRazael
 {
@@ -382,7 +382,7 @@ public:
     }
 };
 
-#define GOSSIP_ITEM_MG_I  "Walt sent me to pick up some dark iron ingots."
+#define GOSSIP_ITEM_MG_I  "Walt m'a envoyé pour prendre quelques lingots de fer noir."
 #define GOSSIP_ITEM_MG_II "Yarp."
 
 enum eMcGoyver

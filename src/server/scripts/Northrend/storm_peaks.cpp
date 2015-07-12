@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -13,7 +13,7 @@
 #include "ScriptedEscortAI.h"
 
 #define SAY_AGGRO                  -1571003
-#define GOSSIP_AGNETTA             "Skip the warmup, sister... or are you too scared to face soemeone your own size?"
+#define GOSSIP_AGNETTA             "Passes l'entrainement soeur ... ou as-tu peur de faire face à quelqu'un de ta taille ?"
 
 enum eAgnetta
 {
@@ -65,9 +65,9 @@ public:
     }
 };
 
-#define GOSSIP_ITEM1    "Are you okay? I've come to take you back to Frosthold if you can stand."
-#define GOSSIP_ITEM2    "I'm sorry that I didn't get here sooner. What happened?"
-#define GOSSIP_ITEM3    "I'll go get some help. Hang in there."
+#define GOSSIP_ITEM1    "Êtes-vous d'accord? Je suis venu pour vous ramener à Frosthold si vous pouvez le supporter."
+#define GOSSIP_ITEM2    "Je suis désolé, je n'ai pas venir plus tôt. Qu'est-il arrivé ?"
+#define GOSSIP_ITEM3    "Je vais aller chercher de l'aide. Accrochez-vous."
 
 enum eFrostbornScout
 {
@@ -114,9 +114,9 @@ public:
 };
 
 #define GOSSIP_HN "Thorim?"
-#define GOSSIP_SN1 "Can you tell me what became of Sif?"
-#define GOSSIP_SN2 "He did more than that, Thorim. He controls Ulduar now."
-#define GOSSIP_SN3 "It needn't end this way."
+#define GOSSIP_SN1 "Pouvez-vous me dire ce qu'est devenu Sif ?"
+#define GOSSIP_SN2 "Il ne fait plus que cela, Thorim. Il contrôle désormais Ulduar."
+#define GOSSIP_SN3 "Il ne doit pas finir comme ça."
 
 enum eThorim
 {
@@ -205,7 +205,7 @@ public:
     }
 };
 
-#define GOSSIP_CHALLENGER            "Let's do this, sister."
+#define GOSSIP_CHALLENGER            "Faisons-le, ma soeur."
 
 enum eVictoriousChallenger
 {
@@ -298,10 +298,10 @@ public:
     }
 };
 
-#define GOSSIP_LOKLIRACRONE     "Tell me about this proposal"
-#define GOSSIP_LOKLIRACRONE1    "What happened then?"
-#define GOSSIP_LOKLIRACRONE2    "You want me to take part in the Hyldsmeet to end the war?"
-#define GOSSIP_LOKLIRACRONE3    "Very well. I'll take part in this competition."
+#define GOSSIP_LOKLIRACRONE     "Parlez-moi de cette proposition"
+#define GOSSIP_LOKLIRACRONE1    "Qu'est-il arrivé alors ?"
+#define GOSSIP_LOKLIRACRONE2    "Vous voulez que je prenne part à Hyldsmeet pour mettre fin à la guerre ?"
+#define GOSSIP_LOKLIRACRONE3    "Très bien. Je vais prendre part à cette compétition."
 
 enum eLokliraCrone
 {
@@ -364,7 +364,7 @@ enum eInjuredGoblin
     SAY_END_WP_REACHED         =  -1800043
 };
 
-#define GOSSIP_ITEM_1       "I am ready, lets get you out of here"
+#define GOSSIP_ITEM_1       "Je suis prêt, vous pouvez sortir d'ici"
 
 class npc_injured_goblin : public CreatureScript
 {

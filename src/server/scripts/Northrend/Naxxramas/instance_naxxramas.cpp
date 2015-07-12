@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -57,7 +57,6 @@ enum eEnums
 {
     GO_HORSEMEN_CHEST_HERO  = 193426,
     GO_HORSEMEN_CHEST       = 181366,
-    GO_GOTHIK_GATE          = 181170,
     GO_KELTHUZAD_PORTAL01   = 181402,
     GO_KELTHUZAD_PORTAL02   = 181403,
     GO_KELTHUZAD_PORTAL03   = 181404,
@@ -75,6 +74,7 @@ enum eEnums
     GO_ROOM_GROBBULUS       = 181123,
     GO_PASSAGE_GLUTH        = 181120,
     GO_ROOM_THADDIUS        = 181121,
+	GO_GATE_GOTHIK          = 181170,
     GO_ROOM_GOTHIK          = 181124,
     GO_PASSAGE_GOTHIK       = 181125,
     GO_ROOM_HORSEMEN        = 181119,
@@ -86,7 +86,7 @@ enum eEnums
 
 enum eDoors
 {
-    DOOR_ROOM_ANUBREKHAN      = 0,
+    DOOR_ROOM_ANUBREKHAN	= 0,
     DOOR_PASSAGE_ANUBREKHAN,
     DOOR_PASSAGE_FAERLINA,
     DOOR_ROOM_MAEXXNA,
@@ -159,7 +159,6 @@ public:
         uint32 m_PlayerDeathCount;
         uint32 m_HeiganPlayerDeathCount;
         uint32 SlimeCheckTimer;
-        uint64 GothikGateGUID;
         uint64 HorsemenChestGUID;
         uint64 SapphironGUID;
         uint64 uiFaerlina;
@@ -181,21 +180,27 @@ public:
         uint64 FaerlinaDoor;
         uint64 MaexxnaDoor;
         uint64 ThaddiusDoor;
-        uint64 GothicDoor;
+		uint64 GothikGateGUID;
+        uint64 GothicRoomGUID;
+		uint64 GothicPassageGUID;
         uint64 NothDoor_Out;
         uint64 HeiganDoor;
         uint64 HorsemenDoor;
         uint64 uiPortals[4];
         uint64 uiNaxxDoors[MAX_DOOR_NAXX];
 
-        GOState gothikDoorState;
+		GOState gothikGateState;
+		GOState gothicRoomState;
+		GOState gothicPassageState;	
         time_t minHorsemenDiedTime;
         time_t maxHorsemenDiedTime;
 
         void Initialize()
         {
             memset(&m_auiEncounter, 0, sizeof(m_auiEncounter));
-            gothikDoorState = GO_STATE_ACTIVE;
+            gothikGateState = GO_STATE_ACTIVE;
+			gothicRoomState = GO_STATE_READY;
+			gothicPassageState = GO_STATE_READY;
             SlimeCheckTimer = 1000;
         }
 
@@ -295,9 +300,15 @@ public:
                 case GO_PASSAGE_HEIGAN:
                     uiNaxxDoors[DOOR_PASSAGE_HEIGAN] = go->GetGUID();
                     break;
+				case GO_GATE_GOTHIK:
+					GothikGateGUID = go->GetGUID();
+					break;
+				case GO_ROOM_GOTHIK:
+                    GothicRoomGUID = go->GetGUID();
+                    break;	
                 case GO_PASSAGE_GOTHIK:
-                    GothicDoor = go->GetGUID();
-                    break;
+                    GothicPassageGUID = go->GetGUID();
+                    break;			
                 case GO_ROOM_HORSEMEN:
                     HorsemenDoor = go->GetGUID();
                     break;
@@ -429,10 +440,20 @@ public:
                     HeiganErupt(value);
                     break;
                 case DATA_GOTHIK_GATE:
-                    if(GameObject* gothikGate = instance->GetGameObject(GothikGateGUID))
-                        gothikGate->SetGoState(GOState(value));
-                    gothikDoorState = GOState(value);
+                    if(GameObject* gothicGate = instance->GetGameObject(GothikGateGUID))
+                        gothicGate->SetGoState(GOState(value));
+                    gothikGateState = GOState(value);
                     break;
+				case DATA_GOTHIK_ROOM:
+                    if(GameObject* gothikRoom = instance->GetGameObject(GothicRoomGUID))
+                        gothikRoom->SetGoState(GOState(value));
+                    gothicRoomState = GOState(value);
+                    break;
+				case DATA_GOTHIK_PASSAGE:
+                    if(GameObject* gothikPassage = instance->GetGameObject(GothicPassageGUID))
+                        gothikPassage->SetGoState(GOState(value));
+                    gothicPassageState = GOState(value);
+                    break;			
                 case DATA_HORSEMEN0:
                 case DATA_HORSEMEN1:
                 case DATA_HORSEMEN2:
@@ -579,17 +600,17 @@ public:
                 if(GameObject* pDoors = instance->GetGameObject(HeiganDoor))
                     pDoors->SetGoState(GO_STATE_ACTIVE);
             }
-
+			
             if(id == BOSS_RAZUVIOUS && state == DONE)
             {
-                if(GameObject* pDoors = instance->GetGameObject(GothicDoor))
+                if(GameObject* pDoors = instance->GetGameObject(GothicRoomGUID))
                     pDoors->SetGoState(GO_STATE_ACTIVE);
             }
-
+			
             if(id == BOSS_GOTHIK && state == DONE)
             {
                 if(GameObject* pDoors = instance->GetGameObject(HorsemenDoor))
-                    pDoors->SetGoState(GO_STATE_ACTIVE);
+                    pDoors->SetGoState(GO_STATE_ACTIVE);				
             }
 
             if(id == BOSS_HORSEMEN && state == DONE)

@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -179,14 +179,14 @@ public:
         switch(pCreature->GetEntry())
         {
             case NPC_JAINA:
-                pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Can you remove the sword?", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
+                pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Pouvez-vous détruire l'épée ?", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
                 if(pPlayer->GetQuestStatus(24500) == QUEST_STATUS_COMPLETE)
-                    pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Lets Fight!", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+2);
+                    pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Luttons contre!", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+2);
                 break;
             case NPC_SYLVANA:
-                pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "I think I hear Arthas coming. Whatever you're going to do, do it quickly.", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
+                pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Je crois entendre Arthas arriver. Tout ce que vous comptez faire, faites le rapidement.", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
                 if(pPlayer->GetQuestStatus(24802) == QUEST_STATUS_COMPLETE)
-                    pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Lets Fight!", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+2);
+                    pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Luttons contre!", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+2);
                 break;
         }
 
@@ -640,7 +640,7 @@ public:
         if(pCreature->isQuestGiver())
            pPlayer->PrepareQuestMenu( pCreature->GetGUID());
 
-        pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Lets go together!", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
+        pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Allons-y ensemble !", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
         pPlayer->SEND_GOSSIP_MENU(pPlayer->GetGossipTextId(pCreature), pCreature->GetGUID());
         return true;
     }

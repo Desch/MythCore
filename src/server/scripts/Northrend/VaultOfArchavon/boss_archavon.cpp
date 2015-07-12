@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -29,7 +29,7 @@
 #define ARCHAVON_WARDER          32353 //npc 32353
 
 //Yell
-#define SAY_LEAP "Archavon the Stone Watcher lunges for $N!" //$N should be the target
+#define SAY_LEAP "Archavon le gardien des pierres se précipite sur $N!" //$N should be the target
 
 enum Events
 {

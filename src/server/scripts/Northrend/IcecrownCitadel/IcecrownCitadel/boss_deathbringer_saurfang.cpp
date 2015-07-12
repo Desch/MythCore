@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -787,7 +787,7 @@ public:
 
         if((!player->GetGroup() || !player->GetGroup()->IsLeader(player->GetGUID())) && !player->isGameMaster())
         {
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "I am not Raid Leader...", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+2);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Je ne suis pas le chef du raid...", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+2);
             player->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
             return true;
         }
@@ -795,7 +795,7 @@ public:
         InstanceScript* instance = creature->GetInstanceScript();
         if(instance && instance->GetBossState(DATA_DEATHBRINGER_SAURFANG) != DONE)
         {
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "We are ready to go, High Overlord. The Lich King must fall!", 631, -ACTION_START_EVENT);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Nous sommes prêts à y aller, High Overlord. Le Roi liche doit tomber!", 631, -ACTION_START_EVENT);
             player->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
         }
 
@@ -808,7 +808,7 @@ public:
         player->CLOSE_GOSSIP_MENU();
 
         if(action == GOSSIP_ACTION_INFO_DEF+2)
-            creature->MonsterSay("I will wait Raid Leader", LANG_UNIVERSAL, player->GetGUID());
+            creature->MonsterSay("Je vais attendre le chef du raid", LANG_UNIVERSAL, player->GetGUID());
 
         if(action == -ACTION_START_EVENT)
             creature->AI()->DoAction(ACTION_START_EVENT);
@@ -943,7 +943,7 @@ public:
         InstanceScript* pInstance = pCreature->GetInstanceScript();
         if(pInstance && pInstance->GetBossState(DATA_DEATHBRINGER_SAURFANG) != DONE)
         {
-            pPlayer->ADD_GOSSIP_ITEM(0, "Let it begin...", 631, -ACTION_START_EVENT + 1);
+            pPlayer->ADD_GOSSIP_ITEM(0, "Nous sommes prêt !", 631, -ACTION_START_EVENT + 1);
             pPlayer->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, pCreature->GetGUID());
         }
 

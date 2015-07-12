@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -13,10 +13,10 @@
 #include "OutdoorPvPWG.h"
 #include "OutdoorPvPMgr.h"
 
-#define GOSSIP_HELLO_DEMO1  "Build catapult."
-#define GOSSIP_HELLO_DEMO2  "Build demolisher."
-#define GOSSIP_HELLO_DEMO3  "Build siege engine."
-#define GOSSIP_HELLO_DEMO4  "I cannot build more!"
+#define GOSSIP_HELLO_DEMO1  "Construire une Catapulte."
+#define GOSSIP_HELLO_DEMO2  "Construire un Démolisseur."
+#define GOSSIP_HELLO_DEMO3  "Construire un engin de Siège."
+#define GOSSIP_HELLO_DEMO4  "Je ne peux pas construire d'avantage !"
 
 class npc_demolisher_engineerer : public CreatureScript
 {
@@ -187,7 +187,7 @@ public:
                                         WintergraspPortal = me->SummonGameObject(GO_WINTERGRASP_PORTAL, 5686.974609f, 773.303711f, 647.753235f, 5.572729f, 0, 0, 0.324484f, -0.945891f, 0);
                                         me->SetOrientation(5.515240f);
                                         me->SendMovementFlagUpdate();
-                                        me->MonsterYell("Reinforcements are needed on the Wintergrasp battlefield! I have opened a portal for quick travel to the battle at The Silver Enclave.", LANG_UNIVERSAL, 0);
+                                        me->MonsterYell("Les renforts sont nécessaires sur le champ de bataille de Joug-d'hiver! J'ai ouvert un portail pour un voyage rapide à la bataille de l'enclave d'argent.", LANG_UNIVERSAL, 0);
                                         ++uiPortalPhase;
                                         uiPortalTimer = 1000;
                                         break;

@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Copyright (C) 2012 SymphonyArt <http://symphonyart.com/>
  *
@@ -164,6 +164,92 @@ void MailDraft::SendReturnToSender(uint32 sender_acc, uint32 sender_guid, uint32
     // will delete item or place to receiver mail list
     SendMailTo(trans, MailReceiver(receiver, receiver_guid), MailSender(MAIL_NORMAL, sender_guid), MAIL_CHECK_MASK_RETURNED, deliver_delay);
 }
+
+void WorldSession::SendExternalMails()
+{
+        SQLTransaction trans = CharacterDatabase.BeginTransaction();
+                CharacterDatabase.BeginTransaction();
+    sLog->outString("EXTERNAL MAIL> Envoi des Mails Boutique en Attente...");
+    QueryResult result = CharacterDatabase.Query("SELECT e.id, e.receiver, e.subject, e.message, e.money, i.item, i.count FROM mail_external e LEFT JOIN mail_external_items i ON e.id = i.mail_id ORDER BY e.id;");
+    if(!result)
+    {
+        sLog->outString("EXTERNAL MAIL> Pas de Mails Boutique en Liste d'attente...");
+       // delete result;
+        return;
+    }
+    else
+    {
+        uint32 last_id = 0;
+        MailDraft* mail = NULL;
+        uint32 last_receiver_guid;
+
+        do
+        {
+            Field *fields = result->Fetch();
+            uint32 id = fields[0].GetUInt32();
+            uint64 receiver_guid = fields[1].GetUInt64();
+            std::string subject = fields[2].GetString();
+            std::string message = fields[3].GetString();
+            uint32 money = fields[4].GetUInt32();
+            uint32 itemId = fields[5].GetUInt32();
+            uint32 itemCount = fields[6].GetUInt32();
+
+            Player *receiver = sObjectMgr->GetPlayer( receiver_guid );
+
+            if (id != last_id)
+            {
+                // send mail
+                if (last_id != 0)
+                {
+                    sLog->outString("EXTERNAL MAIL> Envoi de mail boutique au personnage avec le GUID %d", last_receiver_guid);
+                    mail->SendMailTo( trans, MailReceiver(last_receiver_guid),MailSender(MAIL_NORMAL, 0 , MAIL_STATIONERY_GM),MAIL_CHECK_MASK_RETURNED, NULL);
+                    delete mail;
+                    CharacterDatabase.PExecute("DELETE mail_external, mail_external_items FROM mail_external, mail_external_items WHERE mail_external_items.mail_id = mail_external.id AND mail_external.id = %u;", last_id);
+                    sLog->outString("EXTERNAL MAIL> Mail Boutique Envoyé");
+                }
+
+                // create new mail
+                mail = new MailDraft( subject, message );
+
+                if(money)
+                {
+                    sLog->outString("EXTERNAL MAIL> Envoi de Po");
+                    mail->AddMoney(money);
+                }
+            }
+
+            if (itemId)
+            {
+                sLog->outString("EXTERNAL MAIL> Ajout %u de item avec l'ID %u", itemCount, itemId);
+                Item* mailItem = Item::CreateItem( itemId, itemCount, receiver );
+                mailItem->SaveToDB(trans);
+                mail->AddItem(mailItem);
+            }
+
+            last_id = id;
+            last_receiver_guid = receiver_guid;
+
+        }
+        while( result->NextRow() );
+
+        // we only send a mail when mail_id!=last_mail_id, so we need to send the very last mail here:
+        if (last_id != 0)
+        {
+            // send last mail
+            sLog->outString("EXTERNAL MAIL> Envoi de Mails boutique au personnage avec le GUID %d", last_receiver_guid);
+
+            mail->SendMailTo( trans, MailReceiver(last_receiver_guid),MailSender(MAIL_NORMAL, 0 , MAIL_STATIONERY_GM),MAIL_CHECK_MASK_RETURNED, NULL);
+            delete mail;
+            CharacterDatabase.PExecute("DELETE mail_external, mail_external_items FROM mail_external, mail_external_items WHERE mail_external_items.mail_id = mail_external.id AND mail_external.id = %u;", last_id);
+            sLog->outString("EXTERNAL MAIL> Mails Boutique Envoyé");
+        }
+    }
+        
+        CharacterDatabase.CommitTransaction(trans);
+    //delete result;
+    sLog->outString("EXTERNAL MAIL> Tous les Mails Boutique sont Envoyés...");
+}
+
 
 void MailDraft::SendMailTo(SQLTransaction& trans, MailReceiver const& receiver, MailSender const& sender, MailCheckMask checked, uint32 deliver_delay)
 {

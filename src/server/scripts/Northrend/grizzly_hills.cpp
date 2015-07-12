@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -12,11 +12,11 @@
 #include "ScriptPCH.h"
 #include "ScriptedEscortAI.h"
 
-#define GOSSIP_ITEM1 "You're free to go Orsonn, but first tell me what's wrong with the furbolg."
-#define GOSSIP_ITEM2 "What happened then?"
-#define GOSSIP_ITEM3 "Thank you, Son of Ursoc. I'll see what can be done."
-#define GOSSIP_ITEM4 "Who was this stranger?"
-#define GOSSIP_ITEM5 "Thank you, Kodian. I'll do what I can."
+#define GOSSIP_ITEM1 "Vous Etes libre de partir Orsonn, mais d'abord dite moi quel est le problème avec les furbolgs."
+#define GOSSIP_ITEM2 "Qu'est-il arrivé alors ?"
+#define GOSSIP_ITEM3 "Je vous remercie, Fils de Ursoc. Je vais voir ce qu'on peut faire."
+#define GOSSIP_ITEM4 "Qui était cet étranger ?"
+#define GOSSIP_ITEM5 "Je vous remercie, Kodian. Je vais faire ce que je peux."
 
 enum eEnums
 {

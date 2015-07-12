@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -305,8 +305,8 @@ public:
                 {
                     _bCanLand = true;
                     ++_bombsLanded;
-                    if(_bombsLanded != 2)
-                        events.ScheduleEvent(EVENT_FROST_BOMB, 5000);
+                    if(_bombsLanded != 4)
+                        events.ScheduleEvent(EVENT_FROST_BOMB, 1000);
                     break;
                 }
                 default:
