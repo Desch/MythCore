@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -931,6 +931,7 @@ bool Guardian::InitStatsForLevel(uint8 petlevel)
                         SetCreateHealth(40*petlevel);
                         SetCreateMana(28 + 10*petlevel);
                     }
+                    SetBonusDamage(m_owner->SpellBaseDamageBonus(SPELL_SCHOOL_MASK_FIRE) * 0.5f);
                     SetBaseWeaponDamage(BASE_ATTACK, MINDAMAGE, float(petlevel * 4 - petlevel));
                     SetBaseWeaponDamage(BASE_ATTACK, MAXDAMAGE, float(petlevel * 4 + petlevel));
                     break;
@@ -992,18 +993,17 @@ bool Guardian::InitStatsForLevel(uint8 petlevel)
                         SetCreateMana(28 + 10*petlevel);
                         SetCreateHealth(28 + 30*petlevel);
                     }
+                    m_modAttackSpeedPct[RANGED_ATTACK] = m_owner->m_modAttackSpeedPct[BASE_ATTACK];
+                    SetFloatValue(UNIT_MOD_CAST_SPEED, m_modAttackSpeedPct[RANGED_ATTACK]);
                     if(Player* pSummoner = m_owner->ToPlayer()) // get 100% of owning player's physical (melee) haste
                     {
                         float bonus = pSummoner->GetRatingBonusValue(CR_HASTE_MELEE);
                         bonus += pSummoner->GetTotalAuraModifier(SPELL_AURA_MOD_MELEE_HASTE) + pSummoner->GetTotalAuraModifier(SPELL_AURA_MOD_MELEE_RANGED_HASTE);
                         ApplyCastTimePercentMod(bonus, true);
-                        SetCreateHealth(uint32(pSummoner->GetMaxHealth()*0.8f)); // hp must be 0.8x of DK hp
                     }
-                    SetBonusDamage(int32(m_owner->GetTotalAttackPowerValue(BASE_ATTACK) * 0.5f)); // attack power coefficient is 0.4
+                    SetBonusDamage(int32(m_owner->GetTotalAttackPowerValue(BASE_ATTACK) * 0.4f)); // attack power coefficient is 40%
                     SetBaseWeaponDamage(BASE_ATTACK, MINDAMAGE, float(petlevel - (petlevel / 4)));
                     SetBaseWeaponDamage(BASE_ATTACK, MAXDAMAGE, float(petlevel + (petlevel / 4)));
-                    m_modAttackSpeedPct[RANGED_ATTACK]= m_owner->m_modAttackSpeedPct[BASE_ATTACK];
-                    SetFloatValue(UNIT_MOD_CAST_SPEED, m_modAttackSpeedPct[RANGED_ATTACK]);
                     break;
                 }
                 case 28017: // Bloodworms
@@ -1193,6 +1193,9 @@ void Pet::_LoadAuras(uint32 timediff)
             int32 baseDamage[3];
             Field* fields = result->Fetch();
             uint64 caster_guid = fields[0].GetUInt64();
+            // NULL guid stored - pet is the caster of the spell - see Pet::_SaveAuras
+            if(!caster_guid)
+                caster_guid = GetGUID();
             uint32 spellid = fields[1].GetUInt32();
             uint8 effmask = fields[2].GetUInt8();
             uint8 recalculatemask = fields[3].GetUInt8();
@@ -1932,4 +1935,40 @@ void Pet::SynchronizeLevelWithOwner()
         default:
             break;
     }
+}
+
+void Pet::ProhibitSpellSchool(SpellSchoolMask idSchoolMask, uint32 unTimeMs)
+{
+    WorldPacket data(SMSG_SPELL_COOLDOWN, 8+1+m_spells.size()*8);
+    data << uint64(GetGUID());
+    data << uint8(0x0);                                     // flags (0x1, 0x2)
+    time_t curTime = time(NULL);
+    for(PetSpellMap::const_iterator itr = m_spells.begin(); itr != m_spells.end(); ++itr)
+    {
+        if (itr->second.state == PETSPELL_REMOVED)
+            continue;
+        uint32 unSpellId = itr->first;
+        SpellEntry const *spellInfo = sSpellStore.LookupEntry(unSpellId);
+        if (!spellInfo)
+        {
+            ASSERT(spellInfo);
+            continue;
+        }
+
+        // Not send cooldown for this spells
+        if (spellInfo->Attributes & SPELL_ATTR0_DISABLED_WHILE_ACTIVE)
+            continue;
+
+        if (spellInfo->PreventionType != SPELL_PREVENTION_TYPE_SILENCE)
+            continue;
+
+        if ((idSchoolMask & GetSpellSchoolMask(spellInfo)) && GetCreatureSpellCooldownDelay(unSpellId) < unTimeMs)
+        {
+            data << uint32(unSpellId);
+            data << uint32(unTimeMs);                       // in m.secs
+            _AddCreatureSpellCooldown(unSpellId, curTime + unTimeMs/IN_MILLISECONDS);
+        }
+    }
+    if(Player *owner = GetOwner())
+        owner->GetSession()->SendPacket(&data);
 }

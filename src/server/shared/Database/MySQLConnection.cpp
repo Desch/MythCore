@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Copyright (C) 2012 SymphonyArt <http://symphonyart.com/>
  *
@@ -171,11 +171,8 @@ bool MySQLConnection::Execute(const char* sql)
                 return Execute(sql);       // Try again
 
             return false;
-        }
-        else if(sLog->GetSQLDriverQueryLogging())
-        {
+        } else if(sLog->GetSQLDriverQueryLogging())
             sLog->outSQLDriver("[%u ms] SQL: %s", getMSTimeDiff(_s, getMSTime()), sql);
-        }
     }
 
     return true;

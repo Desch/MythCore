@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -1269,7 +1269,7 @@ bool ChatHandler::HandleMmapLoadedTilesCommand(const char* /*args*/)
 bool ChatHandler::HandleMmapStatsCommand(const char* /*args*/)
 {
     PSendSysMessage("mmap stats:");
-    PSendSysMessage("  global pathfinding is %sabled", sWorld->getBoolConfig(CONFIG_PATHFINDING_ENABLED) ? "en" : "dis");
+    PSendSysMessage("  global pathfinding is %sabled", sWorld->getBoolConfig(CONFIG_MMAPS_ENABLED) ? "en" : "dis");
 
     MMAP::MMapManager *manager = MMAP::MMapFactory::createOrGetMMapManager();
     PSendSysMessage(" %u maps loaded with %u tiles overall", manager->getLoadedMapsCount(), manager->getLoadedTilesCount());

@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -32,6 +32,8 @@ public:
     void KilledUnit(Unit* /*pVictim*/);
     void AttackStart(Unit* target);
     void MovementInform(uint32 moveType, uint32 data);
+    void OwnerDamagedBy(Unit* attacker);
+    void OwnerAttacked(Unit* target);
 
 private:
     bool _isVisible(Unit* ) const;
@@ -42,7 +44,6 @@ private:
 
     TimeTracker i_tracker;
     bool inCombat;
-    bool targetHasCC;
     std::set<uint64> m_AllySet;
     uint32 m_updateAlliesTimer;
 
@@ -50,7 +51,6 @@ private:
     void HandleReturnMovement();
     void DoAttack(Unit* target, bool chase);
     bool _CanAttack(Unit* target);
-    bool _CheckTargetCC(Unit* target);
 };
 
 #endif

@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -1255,8 +1255,8 @@ float WorldObject::GetDistanceZ(const WorldObject* obj) const
 
 bool WorldObject::_IsWithinDist(WorldObject const* obj, float dist2compare, bool is3D) const
 {
-    if(!this)
-        return false;
+//    if(!this) /* ROLLBACK THAT IF CRASH HAPPEN */
+//        return false;
 
     float sizefactor = GetObjectSize() + obj->GetObjectSize();
     float maxdist = dist2compare + sizefactor;
@@ -1734,7 +1734,7 @@ bool WorldObject::canDetect(WorldObject const* obj, bool ignoreStealth) const
     if(obj->isAlwaysDetectableFor(seer))
         return true;
 
-    if(!seer->canDetectInvisibilityOf(obj))
+    if (!ignoreStealth && !seer->canDetectInvisibilityOf(obj))
         return false;
 
     if(!ignoreStealth && !seer->canDetectStealthOf(obj))
@@ -2145,6 +2145,7 @@ TempSummon* Map::SummonCreature(uint32 entry, Position const& pos, SummonPropert
                         mask = UNIT_MASK_GUARDIAN;
                         break;
                     case SUMMON_TYPE_TOTEM:
+                    case SUMMON_TYPE_LIGHTWELL:
                         mask = UNIT_MASK_TOTEM;
                         break;
                     case SUMMON_TYPE_VEHICLE:
@@ -2481,8 +2482,42 @@ void WorldObject::GetNearPoint(WorldObject const* /*searcher*/, float &x, float 
 void WorldObject::MovePosition(Position &pos, float dist, float angle)
 {
     angle += m_orientation;
-    pos.m_positionX += dist * cos(angle);
-    pos.m_positionY += dist * sin(angle);
+    float destx, desty, destz, ground, floor;
+    destx = pos.m_positionX + dist * cos(angle);
+    desty = pos.m_positionY + dist * sin(angle);
+
+    // Prevent invalid coordinates here, position is unchanged
+    if(!Trinity::IsValidMapCoord(destx, desty))
+    {
+        sLog->outCrash("WorldObject::MovePosition invalid coordinates X: %f and Y: %f were passed!", destx, desty);
+        return;
+    }
+
+    ground = GetMap()->GetHeight(GetPhaseMask(), destx, desty, MAX_HEIGHT, true);
+    floor = GetMap()->GetHeight(GetPhaseMask(), destx, desty, pos.m_positionZ, true);
+    destz = fabs(ground - pos.m_positionZ) <= fabs(floor - pos.m_positionZ) ? ground : floor;
+
+    float step = dist/10.0f;
+
+    for(uint8 j = 0; j < 10; ++j)
+    {
+        // do not allow too big z changes
+        if(fabs(pos.m_positionZ - destz) > 6)
+        {
+            destx -= step * cos(angle);
+            desty -= step * sin(angle);
+            ground = GetMap()->GetHeight(GetPhaseMask(), destx, desty, MAX_HEIGHT, true);
+            floor = GetMap()->GetHeight(GetPhaseMask(), destx, desty, pos.m_positionZ, true);
+            destz = fabs(ground - pos.m_positionZ) <= fabs(floor - pos.m_positionZ) ? ground : floor;
+        }
+        // we have correct destz now
+        else
+        {
+            pos.Relocate(destx, desty, destz);
+            break;
+        }
+    }
+
     Trinity::NormalizeMapCoord(pos.m_positionX);
     Trinity::NormalizeMapCoord(pos.m_positionY);
     UpdateGroundPositionZ(pos.m_positionX, pos.m_positionY, pos.m_positionZ);

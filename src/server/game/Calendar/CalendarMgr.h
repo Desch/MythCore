@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2012 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -255,9 +255,9 @@ struct CalendarEvent
         std::string _title;
         std::string _description;
 };
-
+typedef std::vector<CalendarInvite*> CalendarInviteStore;
 typedef std::set<CalendarEvent*> CalendarEventStore;
-typedef std::map<uint64 /* eventId */, std::vector<CalendarInvite*> > CalendarInviteStore;
+typedef std::map<uint64 /* eventId */, CalendarInviteStore > CalendarEventInviteStore;
 
 class CalendarMgr
 {
@@ -268,7 +268,7 @@ class CalendarMgr
         ~CalendarMgr();
 
         CalendarEventStore _events;
-        CalendarInviteStore _invites;
+        CalendarEventInviteStore _invites;
 
         std::deque<uint64> _freeEventIds;
         std::deque<uint64> _freeInviteIds;
@@ -278,14 +278,14 @@ class CalendarMgr
     public:
         void LoadFromDB();
 
-        CalendarEvent* GetEvent(uint64 eventId);
+        CalendarEvent* GetEvent(uint64 eventId) const;
         CalendarEventStore const& GetEvents() const { return _events; }
         CalendarEventStore GetPlayerEvents(uint64 guid);
 
-        CalendarInvite* GetInvite(uint64 inviteId);
-        CalendarInviteStore const& GetInvites() const { return _invites; }
-        std::vector<CalendarInvite*> GetEventInvites(uint64 eventId);
-        std::vector<CalendarInvite*> GetPlayerInvites(uint64 guid);
+        CalendarInvite* GetInvite(uint64 inviteId) const;
+        CalendarEventInviteStore const& GetInvites() const { return _invites; }
+        CalendarInviteStore const& GetEventInvites(uint64 eventId);
+        CalendarInviteStore GetPlayerInvites(uint64 guid);
 
         void FreeEventId(uint64 id);
         uint64 GetFreeEventId();

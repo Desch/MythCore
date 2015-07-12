@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -1614,6 +1614,12 @@ public:
             if(!UpdateVictim())
                 return;
 
+            if(me->getVictim()->HasBreakableByDamageCrowdControlAura(me))
+            {
+                me->InterruptNonMeleeSpells(false);
+                return;
+            }
+
             if(SpellTimer <= diff)
             {
                 if(IsViper) //Viper
@@ -1935,6 +1941,19 @@ public:
         {
             DoCast(me, 59907, false); // Spell for Lightwell Charges
         }
+
+        // Treatment for avoid combat misbehave
+        void EnterEvadeMode()
+        {
+            if (!me->isAlive())
+                return;
+
+            me->DeleteThreatList();
+            me->CombatStop(true);
+            me->ResetPlayerDamageReq();
+        }
+
+
     };
 
     CreatureAI* GetAI(Creature* pCreature) const
@@ -2758,7 +2777,7 @@ public:
                     DoCast(SPELL_SUMMON_BABY_BUNNY);
                     bunnyTimer = urand(20000, 40000);
                 } else bunnyTimer -= diff;
-            } else if(searchTimer <= diff) {
+            } else if(me && searchTimer <= diff) {
                 if(Creature* pRabbit = me->FindNearestCreature(NPC_SPRING_RABBIT, 10.0f))
                 {
                     if(pRabbit == me || pRabbit->HasAura(SPELL_SPRING_RABBIT_IN_LOVE))
@@ -2775,6 +2794,120 @@ public:
             } else searchTimer -= diff;
         }
     };
+};
+/*###################
+# npc_fire_elemental
+######*/
+#define SPELL_FIRENOVA        12470
+#define SPELL_FIRESHIELD      13376
+#define SPELL_FIREBLAST       57984
+
+class npc_fire_elemental : public CreatureScript
+{
+public:
+    npc_fire_elemental() : CreatureScript("npc_fire_elemental") { }
+
+    struct npc_fire_elementalAI : public ScriptedAI
+    {
+        npc_fire_elementalAI(Creature* creature) : ScriptedAI(creature) {}
+
+        uint32 FireNova_Timer;
+        uint32 FireShield_Timer;
+        uint32 FireBlast_Timer;
+
+        void Reset()
+        {
+            FireNova_Timer = 5000 + rand() % 15000; // 5-20 sec cd
+            FireBlast_Timer = 5000 + rand() % 15000; // 5-20 sec cd
+            FireShield_Timer = 0;
+            me->ApplySpellImmune(0, IMMUNITY_SCHOOL, SPELL_SCHOOL_MASK_FIRE, true);
+        }
+
+        void UpdateAI(const uint32 diff)
+        {
+            if(!UpdateVictim())
+                return;
+
+            if(me->HasUnitState(UNIT_STAT_CASTING))
+                return;
+
+            if(FireShield_Timer <= diff)
+            {
+                DoCast(me->getVictim(), SPELL_FIRESHIELD);
+                FireShield_Timer = 2 * IN_MILLISECONDS;
+            }
+            else
+                FireShield_Timer -= diff;
+
+            if(FireBlast_Timer <= diff)
+            {
+                DoCast(me->getVictim(), SPELL_FIREBLAST);
+                FireBlast_Timer = 5000 + rand() % 15000; // 5-20 sec cd
+            }
+            else
+                FireBlast_Timer -= diff;
+
+            if(FireNova_Timer <= diff)
+            {
+                DoCast(me->getVictim(), SPELL_FIRENOVA);
+                FireNova_Timer = 5000 + rand() % 15000; // 5-20 sec cd
+            }
+            else
+                FireNova_Timer -= diff;
+
+            DoMeleeAttackIfReady();
+        }
+    };
+
+    CreatureAI *GetAI(Creature* creature) const
+    {
+        return new npc_fire_elementalAI(creature);
+    }
+};
+
+/*######
+# npc_earth_elemental
+######*/
+#define SPELL_ANGEREDEARTH        36213
+
+class npc_earth_elemental : public CreatureScript
+{
+public:
+    npc_earth_elemental() : CreatureScript("npc_earth_elemental") { }
+
+    struct npc_earth_elementalAI : public ScriptedAI
+    {
+        npc_earth_elementalAI(Creature* creature) : ScriptedAI(creature) {}
+
+        uint32 AngeredEarth_Timer;
+
+        void Reset()
+        {
+            AngeredEarth_Timer = 0;
+            me->ApplySpellImmune(0, IMMUNITY_SCHOOL, SPELL_SCHOOL_MASK_NATURE, true);
+        }
+
+        void UpdateAI(const uint32 diff)
+        {
+            if(!UpdateVictim())
+                return;
+
+            if(AngeredEarth_Timer <= diff)
+            {
+                DoCast(me->getVictim(), SPELL_ANGEREDEARTH);
+                AngeredEarth_Timer = 5000 + rand() % 15000; // 5-20 sec cd
+            }
+            else
+                AngeredEarth_Timer -= diff;
+
+            DoMeleeAttackIfReady();
+        }
+    };
+
+    CreatureAI *GetAI(Creature* creature) const
+    {
+        return new npc_earth_elementalAI(creature);
+    }
 };
 
 void AddSC_npcs_special()
@@ -2813,4 +2946,6 @@ void AddSC_npcs_special()
     new npc_halloween_orphan_matron;
     new npc_eversong_ranger;
     new npc_snip_snagglebolt;
+    new npc_fire_elemental;
+    new npc_earth_elemental;
 }

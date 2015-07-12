@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Copyright (C) 2012 SymphonyArt <http://symphonyart.com/>
  *
@@ -3344,7 +3344,7 @@ bool SpellArea::IsFitToRequirements(Player const* pPlayer, uint32 newZone, uint3
                 if(!pPlayer || !pvpWG)
                     return false;
 
-                if(!pvpWG->isWarTime() || 
+                if(!pvpWG->isWarTime() ||
                     !pPlayer->HasAuraType(SPELL_AURA_MOD_INCREASE_MOUNTED_FLIGHT_SPEED)
                  && !pPlayer->HasAuraType(SPELL_AURA_FLY)
                  || pPlayer->HasAura(45472)
@@ -3358,15 +3358,15 @@ bool SpellArea::IsFitToRequirements(Player const* pPlayer, uint32 newZone, uint3
                 return false;
             if((uint8)pPlayer->GetTeamId() != sWorld->getWorldState(WORLDSTATE_WINTERGRASP_CONTROLING_FACTION))
                 return false;
-            break;
-        case 55773: // Horde Control Phase
+            break;/*
+        case 55774: // Alliance Control Phase
             if(newZone == 4197 && sWorld->getWorldState(WORLDSTATE_WINTERGRASP_DEFENDERS) != TEAM_HORDE)
                 return false;
             break;
-        case 55774: // Alliance Control Phase
+        case 55773: // Horde Control Phase
             if(newZone == 4197 && sWorld->getWorldState(WORLDSTATE_WINTERGRASP_DEFENDERS) != TEAM_ALLIANCE)
                 return false;
-            break;
+            break;*/
         case 68719: // Oil Refinery - Isle of Conquest.
         case 68720: // Quarry - Isle of Conquest.
         {
@@ -4159,6 +4159,10 @@ void SpellMgr::LoadSpellCustomAttr()
             case 59372: // Energize Cores
                 spellInfo->EffectImplicitTargetA[0] = TARGET_UNIT_AREA_ENEMY_SRC;
                 break;
+            case 29444: // Magic Absorption
+            case 29441:
+                spellInfo->spellLevel = 0;
+                break;
             case 3286:  // Bind
                 spellInfo->EffectImplicitTargetA[0] = TARGET_UNIT_TARGET_ENEMY;
                 spellInfo->EffectImplicitTargetA[1] = TARGET_UNIT_TARGET_ENEMY;
@@ -4232,7 +4236,7 @@ void SpellMgr::LoadSpellCustomAttr()
             case 59725: // Improved Spell Reflection - aoe aura
                 // Target entry seems to be wrong for this spell :/
                 spellInfo->EffectImplicitTargetA[0] = TARGET_UNIT_PARTY_CASTER;
-                spellInfo->EffectRadiusIndex[0] = 45;
+                spellInfo->EffectRadiusIndex[0] = 10;
                 break;
             case 27820: // Mana Detonation
             case 69782: // Ooze Flood
@@ -4712,6 +4716,7 @@ void SpellMgr::LoadSpellCustomAttr()
             case 62524: // Freya - Attuned to Nature 2 Dose Reduction
             case 62525: // Freya - Attuned to Nature 10 Dose Reduction
             case 58875: // Shaman - Spirit Walk - Feral Spirit
+            case 7720:  // Warlock: Ritual of Summoning
                 mSpellCustomAttr[i] |= SPELL_ATTR0_CU_IGNORE_LOS;
                 break;
             case 62488: // Ignis Activate Construct (only visually)
@@ -4890,6 +4895,11 @@ void SpellMgr::LoadSpellCustomAttr()
                 spellInfo->EffectImplicitTargetA[0] = TARGET_DEST_TARGET_ANY;
                 spellInfo->EffectImplicitTargetB[0] = TARGET_UNIT_TARGET_ANY;
                 spellInfo->Effect[1] = 0;
+                break;
+            case 7922:  // charge stun
+            case 20253: // intercept stun
+                spellInfo->DmgClass = SPELL_DAMAGE_CLASS_MELEE;
+                spellInfo->Attributes |= SPELL_ATTR0_IMPOSSIBLE_DODGE_PARRY_BLOCK;
                 break;
             case 23126: // World Enlarger
                 spellInfo->AuraInterruptFlags |= AURA_INTERRUPT_FLAG_SPELL_ATTACK;

@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -103,6 +103,11 @@ void CombatAI::UpdateAI(const uint32 diff)
         DoMeleeAttackIfReady();
 }
 
+void CombatAI::SpellInterrupted(uint32 spellId, uint32 unTimeMs)
+{
+    events.RescheduleEvent(spellId, unTimeMs);
+}
+
 /////////////////
 //CasterAI
 /////////////////
@@ -149,6 +154,12 @@ void CasterAI::UpdateAI(const uint32 diff)
         return;
 
     events.Update(diff);
+
+    if(me->getVictim()->HasBreakableByDamageCrowdControlAura())
+    {
+        me->InterruptNonMeleeSpells(false);
+        return;
+    }
 
     if(me->HasUnitState(UNIT_STAT_CASTING))
         return;
@@ -317,6 +328,6 @@ void VehicleAI::CheckConditions(const uint32 diff)
                     }
                 }
         }
-        m_ConditionsTimer = VEHICLE_CONDITION_CHECK_TIME;
+       m_ConditionsTimer = VEHICLE_CONDITION_CHECK_TIME;
     } else m_ConditionsTimer -= diff;
 }

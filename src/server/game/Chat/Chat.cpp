@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -63,6 +63,7 @@ ChatCommand * ChatHandler::getCommandTable()
     static ChatCommand banCommandTable[] =
     {
         { "account",        SEC_ADMINISTRATOR,  true,  OldHandler<&ChatHandler::HandleBanAccountCommand>,           "", NULL },
+        { "character",      SEC_ADMINISTRATOR,  true,  OldHandler<&ChatHandler::HandleBanCharacterCommand>,         "", NULL },
         { "playeraccount",  SEC_ADMINISTRATOR,  true,  OldHandler<&ChatHandler::HandleBanAccountByCharCommand>,     "", NULL },
         { "ip",             SEC_ADMINISTRATOR,  true,  OldHandler<&ChatHandler::HandleBanIPCommand>,                "", NULL },
         { NULL,             0,                  false, NULL,                                                        "", NULL }
@@ -282,6 +283,7 @@ ChatCommand * ChatHandler::getCommandTable()
     static ChatCommand unbanCommandTable[] =
     {
         { "account",        SEC_ADMINISTRATOR,  true,  OldHandler<&ChatHandler::HandleUnBanAccountCommand>,       "", NULL },
+        { "character",      SEC_ADMINISTRATOR,  true,  OldHandler<&ChatHandler::HandleUnBanCharacterCommand>,     "", NULL },
         { "playeraccount",  SEC_ADMINISTRATOR,  true,  OldHandler<&ChatHandler::HandleUnBanAccountByCharCommand>, "", NULL },
         { "ip",             SEC_ADMINISTRATOR,  true,  OldHandler<&ChatHandler::HandleUnBanIPCommand>,            "", NULL },
         { NULL,             0,                  false, NULL,                                                      "", NULL }
@@ -456,7 +458,7 @@ ChatCommand * ChatHandler::getCommandTable()
 
 std::string ChatHandler::PGetParseString(int32 entry, ...) const
 {
-    const char *format = GetTrinityString(entry);
+    const char* format = GetTrinityString(entry);
     char str[1024];
     va_list ap;
     va_start(ap, entry);
@@ -465,7 +467,7 @@ std::string ChatHandler::PGetParseString(int32 entry, ...) const
     return std::string(str);
 }
 
-const char *ChatHandler::GetTrinityString(int32 entry) const
+const char* ChatHandler::GetTrinityString(int32 entry) const
 {
     return m_session->GetTrinityString(entry);
 }
@@ -551,7 +553,7 @@ bool ChatHandler::hasStringAbbr(const char* name, const char* part)
     return true;
 }
 
-void ChatHandler::SendSysMessage(const char *str)
+void ChatHandler::SendSysMessage(const char* str)
 {
     WorldPacket data;
 
@@ -568,7 +570,7 @@ void ChatHandler::SendSysMessage(const char *str)
     free(buf);
 }
 
-void ChatHandler::SendGlobalSysMessage(const char *str)
+void ChatHandler::SendGlobalSysMessage(const char* str)
 {
     // Chat output
     WorldPacket data;
@@ -586,7 +588,7 @@ void ChatHandler::SendGlobalSysMessage(const char *str)
     free(buf);
 }
 
-void ChatHandler::SendGlobalGMSysMessage(const char *str)
+void ChatHandler::SendGlobalGMSysMessage(const char* str)
 {
     // Chat output
     WorldPacket data;
@@ -610,7 +612,7 @@ void ChatHandler::SendSysMessage(int32 entry)
 
 void ChatHandler::PSendSysMessage(int32 entry, ...)
 {
-    const char *format = GetTrinityString(entry);
+    const char* format = GetTrinityString(entry);
     va_list ap;
     char str [2048];
     va_start(ap, entry);
@@ -619,7 +621,7 @@ void ChatHandler::PSendSysMessage(int32 entry, ...)
     SendSysMessage(str);
 }
 
-void ChatHandler::PSendSysMessage(const char *format, ...)
+void ChatHandler::PSendSysMessage(const char* format, ...)
 {
     va_list ap;
     char str [2048];
@@ -970,7 +972,7 @@ bool ChatHandler::ShowHelpForCommand(ChatCommand *table, const char* cmd)
 }
 
 //Note: target_guid used only in CHAT_MSG_WHISPER_INFORM mode (in this case channelName ignored)
-void ChatHandler::FillMessageData(WorldPacket *data, WorldSession* session, uint8 type, uint32 language, const char *channelName, uint64 target_guid, const char *message, Unit* speaker)
+void ChatHandler::FillMessageData(WorldPacket *data, WorldSession* session, uint8 type, uint32 language, const char* channelName, uint64 target_guid, const char* message, Unit* speaker)
 {
     uint32 messageLength = (message ? strlen(message) : 0) + 1;
 
@@ -1514,23 +1516,16 @@ LocaleConstant ChatHandler::GetSessionDbcLocale() const
     return m_session->GetSessionDbcLocale();
 }
 
-int ChatHandler::GetSessionDbLocaleIndex() const
-{
-    return m_session->GetSessionDbLocaleIndex();
-}
+int ChatHandler::GetSessionDbLocaleIndex() const { return m_session->GetSessionDbLocaleIndex(); }
 
-const char *CliHandler::GetTrinityString(int32 entry) const
+const char* CliHandler::GetTrinityString(int32 entry) const
 {
     return sObjectMgr->GetTrinityStringForDBCLocale(entry);
 }
 
-bool CliHandler::isAvailable(ChatCommand const& cmd) const
-{
-    // skip non-console commands in console case
-    return cmd.AllowConsole;
-}
+bool CliHandler::isAvailable(ChatCommand const& cmd) const { return cmd.AllowConsole; }
 
-void CliHandler::SendSysMessage(const char *str)
+void CliHandler::SendSysMessage(const char* str)
 {
     m_print(m_callbackArg, str);
     m_print(m_callbackArg, "\r\n");
@@ -1541,7 +1536,7 @@ std::string CliHandler::GetNameLink() const
     return GetTrinityString(LANG_CONSOLE_COMMAND);
 }
 
-bool CliHandler::needReportToTarget(Player* /*chr*/) const
+bool CliHandler::needReportToTarget(Player* /*pPlayer*/) const
 {
     return true;
 }
@@ -1574,9 +1569,7 @@ bool ChatHandler::GetPlayerGroupAndGUIDByName(const char* cname, Player* &plr, G
         group = plr->GetGroup();
         if(!guid || !offline)
             guid = plr->GetGUID();
-    }
-    else
-    {
+    } else {
         if(getSelectedPlayer())
             plr = getSelectedPlayer();
         else

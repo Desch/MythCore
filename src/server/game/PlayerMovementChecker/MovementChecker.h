@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Copyright (C) 2012 SymphonyArt <http://symphonyart.com/>
  *
@@ -33,16 +33,16 @@ public:
         _lastYCoord     = 0.0f;
         _lastZCoord     = 0.0f;
         _lastMovementZCoord = 0.0f;
-        _mapZ       = 0.0f;
-        _floorZ     = 0.0f;
-        _distance2D = 0.0f;
-        _distance3D = 0.0f;
-        _alreadyJumped = false;
-        _currSpeed  = 0.0f;
-        _lastSpeed  = 0.0f;
-        _moverSize  = 0;
-        _speedChanged = false;
-        _lastFallTime = 0;
+        _mapZ           = 0.0f;
+        _floorZ         = 0.0f;
+        _distance2D     = 0.0f;
+        _distance3D     = 0.0f;
+        _alreadyJumped  = false;
+        _currSpeed      = 0.0f;
+        _lastSpeed      = 0.0f;
+        _moverSize      = 0;
+        _speedChanged   = false;
+        _lastFallTime   = 0;
         _hasFlyingFlags = false;
         _justWasInAir   = false;
         _justCharged    = false;
@@ -88,16 +88,9 @@ private:
         _mapZ, _floorZ, _distance2D, _distance3D, _currSpeed, _lastSpeed,
         _moverHeight;
 
-    bool _alreadyJumped;
-    bool _speedChanged;
-    bool _hasFlyingFlags;
-    bool _justWasInAir;
-    bool _justCharged;
-    bool _inAirCheck;
-    bool _isAboveFloor;
-    bool _justTurn;
-    bool _isInWater;
-    bool _justWasInWater;
+    bool _alreadyJumped, _speedChanged, _hasFlyingFlags, _justWasInAir,
+        _justCharged, _inAirCheck, _isAboveFloor, _justTurn, _isInWater,
+        _justWasInWater;
 
     bool isFlyingOk();
     bool isPlaneOk();

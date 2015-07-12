@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -48,6 +48,7 @@ public:
     float GetFollowAngle() const { return m_followAngle; }
     void SetFollowAngle(float angle) { m_followAngle = angle; }
     bool IsPetGhoul() const {return GetEntry() == 26125;} // Ghoul may be guardian or pet
+    bool IsPetGargoyle() const {return GetEntry() == 27829;}
     bool IsGuardianPet() const;
 protected:
     Unit* const m_owner;

@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -322,6 +322,40 @@ class boss_lady_deathwhisper : public CreatureScript
                             }
                             else
                                 owner->KilledMonsterCredit(NPC_DARNAVAN_CREDIT, 0);
+                        }
+                    }
+                }
+
+                if(killer->GetTypeId() == TYPEID_PLAYER)
+                {
+
+                    // Custom hack fix for Full House (10 player) Achievement http://www.wowhead.com/achievement=4535
+                    if(killer->ToPlayer()->GetGroup())
+                    {
+                        Group* group = killer->ToPlayer()->GetGroup();
+                        for (GroupReference* itr = group->GetFirstMember(); itr != NULL; itr = itr->next())
+                        {
+                            Player* pl = itr->getSource();
+
+                            if (!pl || !pl->GetSession())
+                                continue;
+
+                            uint32 achiev = 0;
+                            switch(GetDifficulty())
+                            {
+                                case RAID_DIFFICULTY_10MAN_NORMAL:
+                                    achiev = 4535;
+                                    break;
+                                case RAID_DIFFICULTY_25MAN_NORMAL:
+                                    achiev = 4611;
+                                    break;
+                                default:
+                                    break;
+                            }
+
+                            if(AchievementEntry const* pAchievment = GetAchievementStore()->LookupEntry(achiev))
+                                pl->CompletedAchievement(pAchievment);            
+
                         }
                     }
                 }
@@ -760,7 +794,8 @@ class npc_cult_adherent : public CreatureScript
                             break;
                         case EVENT_ADHERENT_CURSE_OF_TORPOR:
                             if(Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 1))
-                                DoCast(target, SPELL_CURSE_OF_TORPOR);
+                                if(!target->HasAura(SPELL_CURSE_OF_TORPOR))
+                                    DoCast(target, SPELL_CURSE_OF_TORPOR);
                             Events.ScheduleEvent(EVENT_ADHERENT_CURSE_OF_TORPOR, urand(9000, 13000));
                             break;
                         case EVENT_ADHERENT_SHORUD_OF_THE_OCCULT:

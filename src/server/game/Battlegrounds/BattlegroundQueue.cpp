@@ -1,19 +1,14 @@
 /*
- * Copyright (C) 2008-2011 TrinityCore <http://www.trinitycore.org/>
- * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
+ * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the
- * Free Software Foundation; either version 2 of the License, or (at your
- * option) any later version.
+ * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
- * more details.
+ * Copyright (C) 2012 SymphonyArt <http://symphonyart.com/>
  *
- * You should have received a copy of the GNU General Public License along
- * with this program. If not, see <http://www.gnu.org/licenses/>.
+ * Myth Project's source is based on the Trinity Project source, you can find the
+ * link to that easily in Trinity Copyrights. Myth Project is a private community.
+ * To get access, you either have to donate or pass a developer test.
+ * You may not share Myth Project's sources! For personal use only.
  */
 
 #include "BattlegroundQueue.h"
@@ -723,12 +718,17 @@ bool BattlegroundQueue::CheckSkirmishForSameFaction(BattlegroundBracketId bracke
     return true;
 }
 
+void BattlegroundQueue::UpdateEvents(uint32 diff)
+{
+    m_events.Update(diff);
+}
+
 /*
 this method is called when group is inserted, or player / group is removed from BG Queue - there is only one player's status changed, so we don't use while(true) cycles to invite whole queue
 it must be called after fully adding the members of a group to ensure group joining
 should be called from Battleground::RemovePlayer function in some cases
 */
-void BattlegroundQueue::Update(BattlegroundTypeId bgTypeId, BattlegroundBracketId bracket_id, uint8 arenaType, bool isRated, uint32 arenaRating)
+void BattlegroundQueue::BattlegroundQueueUpdate(BattlegroundTypeId bgTypeId, BattlegroundBracketId bracket_id, uint8 arenaType, bool isRated, uint32 arenaRating)
 {
     //if no players in queue - do nothing
     if(m_QueuedGroups[bracket_id][BG_QUEUE_PREMADE_ALLIANCE].empty() &&

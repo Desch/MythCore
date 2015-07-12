@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -1377,6 +1377,10 @@ bool Creature::canStartAttack(Unit const* who, bool force) const
     if(HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PASSIVE))
         return false;
 
+    // Do not attack non-combat pets
+    if(who->GetTypeId() == TYPEID_UNIT && who->GetCreatureType() == CREATURE_TYPE_NON_COMBAT_PET)
+        return false;
+
     if(!canFly() && (GetDistanceZ(who) > CREATURE_Z_ATTACK_RANGE + m_CombatDistance))
         //|| who->IsControlledByPlayer() && who->IsFlying()))
         // we cannot check flying for other creatures, too much map/vmap calculation
@@ -2139,6 +2143,39 @@ bool Creature::HasSpellCooldown(uint32 spell_id) const
 {
     CreatureSpellCooldowns::const_iterator itr = m_CreatureSpellCooldowns.find(spell_id);
     return (itr != m_CreatureSpellCooldowns.end() && itr->second > time(NULL)) || HasCategoryCooldown(spell_id);
+}
+
+void Creature::ProhibitSpellSchool(SpellSchoolMask idSchoolMask, uint32 unTimeMs) 
+{
+    time_t curTime = time(NULL);
+    for(uint8 i = 0; i < CREATURE_MAX_SPELLS; ++i)
+    {
+        if (m_spells[i] == 0)
+            continue;
+        
+        uint32 unSpellId = m_spells[i];
+        SpellEntry const *spellInfo = sSpellStore.LookupEntry(unSpellId);
+        if (!spellInfo)
+        {
+            ASSERT(spellInfo);
+            continue;
+        }
+
+        // Not send cooldown for this spells
+        if (spellInfo->Attributes & SPELL_ATTR0_DISABLED_WHILE_ACTIVE)
+            continue;
+
+        if (spellInfo->PreventionType != SPELL_PREVENTION_TYPE_SILENCE)
+            continue;
+
+        if ((idSchoolMask & GetSpellSchoolMask(spellInfo)) && GetCreatureSpellCooldownDelay(unSpellId) < unTimeMs)
+        {
+            _AddCreatureSpellCooldown(unSpellId, curTime + unTimeMs/IN_MILLISECONDS);
+            if(UnitAI *ai = GetAI()) 
+                ai->SpellInterrupted(unSpellId, unTimeMs);
+        }
+        
+    }
 }
 
 bool Creature::HasSpell(uint32 spellID) const

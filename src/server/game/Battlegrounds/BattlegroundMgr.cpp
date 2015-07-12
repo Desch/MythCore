@@ -1,19 +1,14 @@
 /*
- * Copyright (C) 2008-2011 TrinityCore <http://www.trinitycore.org/>
- * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
+ * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the
- * Free Software Foundation; either version 2 of the License, or (at your
- * option) any later version.
+ * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
- * more details.
+ * Copyright (C) 2012 SymphonyArt <http://symphonyart.com/>
  *
- * You should have received a copy of the GNU General Public License along
- * with this program. If not, see <http://www.gnu.org/licenses/>.
+ * Myth Project's source is based on the Trinity Project source, you can find the
+ * link to that easily in Trinity Copyrights. Myth Project is a private community.
+ * To get access, you either have to donate or pass a developer test.
+ * You may not share Myth Project's sources! For personal use only.
  */
 
 #include "Common.h"
@@ -119,6 +114,10 @@ void BattlegroundMgr::Update(uint32 diff)
         }
     }
 
+    // update events timer
+    for(int qtype = BATTLEGROUND_QUEUE_NONE; qtype < MAX_BATTLEGROUND_QUEUE_TYPES; ++qtype)
+        m_BattlegroundQueues[qtype].UpdateEvents(diff);
+
     // update scheduled queues
     if(!m_QueueUpdateScheduler.empty())
     {
@@ -137,7 +136,7 @@ void BattlegroundMgr::Update(uint32 diff)
             BattlegroundQueueTypeId bgQueueTypeId = BattlegroundQueueTypeId(scheduled[i] >> 16 & 255);
             BattlegroundTypeId bgTypeId = BattlegroundTypeId((scheduled[i] >> 8) & 255);
             BattlegroundBracketId bracket_id = BattlegroundBracketId(scheduled[i] & 255);
-            m_BattlegroundQueues[bgQueueTypeId].Update(bgTypeId, bracket_id, arenaType, arenaMMRating > 0, arenaMMRating);
+            m_BattlegroundQueues[bgQueueTypeId].BattlegroundQueueUpdate(bgTypeId, bracket_id, arenaType, arenaMMRating > 0, arenaMMRating);
         }
     }
 
@@ -151,7 +150,7 @@ void BattlegroundMgr::Update(uint32 diff)
             sLog->outDebug(LOG_FILTER_BATTLEGROUND, "BattlegroundMgr: UPDATING ARENA QUEUES");
             for(int qtype = BATTLEGROUND_QUEUE_2v2; qtype <= BATTLEGROUND_QUEUE_5v5; ++qtype)
                 for(int bracket = BG_BRACKET_ID_FIRST; bracket < MAX_BATTLEGROUND_BRACKETS; ++bracket)
-                    m_BattlegroundQueues[qtype].Update(
+                    m_BattlegroundQueues[qtype].BattlegroundQueueUpdate(
                         BATTLEGROUND_AA, BattlegroundBracketId(bracket),
                         BattlegroundMgr::BGArenaType(BattlegroundQueueTypeId(qtype)), true, 0);
 

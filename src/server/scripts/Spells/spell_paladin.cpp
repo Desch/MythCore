@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -368,8 +368,12 @@ public:
         void HandleEffectRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
         {
             if(Unit* pCaster = GetCaster())
+            {
                 if(pCaster->ToPlayer())
                     pCaster->ToPlayer()->AddSpellCooldown(PALADIN_SPELL_SACRED_SHIELD_EFFECT, 0, time(NULL) + 6);
+                else if(pCaster->ToCreature())
+                    pCaster->ToCreature()->_AddCreatureSpellCooldown(PALADIN_SPELL_SACRED_SHIELD_EFFECT, time(NULL) + 6);
+            }
         }
 
         void Register()

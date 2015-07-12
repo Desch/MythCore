@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -1827,6 +1827,7 @@ void Spell::EffectTriggerSpell(SpellEffIndex effIndex)
         {
             unitTarget->RemoveMovementImpairingAuras();
             unitTarget->RemoveAurasByType(SPELL_AURA_MOD_STALKED);
+            unitTarget->CombatStop();
 
             // If this spell is given to an NPC, it must handle the rest using its own AI
             if(unitTarget->GetTypeId() != TYPEID_PLAYER)
@@ -3169,6 +3170,9 @@ void Spell::EffectSummonType(SpellEffIndex effIndex)
                 case SUMMON_TYPE_VEHICLE2:
                     summon = m_caster->GetMap()->SummonCreature(entry, pos, properties, duration, m_originalCaster, m_spellInfo->Id);
                     break;
+                // Summon Lightwell and add MaxHealth Value
+                case SUMMON_TYPE_LIGHTWELL:
+                    damage = m_caster->CountPctFromMaxHealth(50);
                 case SUMMON_TYPE_TOTEM:
                 {
                     summon = m_caster->GetMap()->SummonCreature(entry, pos, properties, duration, m_originalCaster, m_spellInfo->Id);
@@ -4220,7 +4224,7 @@ void Spell::SpellDamageWeaponDmg(SpellEffIndex effIndex)
             // Blood-Caked Strike - Blood-Caked Blade
             if(m_spellInfo->SpellIconID == 1736)
             {
-                AddPctF(totalDamagePercentMod, (float)unitTarget->GetDiseasesCountOnTarget() * 12.5f);
+                AddPctF(totalDamagePercentMod, (float)unitTarget->GetDiseasesCountOnTarget() * 50.0f);
                 break;
             }
             // Heart Strike

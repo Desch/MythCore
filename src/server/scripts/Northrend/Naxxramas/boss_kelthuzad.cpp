@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -11,6 +11,8 @@
 
 #include "ScriptPCH.h"
 #include "naxxramas.h"
+#include "GroupReference.h"
+#include "Group.h"
 
 enum Yells
 {
@@ -292,7 +294,7 @@ public:
             DoScriptText(RAND(SAY_SLAY_1,SAY_SLAY_2), me);
         }
 
-        void JustDied(Unit* /*pKiller*/)
+        void JustDied(Unit* pKiller)
         {
             _JustDied();
             DoScriptText(SAY_DEATH, me);
@@ -304,6 +306,29 @@ public:
                     player->SetFloatValue(OBJECT_FIELD_SCALE_X, (*itr).second);
             }
             chained.clear();
+
+            // Custom hack fix for Just Can't Get Enough (10 player) Achievement http://www.wowhead.com/achievement=2184/just-cant-get-enough-10-player
+            if(pKiller->GetTypeId() == TYPEID_PLAYER)
+            {
+                if(pKiller->ToPlayer()->GetGroup())
+                {
+                    Group* group = pKiller->ToPlayer()->GetGroup();
+                    for (GroupReference* itr = group->GetFirstMember(); itr != NULL; itr = itr->next())
+                    {
+                        Player* pl = itr->getSource();
+
+                        if (!pl || !pl->GetSession())
+                            continue;
+
+                        uint32 achiev = 2184;
+
+                        if(AchievementEntry const* pAchievment = GetAchievementStore()->LookupEntry(achiev))
+                            pl->CompletedAchievement(pAchievment);            
+
+                    }
+                }
+            }
+
 
             if(instance && instance->GetData(DATA_PLAYER_DEATHS) == 0)
                 instance->DoCompleteAchievement(RAID_MODE(ACHIEVEMENT_THE_UNDYING_10,ACHIEVEMENT_THE_IMMORTAL_25));

@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Copyright (C) 2012 SymphonyArt <http://symphonyart.com/>
  *
@@ -34,16 +34,17 @@ void EventProcessor::Update(uint32 p_time)
     while(((i = m_events.begin()) != m_events.end()) && i->first <= m_time)
     {
         // get and remove event from queue
-        BasicEvent* Event = i->second;
+        BasicEvent* pBEvent = i->second;
         m_events.erase(i);
+        if(!pBEvent)
+            continue;
 
-        if(!Event->to_Abort)
-        {
-            if(Event->Execute(m_time, p_time))
-                delete Event;
+        if(!pBEvent->to_Abort) {
+            if(pBEvent->Execute(m_time, p_time))
+                delete pBEvent;
         } else {
-            Event->Abort(m_time);
-            delete Event;
+            pBEvent->Abort(m_time);
+            delete pBEvent;
         }
     }
 }

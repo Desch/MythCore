@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -10,6 +10,8 @@
  */
 
 #include "ScriptPCH.h"
+#include "GroupReference.h"
+#include "Group.h"
 #include "trial_of_the_crusader.h"
 
 enum Yells
@@ -797,6 +799,25 @@ public:
             {
                 if(pInstance)
                     pInstance->SetData(DATA_TRIBUTE_TO_IMMORTALITY_ELEGIBLE, 0);
+
+                // Custom hack fix for Upper Back Pain (25 player) Achievement http://www.wowhead.com/achievement=3813/upper-back-pain-25-player
+                if(pWho->ToPlayer()->GetGroup() && GetDifficulty() == RAID_DIFFICULTY_25MAN_NORMAL)
+                {
+                    Group* group = pWho->ToPlayer()->GetGroup();
+                    for (GroupReference* itr = group->GetFirstMember(); itr != NULL; itr = itr->next())
+                    {
+                        Player* pl = itr->getSource();
+
+                        if (!pl || !pl->GetSession())
+                            continue;
+
+                        uint32 achiev = 3813;
+
+                        if(AchievementEntry const* pAchievment = GetAchievementStore()->LookupEntry(achiev))
+                            pl->CompletedAchievement(pAchievment);            
+
+                    }
+                }
             }
         }
 

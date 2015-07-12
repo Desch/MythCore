@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -67,10 +67,16 @@ class boss_rajaxx : public CreatureScript
                 events.ScheduleEvent(EVENT_THUNDERCRASH, 12000);
             }
 
-            void JustDied(Unit* /*pKiller*/)
+            void JustDied(Unit* pKiller)
             {
-                //SAY_DEATH
+                if(!pKiller)
+                    return;
                 _JustDied();
+                if(Player* pPlayer = pKiller->ToPlayer())
+                {
+                    if(Creature* pCreature15471 = pPlayer->FindNearestCreature(15471, 100, true))
+                        pCreature15471->SetFlag(UNIT_FIELD_FLAGS, UNIT_NPC_FLAG_VENDOR);
+                }
             }
 
             void EnterCombat(Unit* /*pVictim*/)

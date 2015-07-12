@@ -1,19 +1,14 @@
 /*
- * Copyright (C) 2008-2011 TrinityCore <http://www.trinitycore.org/>
- * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
+ * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the
- * Free Software Foundation; either version 2 of the License, or (at your
- * option) any later version.
+ * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
- * more details.
+ * Copyright (C) 2012 SymphonyArt <http://symphonyart.com/>
  *
- * You should have received a copy of the GNU General Public License along
- * with this program. If not, see <http://www.gnu.org/licenses/>.
+ * Myth Project's source is based on the Trinity Project source, you can find the
+ * link to that easily in Trinity Copyrights. Myth Project is a private community.
+ * To get access, you either have to donate or pass a developer test.
+ * You may not share Myth Project's sources! For personal use only.
  */
 
 #ifndef __BATTLEGROUNDQUEUE_H
@@ -70,7 +65,8 @@ class BattlegroundQueue
         BattlegroundQueue();
         ~BattlegroundQueue();
 
-        void Update(BattlegroundTypeId bgTypeId, BattlegroundBracketId bracket_id, uint8 arenaType = 0, bool isRated = false, uint32 minRating = 0);
+        void BattlegroundQueueUpdate(BattlegroundTypeId bgTypeId, BattlegroundBracketId bracket_id, uint8 arenaType = 0, bool isRated = false, uint32 minRating = 0);
+        void UpdateEvents(uint32 diff);
 
         void FillPlayersToBG(Battleground* pBG, BattlegroundBracketId bracket_id);
         bool CheckPremadeMatch(BattlegroundBracketId bracket_id, uint32 MinPlayersPerTeam, uint32 MaxPlayersPerTeam);
@@ -122,6 +118,9 @@ class BattlegroundQueue
         uint32 m_WaitTimes[BG_TEAMS_COUNT][MAX_BATTLEGROUND_BRACKETS][COUNT_OF_PLAYERS_TO_AVERAGE_WAIT_TIME];
         uint32 m_WaitTimeLastPlayer[BG_TEAMS_COUNT][MAX_BATTLEGROUND_BRACKETS];
         uint32 m_SumOfWaitTimes[BG_TEAMS_COUNT][MAX_BATTLEGROUND_BRACKETS];
+
+        // Event handler
+        EventProcessor m_events;
 };
 
 /*

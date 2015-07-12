@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -12,6 +12,8 @@
 #include "ScriptPCH.h"
 #include "ScriptedEscortAI.h"
 #include "violet_hold.h"
+#include "GroupReference.h"
+#include "Group.h"
 
 #define GOSSIP_START_EVENT  "Get your people to safety, we'll keep the Blue Dragonflight's forces at bay."
 #define GOSSIP_ITEM_1       "Activate the crystals when we get in trouble, right"
@@ -262,6 +264,25 @@ public:
                 CAST_AI(npc_sinclari_vh::npc_sinclariAI, (pCreature->AI()))->uiPhase = 1;
                 if(InstanceScript* pInstance = pCreature->GetInstanceScript())
                     pInstance->SetData(DATA_MAIN_EVENT_PHASE,SPECIAL);
+
+                // Custom hack fix for Dehydration Achievement http://www.wowhead.com/achievement=2041/dehydration
+                if(pPlayer->GetGroup())
+                {
+                    Group* group = pPlayer->GetGroup();
+                    for (GroupReference* itr = group->GetFirstMember(); itr != NULL; itr = itr->next())
+                    {
+                        Player* pl = itr->getSource();
+
+                        if (!pl || !pl->GetSession())
+                            continue;
+
+                        uint32 achiev = 2041;
+
+                        if(AchievementEntry const* pAchievment = GetAchievementStore()->LookupEntry(achiev))
+                            pl->CompletedAchievement(pAchievment);            
+
+                    }
+                }
                 break;
             case GOSSIP_ACTION_INFO_DEF+2:
                 pPlayer->SEND_GOSSIP_MENU(13854, pCreature->GetGUID());

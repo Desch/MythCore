@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -217,13 +217,6 @@ int RASocket::check_password(const std::string& user, const std::string& pass)
 
 int RASocket::authenticate()
 {
-    if(send(std::string("Press Enter To Continue: ")) == -1)
-        return -1;
-
-    std::string temp;
-    if(recv_line(temp) == -1)
-        return -1;
-
     if(send(std::string("Username: ")) == -1)
         return -1;
 

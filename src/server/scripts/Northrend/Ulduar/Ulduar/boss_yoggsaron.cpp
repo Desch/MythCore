@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -732,44 +732,44 @@ public:
             return count;
         }
 
-        void ModifySanity(Player* target, int8 amount)
+        void ModifySanity(Player* pTarget, int8 amount)
         {
-            if(target && target->isAlive())
+            if(!me || !pTarget || !pTarget->isAlive())
+                return;
+
+            int newamount;
+            if(Aura* pAura = pTarget->GetAura(SPELL_SANITY, GetGUID()))
             {
-                int32 newamount;
-                if(Aura* aur = target->GetAura(SPELL_SANITY, GetGUID()))
-                {
-                    newamount = aur->GetStackAmount();
-                    if(newamount > 0)
-                        newamount += amount;
+                newamount = pAura->GetStackAmount();
+                if(newamount > 0)
+                    newamount += amount;
 
-                    if(newamount > 100)
-                        newamount = 100;
+                if(newamount > 100)
+                    newamount = 100;
 
-                    if(newamount <= 0)
-                        target->RemoveAurasDueToSpell(SPELL_SANITY);
-                    else
-                        aur->SetStackAmount(newamount);
-                }
+                if(newamount <= 0)
+                    pTarget->RemoveAurasDueToSpell(SPELL_SANITY);
+                else
+                    pAura->SetStackAmount(newamount);
             }
         }
 
-        void SpellHitTarget(Unit* target, const SpellEntry* spell)
+        void SpellHitTarget(Unit* pTarget, const SpellEntry* pSpell)
         {
-            if(target && target->ToPlayer())
+            if(!pTarget || !pSpell || !pTarget->ToPlayer())
+                return;
+
+            switch(pSpell->Id)
             {
-                switch(spell->Id)
-                {
                 case SPELL_PSYCHOSIS:
-                    ModifySanity(target->ToPlayer(),-12);
+                    ModifySanity(pTarget->ToPlayer(),-12);
                     break;
                 case SPELL_BRAIN_LINK_DAMAGE:
-                    ModifySanity(target->ToPlayer(),-2);
+                    ModifySanity(pTarget->ToPlayer(),-2);
                     break;
                 case SPELL_MALADY_OF_MIND:
-                    ModifySanity(target->ToPlayer(),-3);
+                    ModifySanity(pTarget->ToPlayer(),-3);
                     break;
-                }
             }
         }
 

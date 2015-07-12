@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -307,7 +307,7 @@ void PlayerMenu::SendQuestGiverQuestDetails(Quest const *quest, uint64 npcGUID, 
 
     WorldPacket data(SMSG_QUESTGIVER_QUEST_DETAILS, 100);   // guess size
     data << uint64(npcGUID);
-    data << uint64(0);                                      // wotlk, something todo with quest sharing?
+    data << uint64(_session->GetPlayer()->GetDivider());
     data << uint32(quest->GetQuestId());
     data << questTitle;
     data << questDetails;

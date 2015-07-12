@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -153,14 +153,14 @@ void Log::Initialize()
         }
     }
 
-    charLogfile = openLogFile("CharLogFile", "CharLogTimestamp", "a");
-    dberLogfile = openLogFile("DBErrorLogFile", NULL, "a");
-    raLogfile = openLogFile("RaLogFile", NULL, "a");
-    chatLogfile = openLogFile("ChatLogFile", "ChatLogTimestamp", "a");
-    arenaLogFile = openLogFile("ArenaLogFile", NULL, "a");
-    sqlLogFile = openLogFile("SQLDriverLogFile", NULL, "a");
-    sqlDevLogFile = openLogFile("SQLDeveloperLogFile", NULL, "a");
-    wardenLogFile = openLogFile("WardenLogFile", NULL, "a");
+    charLogfile     = openLogFile("CharLogFile", "CharLogTimestamp", "a");
+    dberLogfile     = openLogFile("DBErrorLogFile", NULL, "a");
+    raLogfile       = openLogFile("RASOAP", NULL, "a");
+    chatLogfile     = openLogFile("ChatLogFile", "ChatLogTimestamp", "a");
+    arenaLogFile    = openLogFile("ArenaLogFile", NULL, "a");
+    sqlLogFile      = openLogFile("SQLDriverLogFile", NULL, "a");
+    sqlDevLogFile   = openLogFile("SQLDeveloperLogFile", NULL, "a");
+    wardenLogFile   = openLogFile("WardenLogFile", NULL, "a");
 
     // Main log file settings
     m_logLevel     = sConfig->GetIntDefault("LogLevel", LOGL_NORMAL);

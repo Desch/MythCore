@@ -263,3 +263,4 @@ ALTER TABLE `account`
     ADD COLUMN `os` VARCHAR(4) DEFAULT '' NOT NULL AFTER `locale`;
 
 DROP TABLE IF EXISTS `warden_data_result`;
+ALTER TABLE `uptime` DROP COLUMN `startstring`;

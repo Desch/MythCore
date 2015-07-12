@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -102,7 +102,6 @@ enum WorldBoolConfigs
     CONFIG_WEATHER,
     CONFIG_ALWAYS_MAX_SKILL_FOR_LEVEL,
     CONFIG_QUEST_IGNORE_RAID,
-    CONFIG_DETECT_POS_COLLISION,
     CONFIG_RESTRICTED_LFG_CHANNEL,
     CONFIG_SILENTLY_GM_JOIN_TO_CHANNEL,
     CONFIG_TALENTS_INSPECTING,
@@ -123,8 +122,7 @@ enum WorldBoolConfigs
     CONFIG_ARENA_SEASON_IN_PROGRESS,
     CONFIG_ARENA_LOG_EXTENDED_INFO,
     CONFIG_OFFHAND_CHECK_AT_SPELL_UNLEARN,
-    CONFIG_VMAP_INDOOR_CHECK,
-    CONFIG_PET_LOS,
+    CONFIG_VMAP_ENABLED,
     CONFIG_START_ALL_SPELLS,
     CONFIG_START_ALL_EXPLORED,
     CONFIG_START_ALL_REP,
@@ -149,7 +147,7 @@ enum WorldBoolConfigs
     CONFIG_BOOL_WARDEN_KICK,
     CONFIG_OUTDOORPVP_WINTERGRASP_ENABLED,
     CONFIG_OUTDOORPVP_WINTERGRASP_CUSTOM_HONOR,
-    CONFIG_PATHFINDING_ENABLED,
+    CONFIG_MMAPS_ENABLED,
     CONFIG_MOVEMENT_CHECKS_SPEED,
     CONFIG_MOVEMENT_CHECKS_FLYING,
     CONFIG_MOVEMENT_CHECKS_PLANE,

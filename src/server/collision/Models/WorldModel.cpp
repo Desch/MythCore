@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Copyright (C) 2012 SymphonyArt <http://symphonyart.com/>
  *
@@ -68,20 +68,20 @@ namespace VMAP
 
     class TriBoundFunc
     {
-    public:
-        TriBoundFunc(std::vector<Vector3> &vert): vertices(vert.begin()) { }
-        void operator()(const MeshTriangle &tri, G3D::AABox &out) const
-        {
-            G3D::Vector3 lo = vertices[tri.idx0];
-            G3D::Vector3 hi = lo;
+        public:
+            TriBoundFunc(std::vector<Vector3> &vert): vertices(vert.begin()) { }
+            void operator()(const MeshTriangle &tri, G3D::AABox &out) const
+            {
+                G3D::Vector3 lo = vertices[tri.idx0];
+                G3D::Vector3 hi = lo;
 
-            lo = (lo.min(vertices[tri.idx1])).min(vertices[tri.idx2]);
-            hi = (hi.max(vertices[tri.idx1])).max(vertices[tri.idx2]);
+                lo = (lo.min(vertices[tri.idx1])).min(vertices[tri.idx2]);
+                hi = (hi.max(vertices[tri.idx1])).max(vertices[tri.idx2]);
 
-            out = G3D::AABox(lo, hi);
-        }
-    protected:
-        const std::vector<Vector3>::const_iterator vertices;
+                out = G3D::AABox(lo, hi);
+            }
+        protected:
+            const std::vector<Vector3>::const_iterator vertices;
     };
 
     WmoLiquid::WmoLiquid(uint32 width, uint32 height, const Vector3 &corner, uint32 type):
@@ -218,7 +218,7 @@ namespace VMAP
             result = false;
         if(result && fread(&pWLiquid->iType, sizeof(uint32), 1, rf) != 1)
             result = false;
-        uint32 size = (pWLiquid->iTilesX + 1)*(pWLiquid->iTilesY + 1);
+        uint32 size = (pWLiquid->iTilesX + 1) * (pWLiquid->iTilesY + 1);
         pWLiquid->iHeight = new float[size];
         if(result && fread(pWLiquid->iHeight, sizeof(float), size, rf) != size)
             result = false;
@@ -228,6 +228,7 @@ namespace VMAP
             result = false;
         if(!result)
             delete pWLiquid;
+
         out = pWLiquid;
         return result;
     }
@@ -253,16 +254,16 @@ namespace VMAP
         bool result = true;
         uint32 chunkSize, count;
 
-        if(result && fwrite(&iBound, sizeof(G3D::AABox), 1, wf) != 1) result = false;
-        if(result && fwrite(&iMogpFlags, sizeof(uint32), 1, wf) != 1) result = false;
-        if(result && fwrite(&iGroupWMOID, sizeof(uint32), 1, wf) != 1) result = false;
+        if(result && fwrite(&iBound, sizeof(G3D::AABox), 1, wf) != 1)   result = false;
+        if(result && fwrite(&iMogpFlags, sizeof(uint32), 1, wf) != 1)   result = false;
+        if(result && fwrite(&iGroupWMOID, sizeof(uint32), 1, wf) != 1)  result = false;
 
         // write vertices
         if(result && fwrite("VERT", 1, 4, wf) != 4) result = false;
         count = vertices.size();
         chunkSize = sizeof(uint32)+ sizeof(Vector3)*count;
-        if(result && fwrite(&chunkSize, sizeof(uint32), 1, wf) != 1) result = false;
-        if(result && fwrite(&count, sizeof(uint32), 1, wf) != 1) result = false;
+        if(result && fwrite(&chunkSize, sizeof(uint32), 1, wf) != 1)    result = false;
+        if(result && fwrite(&count, sizeof(uint32), 1, wf) != 1)        result = false;
         if(!count) // models without (collision) geometry end here, unsure if they are useful
             return result;
         if(result && fwrite(&vertices[0], sizeof(Vector3), count, wf) != count) result = false;
@@ -271,8 +272,8 @@ namespace VMAP
         if(result && fwrite("TRIM", 1, 4, wf) != 4) result = false;
         count = triangles.size();
         chunkSize = sizeof(uint32)+ sizeof(MeshTriangle)*count;
-        if(result && fwrite(&chunkSize, sizeof(uint32), 1, wf) != 1) result = false;
-        if(result && fwrite(&count, sizeof(uint32), 1, wf) != 1) result = false;
+        if(result && fwrite(&chunkSize, sizeof(uint32), 1, wf) != 1)    result = false;
+        if(result && fwrite(&count, sizeof(uint32), 1, wf) != 1)        result = false;
         if(result && fwrite(&triangles[0], sizeof(MeshTriangle), count, wf) != count) result = false;
 
         // write mesh BIH

@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Copyright (C) 2012 SymphonyArt <http://symphonyart.com/>
  *
@@ -46,9 +46,6 @@ namespace ACE_Based
             {
                 lock();
 
-                //ASSERT(!this->_canceled);
-                // throw Cancellation_Exception();
-
                 _queue.push_back(item);
 
                 unlock();
@@ -63,8 +60,6 @@ namespace ACE_Based
                 if(_queue.empty())
                     return false;
 
-                //ASSERT(!_queue.empty() || !this->_canceled);
-                // throw Cancellation_Exception();
                 result = _queue.front();
                 _queue.pop_front();
 

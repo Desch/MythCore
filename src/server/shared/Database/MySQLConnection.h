@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Copyright (C) 2012 SymphonyArt <http://symphonyart.com/>
  *
@@ -82,7 +82,6 @@ public:
     virtual bool Open();
     void Close();
 
-public:
     bool Execute(const char* sql);
     bool Execute(PreparedStatement* stmt);
     ResultSet* Query(const char* sql);
@@ -129,8 +128,6 @@ protected:
 
 private:
     bool _HandleMySQLErrno(uint32 errNo);
-
-private:
     ACE_Activation_Queue* m_queue;                      //! Queue shared with other asynchronous connections.
     DatabaseWorker*       m_worker;                     //! Core worker task.
     MYSQL *               m_Mysql;                      //! MySQL Handle.

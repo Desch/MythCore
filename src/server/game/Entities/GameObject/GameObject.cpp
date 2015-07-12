@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -422,7 +422,7 @@ void GameObject::Update(uint32 diff)
                     bool IsBattlegroundTrap = false;
                     //FIXME: this is activation radius (in different casting radius that must be selected from spell data)
                     //TODO: move activated state code (cast itself) to GO_ACTIVATED, in this place only check activating and set state
-                    float radius = (float)(goInfo->trap.radius)*1.5f; // TODO rename radius to diameter (goInfo->trap.radius) should be (goInfo->trap.diameter)
+                    float radius = (float)(goInfo->trap.radius)/1.5f; // TODO rename radius to diameter (goInfo->trap.radius) should be (goInfo->trap.diameter)
                     if(!radius)
                     {
                         if(goInfo->trap.cooldown != 3)            // cast in other case (at some triggering/linked go/etc explicit call)

@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Copyright (C) 2012 SymphonyArt <http://symphonyart.com/>
  *
@@ -503,7 +503,7 @@ class instance_ulduar : public InstanceMapScript
                         break;
                     case BOSS_VEZAX:
                         if(state == DONE)
-                            HandleGameObject(VezaxDoorGUID, true);
+                            //HandleGameObject(VezaxDoorGUID, true);
                         break;
                     case BOSS_YOGGSARON:
                         break;
@@ -514,10 +514,6 @@ class instance_ulduar : public InstanceMapScript
                                 gameObject->SetRespawnTime(gameObject->GetRespawnDelay());
                             HandleGameObject(KologarnBridgeGUID, false);
                         }
-                        if(state == IN_PROGRESS)
-                            HandleGameObject(KologarnDoorGUID, false);
-                        else
-                            HandleGameObject(KologarnDoorGUID, true);
                         break;
                     case BOSS_HODIR:
                         if(state == DONE)

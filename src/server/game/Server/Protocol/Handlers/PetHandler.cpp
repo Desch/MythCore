@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -149,8 +149,6 @@ void WorldSession::HandlePetActionHelper(Unit* pPet, uint64 guid1, uint16 spelli
             switch(spellid)
             {
                 case COMMAND_STAY:                          //flat=1792  //STAY
-                    //pPet->AttackStop();
-                    //pPet->InterruptNonMeleeSpells(false);
                     pPet->StopMoving();
                     pPet->GetMotionMaster()->Clear(false);
                     pPet->GetMotionMaster()->MoveIdle();
@@ -193,7 +191,7 @@ void WorldSession::HandlePetActionHelper(Unit* pPet, uint64 guid1, uint16 spelli
                             return;
 
                     // Not let attack through obstructions
-                    if(sWorld->getBoolConfig(CONFIG_PET_LOS))
+                    if(sWorld->getBoolConfig(CONFIG_VMAP_ENABLED))
                     {
                         if(!pPet->IsWithinLOSInMap(TargetUnit))
                             return;
@@ -706,7 +704,7 @@ void WorldSession::HandlePetSpellAutocastOpcode(WorldPacket& recvPacket)
     }
 
     // do not add not learned spells/ passive spells
-    if(!pet->HasSpell(spellid) || IsAutocastableSpell(spellid))
+    if(!pet->HasSpell(spellid) || !IsAutocastableSpell(spellid))
         return;
 
     CharmInfo *charmInfo = pet->GetCharmInfo();

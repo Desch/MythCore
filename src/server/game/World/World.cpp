@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -393,7 +393,7 @@ void World::LoadConfigSettings(bool reload)
     }
 
     ///- Read the player limit and the Message of the day from the config file
-    SetPlayerAmountLimit(sConfig->GetIntDefault("PlayerLimit", 2000));
+    SetPlayerAmountLimit(sConfig->GetIntDefault("PlayerLimit", 2500));
     SetMotd(sConfig->GetStringDefault("Motd", "Welcome to a Myth Core Server."));
 
     ///- Read ticket system setting from the config file
@@ -912,10 +912,8 @@ void World::LoadConfigSettings(bool reload)
         m_int_configs[CONFIG_RANDOM_BG_RESET_HOUR] = 6;
     }
 
-    m_bool_configs[CONFIG_DETECT_POS_COLLISION] = sConfig->GetBoolDefault("DetectPosCollision", true);
-
-    m_bool_configs[CONFIG_RESTRICTED_LFG_CHANNEL]      = sConfig->GetBoolDefault("Channel.RestrictedLfg", true);
-    m_bool_configs[CONFIG_SILENTLY_GM_JOIN_TO_CHANNEL] = sConfig->GetBoolDefault("Channel.SilentlyGMJoin", false);
+    m_bool_configs[CONFIG_RESTRICTED_LFG_CHANNEL]       = sConfig->GetBoolDefault("Channel.RestrictedLfg", true);
+    m_bool_configs[CONFIG_SILENTLY_GM_JOIN_TO_CHANNEL]  = sConfig->GetBoolDefault("Channel.SilentlyGMJoin", false);
 
     m_bool_configs[CONFIG_TALENTS_INSPECTING]           = sConfig->GetBoolDefault("TalentsInspecting", true);
     m_bool_configs[CONFIG_CHAT_FAKE_MESSAGE_PREVENTING] = sConfig->GetBoolDefault("ChatFakeMessagePreventing", false);
@@ -1036,22 +1034,15 @@ void World::LoadConfigSettings(bool reload)
             sLog->outError("DataDir option can't be changed at worldserver.conf reload, using current value (%s).", m_dataPath.c_str());
     } else m_dataPath = dataPath;
 
-    m_bool_configs[CONFIG_VMAP_INDOOR_CHECK] = sConfig->GetBoolDefault("vmap.enableIndoorCheck", false);
+    m_bool_configs[CONFIG_VMAP_ENABLED] = sConfig->GetBoolDefault("VMaps.enabled", true);
 
-    bool enableLOS = sConfig->GetBoolDefault("vmap.enableLOS", true);
-    bool enableHeight = sConfig->GetBoolDefault("vmap.enableHeight", true);
+    if(!sWorld->getBoolConfig(CONFIG_VMAP_ENABLED))
+        sLog->outError("VMaps disabled! Do not expect right movement support!");
 
-    std::string ignoreSpellIds = sConfig->GetStringDefault("vmap.ignoreSpellIds", "");
-
-    if(!enableHeight)
-        sLog->outError("VMap height checking disabled! Creatures movements and other various things WILL be broken! Expect no support.");
-
-    VMAP::VMapFactory::createOrGetVMapManager()->setEnableLineOfSightCalc(enableLOS);
-    VMAP::VMapFactory::createOrGetVMapManager()->setEnableHeightCalc(enableHeight);
-    VMAP::VMapFactory::preventSpellsFromBeingTestedForLoS(ignoreSpellIds.c_str());
+    VMAP::VMapFactory::createOrGetVMapManager()->setEnableLineOfSightCalc(sWorld->getBoolConfig(CONFIG_VMAP_ENABLED));
+    VMAP::VMapFactory::createOrGetVMapManager()->setEnableHeightCalc(sWorld->getBoolConfig(CONFIG_VMAP_ENABLED));
 
     m_int_configs[CONFIG_MAX_WHO] = sConfig->GetIntDefault("MaxWhoListReturns", 49);
-    m_bool_configs[CONFIG_PET_LOS] = sConfig->GetBoolDefault("vmap.petLOS", true);
     m_bool_configs[CONFIG_START_ALL_SPELLS] = sConfig->GetBoolDefault("PlayerStart.AllSpells", false);
     if(m_bool_configs[CONFIG_START_ALL_SPELLS])
         sLog->outString("WORLD: WARNING: PlayerStart.AllSpells enabled - may not function as intended!");
@@ -1096,7 +1087,7 @@ void World::LoadConfigSettings(bool reload)
     m_int_configs[CONFIG_AUTOBROADCAST_INTERVAL]    = sConfig->GetIntDefault("AutoBroadcast.Timer", 60000);
 
     // MySQL ping time interval
-    m_int_configs[CONFIG_DB_PING_INTERVAL] = sConfig->GetIntDefault("MaxPingTime", 30);
+    m_int_configs[CONFIG_DB_PING_INTERVAL]          = sConfig->GetIntDefault("MaxPingTime", 30);
 
     //Wintergrasp
     m_bool_configs[CONFIG_OUTDOORPVP_WINTERGRASP_ENABLED]         = sConfig->GetBoolDefault("OutdoorPvP.Wintergrasp.Enabled", true);
@@ -1113,14 +1104,14 @@ void World::LoadConfigSettings(bool reload)
     m_int_configs[CONFIG_OUTDOORPVP_WINTERGRASP_INTACT_BUILDING]  = sConfig->GetIntDefault("OutdoorPvP.Wintergrasp.CustomHonorIntactBuilding", 1500);
 
     // Warden
-    m_bool_configs[CONFIG_BOOL_WARDEN_ENABLED] = sConfig->GetBoolDefault("Warden.Enabled", true);
-    m_bool_configs[CONFIG_BOOL_WARDEN_KICK] = sConfig->GetBoolDefault("Warden.Kick", false);
-    m_int_configs[CONFIG_INT_WARDEN_BANDAY] = sConfig->GetIntDefault("Warden.BanDay", 0);
+    m_bool_configs[CONFIG_BOOL_WARDEN_ENABLED]  = sConfig->GetBoolDefault("Warden.Enabled", true);
+    m_bool_configs[CONFIG_BOOL_WARDEN_KICK]     = sConfig->GetBoolDefault("Warden.Kick", false);
+    m_int_configs[CONFIG_INT_WARDEN_BANDAY]     = sConfig->GetIntDefault("Warden.BanDay", 0);
 
-    m_bool_configs[CONFIG_PATHFINDING_ENABLED] = sConfig->GetBoolDefault("Pathfinding.enabled", false);
-    std::string ignoreMapIds = sConfig->GetStringDefault("Pathfinding.ignoreMapIds", "");
+    m_bool_configs[CONFIG_MMAPS_ENABLED]        = sConfig->GetBoolDefault("MMaps.enabled", true);
+    std::string ignoreMapIds                    = sConfig->GetStringDefault("Pathfinding.ignoreMapIds", "");
     MMAP::MMapFactory::preventPathfindingOnMaps(ignoreMapIds.c_str());
-    sLog->outString("WORLD: pathfinding %sabled", getBoolConfig(CONFIG_PATHFINDING_ENABLED) ? "en" : "dis");
+    sLog->outString("WORLD: pathfinding %sabled", getBoolConfig(CONFIG_MMAPS_ENABLED) ? "en" : "dis");
 
     m_int_configs[CONFIG_MOVEMENT_CHECKS_ACCESSLEVEL]   = sConfig->GetIntDefault("MovementChecker.skipgmlvl", SEC_CONSOLE);
     m_bool_configs[CONFIG_MOVEMENT_CHECKS_SPEED]        = sConfig->GetBoolDefault("MovementChecker.speed", true);
@@ -1189,7 +1180,7 @@ void World::SetInitialWorldSettings()
     else
         server_type = getIntConfig(CONFIG_GAME_TYPE);
     uint32 realm_zone = getIntConfig(CONFIG_REALM_ZONE);
-    LoginDatabase.PExecute("UPDATE realmlist SET icon = %u, timezone = %u WHERE id = '%d'", server_type, realm_zone, realmID);
+    LoginDatabase.PExecute("UPDATE `realmlist` SET `icon` = %u, `timezone` = %u WHERE `id` = '%d'", server_type, realm_zone, realmID);
 
     ///- Remove the bones (they should not exist in DB though) and old corpses after a restart
     PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_OLD_CORPSES);
@@ -1587,12 +1578,9 @@ void World::SetInitialWorldSettings()
     time_t curr;
     time(&curr);
     local=*(localtime(&curr));                              // dereference and assign
-    char isoDate[128];
-    sprintf(isoDate, "%04d-%02d-%02d %02d:%02d:%02d",
-        local.tm_year+1900, local.tm_mon+1, local.tm_mday, local.tm_hour, local.tm_min, local.tm_sec);
 
-    LoginDatabase.PExecute("INSERT INTO uptime (realmid, starttime, startstring, uptime, revision) VALUES('%u', " UI64FMTD ", '%s', 0, '%s')",
-        realmID, uint64(m_startTime), isoDate, _FULLVERSION);
+    LoginDatabase.PExecute("INSERT INTO uptime (realmid, starttime, uptime, revision) VALUES('%u', " UI64FMTD ", 0, '%s')",
+        realmID, uint64(m_startTime), _FULLVERSION);
 
     m_timers[WUPDATE_WEATHERS].SetInterval(1*IN_MILLISECONDS);
     m_timers[WUPDATE_AUCTIONS].SetInterval(MINUTE*IN_MILLISECONDS);

@@ -10,7 +10,7 @@
 #
 # output generic information about the core and buildtype chosen
 
-message("* Myth Core Revision   : 12.48.${rev_id_str} HASH:(${rev_hash_str})")
+message("* Myth Core Revision   : 12.54.${rev_id_str} HASH:${rev_hash_str}")
 if( UNIX )
   message("* Build binaries in      : ${CMAKE_BUILD_TYPE} mode")
 endif()

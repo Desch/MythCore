@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -498,6 +498,7 @@ m_caster(Caster), m_spellValue(new SpellValue(m_spellInfo))
     m_castedClientside = castedClientside;
     m_IsTriggeredSpell = bool(triggered || (info->AttributesEx4 & SPELL_ATTR4_TRIGGERED));
     m_CastItem = NULL;
+    m_castItemGUID = 0;
 
     unitTarget = NULL;
     itemTarget = NULL;
@@ -1250,11 +1251,12 @@ void Spell::DoAllEffectOnTarget(TargetInfo *target)
         else
             procEx |= PROC_EX_NORMAL_HIT;
 
+        int32 gain = caster->HealBySpell(unitTarget, m_spellInfo, addhealth, target->crit);
+
         // Do triggers for unit (reflect triggers passed on hit phase for correct drop charge)
         if(canEffectTrigger && missInfo != SPELL_MISS_REFLECT)
             caster->ProcDamageAndSpell(unitTarget, procAttacker, procVictim, procEx, addhealth, m_attackType, m_spellInfo, m_triggeredByAuraSpell);
 
-        int32 gain = caster->HealBySpell(unitTarget, m_spellInfo, addhealth, target->crit);
         unitTarget->getHostileRefManager().threatAssist(caster, float(gain) * 0.5f, m_spellInfo);
     }
     // Do damage and triggers
@@ -1273,6 +1275,8 @@ void Spell::DoAllEffectOnTarget(TargetInfo *target)
         procEx |= createProcExtendMask(&damageInfo, missInfo);
         procVictim |= PROC_FLAG_TAKEN_DAMAGE;
 
+        caster->DealSpellDamage(&damageInfo, true);
+
         // Do triggers for unit (reflect triggers passed on hit phase for correct drop charge)
         if(canEffectTrigger && missInfo != SPELL_MISS_REFLECT)
         {
@@ -1281,8 +1285,6 @@ void Spell::DoAllEffectOnTarget(TargetInfo *target)
                (m_spellInfo->DmgClass == SPELL_DAMAGE_CLASS_MELEE || m_spellInfo->DmgClass == SPELL_DAMAGE_CLASS_RANGED))
                 caster->ToPlayer()->CastItemCombatSpell(unitTarget, m_attackType, procVictim, procEx);
         }
-
-        caster->DealSpellDamage(&damageInfo, true);
 
         // Needed by Hooks
         m_true_damage = damageInfo.damage;
@@ -3177,11 +3179,19 @@ void Spell::cast(bool skipCheck)
         }
     }
 
-    // now that we've done the basic check, now run the scripts
-    // should be done before the spell is actually executed
     if(Player* playerCaster = m_caster->ToPlayer())
+    {
+        // now that we've done the basic check, now run the scripts
+        // should be done before the spell is actually executed
         sScriptMgr->OnPlayerSpellCast(playerCaster, this, skipCheck);
 
+        // Let any pets know we've attacked something. As of 3.0.2 pets begin
+        //  attacking their owner's target immediately
+        if(this->GetSpellInfo()->DmgClass != SPELL_DAMAGE_CLASS_NONE)
+            if(Pet* playerPet = playerCaster->GetPet())
+                if(playerPet->isAlive() && playerPet->isControlled() && (m_targets.GetTargetMask() & TARGET_FLAG_UNIT))
+                    playerPet->AI()->OwnerAttacked(m_targets.GetUnitTarget()->ToUnit());
+    }
     SetExecutedCurrently(true);
 
     if(m_caster->GetTypeId() != TYPEID_PLAYER && m_targets.GetUnitTarget() && m_targets.GetUnitTarget() != m_caster)
@@ -4904,7 +4914,7 @@ SpellCastResult Spell::CheckCast(bool strict)
                 return SPELL_FAILED_BAD_TARGETS;
 
             // Hack for Vehicle on Battleground and Wintergrasp.
-            if(!m_caster->GetMap()->IsDungeon() && target->HasUnitState(UNIT_STAT_ONVEHICLE) && target->GetVehicleBase() != m_caster)
+            if(target->HasUnitState(UNIT_STAT_ONVEHICLE) && target->GetVehicleBase() != m_caster && !target->HasAura(46598))
                 return SPELL_FAILED_BAD_TARGETS;
 
             if(!m_IsTriggeredSpell && !m_caster->canSeeOrDetect(target))
@@ -4939,7 +4949,7 @@ SpellCastResult Spell::CheckCast(bool strict)
                 }
             }
 
-            if(!m_IsTriggeredSpell && VMAP::VMapFactory::checkSpellForLoS(m_spellInfo->Id) && !(m_customAttr & SPELL_ATTR0_CU_IGNORE_LOS) && !m_caster->IsWithinLOSInMap(target))
+            if(!m_IsTriggeredSpell && !(m_customAttr & SPELL_ATTR0_CU_IGNORE_LOS) && !m_caster->IsWithinLOSInMap(target))
                 return SPELL_FAILED_LINE_OF_SIGHT;
 
         }
@@ -4971,13 +4981,17 @@ SpellCastResult Spell::CheckCast(bool strict)
         {
             if(m_spellInfo->EffectImplicitTargetA[j] == TARGET_UNIT_PET)
             {
-                if(!m_caster->GetGuardianPet())
+                target = m_caster->GetGuardianPet();
+
+                if(!target)
                 {
                     if(m_triggeredByAuraSpell)              // not report pet not existence for triggered spells
                         return SPELL_FAILED_DONT_REPORT;
                     else
                         return SPELL_FAILED_NO_PET;
                 }
+                else if(!target->IsWithinLOSInMap(m_caster))
+                    return SPELL_FAILED_LINE_OF_SIGHT;
                 break;
             }
         }
@@ -7080,8 +7094,8 @@ int32 Spell::CalculateDamageDone(Unit* unit, const uint32 effectMask, float * mu
             {
                 if(IsAreaEffectTarget[m_spellInfo->EffectImplicitTargetA[i]] || IsAreaEffectTarget[m_spellInfo->EffectImplicitTargetB[i]])
                 {
-                    m_damage = int32(float(m_damage) * unit->GetTotalAuraMultiplierByMiscMask(SPELL_AURA_MOD_CREATURE_AOE_DAMAGE_AVOIDANCE, m_spellInfo->SchoolMask));
                     if(m_caster->GetTypeId() == TYPEID_UNIT)
+                        m_damage = int32(float(m_damage) * unit->GetTotalAuraMultiplierByMiscMask(SPELL_AURA_MOD_CREATURE_AOE_DAMAGE_AVOIDANCE, m_spellInfo->SchoolMask));
                         m_damage = int32(float(m_damage) * unit->GetTotalAuraMultiplierByMiscMask(SPELL_AURA_MOD_AOE_DAMAGE_AVOIDANCE, m_spellInfo->SchoolMask));
 
                     if(m_caster->GetTypeId() == TYPEID_PLAYER)

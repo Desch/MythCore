@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -243,6 +243,8 @@ enum eGameObject
     GO_MAIN_GATE_DOOR           = 195647,
     GO_EAST_PORTCULLIS          = 195648,
     GO_WEB_DOOR                 = 195485,
+    GO_WEST_PORTCULLIS          = 195589,
+    GO_NORTH_PORTCULLIS         = 195591
 };
 
 enum eAchievementData

@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -148,7 +148,7 @@ extern int main(int argc, char **argv)
     // Launch the listening network socket
     RealmAcceptor acceptor;
 
-    uint16 rmport = sConfig->GetIntDefault("RealmServerPort", 3724);
+    uint16 rmport       = sConfig->GetIntDefault("RealmServerPort", 3724);
     std::string bind_ip = sConfig->GetStringDefault("BindIP", "0.0.0.0");
 
     ACE_INET_Addr bind_addr(rmport, bind_ip.c_str());

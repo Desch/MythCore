@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Copyright (C) 2012 SymphonyArt <http://symphonyart.com/>
  *
@@ -47,9 +47,7 @@ void PlayerMovementChecker::prepare(MovementInfo *movementInfo, uint16 opcode)
         _lastClientTime = _movementInfo->time;
 
     if(_opcode == MSG_MOVE_FALL_LAND)
-    {
         _alreadyJumped = false;
-    }
 
     _moverSize = _mover->GetObjectSize();
 
@@ -90,7 +88,7 @@ bool PlayerMovementChecker::canMove()
 {
     if(_player->GetSession()->GetSecurity() >= AccountTypes(sWorld->getIntConfig(CONFIG_MOVEMENT_CHECKS_ACCESSLEVEL)))
         return true;
-    if(_player->HasAura(46598) || _player->HasAura(63163) || _player->HasAura(51852))
+    if(/*_player->HasAura(46598) ||*/ _player->HasAura(63163) || _player->HasAura(51852))
         return true;
     if(_player->IsPolymorphed() && _player->GetMap()->IsBattlegroundOrArena())
         return true;
@@ -162,9 +160,7 @@ bool PlayerMovementChecker::isPlaneOk()
         return true;
 
     if(_hasFlyingFlags || _isInWater || _justWasInWater || (_movementInfo->flags & (MOVEMENTFLAG_WATERWALKING)))
-    {
         return true;
-    }
 
     float newCoordMapZ = _player->GetMap()->GetHeight(_movementInfo->pos.m_positionX, _movementInfo->pos.m_positionY, MAX_HEIGHT);
     newCoordMapZ = (newCoordMapZ < -500.0f) ? 0.0f : newCoordMapZ; //check holes in heigth map
@@ -291,11 +287,7 @@ bool PlayerMovementChecker::isSpeedOk()
     {
         _lastSpeed = _currSpeed;
         _speedChanged = true;
-    }
-    else
-    {
-        _speedChanged = false;
-    }
+    } else _speedChanged = false;
 
     _justWasInAir = (_justWasInAir) ? isInAir() : false;
 

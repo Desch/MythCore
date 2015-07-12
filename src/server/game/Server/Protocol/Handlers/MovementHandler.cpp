@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -239,6 +239,9 @@ void WorldSession::HandleMovementOpcodes(WorldPacket &recv_data)
     uint16 opcode = recv_data.GetOpcode();
     recv_data.hexlike();
 
+    if (!_player)
+        return;
+
     Unit* mover = _player->m_mover;
 
     ASSERT(mover != NULL);                                  // there must always be a mover
@@ -264,7 +267,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket &recv_data)
     recv_data.rpos(recv_data.wpos());                   // prevent warnings spam
 
     // prevent tampered movement data
-    if(guid != mover->GetGUID())
+    if(!mover || guid != mover->GetGUID())
         return;
 
     if(!movementInfo.pos.IsPositionValid())
@@ -496,6 +499,9 @@ void WorldSession::HandleSetActiveMoverOpcode(WorldPacket &recv_data)
     {
         if(Unit* mover = ObjectAccessor::GetUnit(*GetPlayer(), guid))
         {
+            if(mover->GetCharmer() != GetPlayer())
+                return;
+
             GetPlayer()->SetMover(mover);
             if(mover != GetPlayer() && mover->canFly())
             {

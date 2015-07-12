@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -27,6 +27,7 @@ enum HunterSpells
     HUNTER_SPELL_CHIMERA_SHOT_SERPENT           = 53353,
     HUNTER_SPELL_CHIMERA_SHOT_VIPER             = 53358,
     HUNTER_SPELL_CHIMERA_SHOT_SCORPID           = 53359,
+    HUNTER_SPELL_ASPECT_OF_THE_BEAST_PET        = 61669,
 };
 
 class spell_hun_masters_call : public SpellScriptLoader
@@ -48,6 +49,23 @@ public:
             return true;
         }
 
+        void HandleDummy(SpellEffIndex /*effIndex*/)
+        {
+            if(Unit* pUnit = GetHitUnit())
+            {
+                if(Player* pCaster = GetCaster()->ToPlayer())
+                {
+                    if(Pet* pTarget = pCaster->GetPet())
+                    {
+                        pTarget->CastSpell(pUnit, GetEffectValue(), true);
+                        pTarget->CastSpell(pUnit, SpellMgr::CalculateSpellEffectAmount(GetSpellInfo(), EFFECT_0), true);
+                        pCaster->RemoveMovementImpairingAuras();
+                        pTarget->RemoveMovementImpairingAuras();
+                    }
+                }
+            }
+        }
+
         void HandleScriptEffect(SpellEffIndex /*effIndex*/)
         {
             if(Unit* pTarget = GetHitUnit())
@@ -57,6 +75,7 @@ public:
 
                 pTarget->CastSpell(pTarget, GetEffectValue(), true);
                 pTarget->CastSpell(pTarget, HUNTER_SPELL_MASTERS_CALL_TRIGGERED, true);
+                pTarget->RemoveMovementImpairingAuras();
                 if(Unit* pFriend = GetTargetUnit())
                 {
                     pFriend->CastSpell(pFriend, GetEffectValue(), true);
@@ -67,6 +86,7 @@ public:
 
         void Register()
         {
+            OnEffect += SpellEffectFn(spell_hun_masters_call_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
             OnEffect += SpellEffectFn(spell_hun_masters_call_SpellScript::HandleScriptEffect, EFFECT_1, SPELL_EFFECT_SCRIPT_EFFECT);
         }
     };
@@ -501,6 +521,57 @@ class spell_hun_target_only_pet_and_owner : public SpellScriptLoader
         }
 };
 
+// 13161 Aspect of the Beast
+class spell_hun_aspect_of_the_beast : public SpellScriptLoader
+{
+public:
+    spell_hun_aspect_of_the_beast() : SpellScriptLoader("spell_hun_aspect_of_the_beast") { }
+
+    class spell_hun_aspect_of_the_beast_AuraScript : public AuraScript
+    {
+        PrepareAuraScript(spell_hun_aspect_of_the_beast_AuraScript)
+        bool Validate(SpellEntry const* /*entry*/)
+        {
+            if(!sSpellStore.LookupEntry(HUNTER_SPELL_ASPECT_OF_THE_BEAST_PET))
+                return false;
+            return true;
+        }
+
+        void OnRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+        {
+            if(!GetCaster())
+                return;
+
+            Unit* caster = GetCaster();
+            if(caster->ToPlayer())
+                if(Pet* pet = caster->ToPlayer()->GetPet())
+                    pet->RemoveAurasDueToSpell(HUNTER_SPELL_ASPECT_OF_THE_BEAST_PET);
+        }
+
+        void OnApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+        {
+            if(!GetCaster())
+                return;
+
+            Unit* caster = GetCaster();
+            if(caster->ToPlayer())
+                if(Pet* pet = caster->ToPlayer()->GetPet())
+                    caster->CastSpell(caster, HUNTER_SPELL_ASPECT_OF_THE_BEAST_PET, true);
+        }
+
+        void Register()
+        {
+            AfterEffectApply += AuraEffectApplyFn(spell_hun_aspect_of_the_beast_AuraScript::OnApply, EFFECT_0, SPELL_AURA_UNTRACKABLE, AURA_EFFECT_HANDLE_REAL);
+            AfterEffectRemove += AuraEffectRemoveFn(spell_hun_aspect_of_the_beast_AuraScript::OnRemove, EFFECT_0, SPELL_AURA_UNTRACKABLE, AURA_EFFECT_HANDLE_REAL);
+        }
+    };
+
+    AuraScript *GetAuraScript() const
+    {
+        return new spell_hun_aspect_of_the_beast_AuraScript();
+    }
+};
+
 void AddSC_hunter_spell_scripts()
 {
     new spell_hun_masters_call;
@@ -513,4 +584,5 @@ void AddSC_hunter_spell_scripts()
     new spell_hun_pet_heart_of_the_phoenix;
     new spell_hun_pet_carrion_feeder;
     new spell_hun_target_only_pet_and_owner;
+    new spell_hun_aspect_of_the_beast;
 }

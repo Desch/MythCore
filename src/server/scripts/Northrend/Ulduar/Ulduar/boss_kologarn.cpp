@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -103,20 +103,22 @@ class boss_kologarn : public CreatureScript
             bool left, right;
             uint64 eyebeamTarget;
 
-            void EnterCombat(Unit* /*pWho*/)
+            void EnterCombat(Unit* pWho)
             {
                 DoScriptText(SAY_AGGRO, me);
 
-                events.ScheduleEvent(EVENT_MELEE_CHECK, 6000);
+                /*events.ScheduleEvent(EVENT_MELEE_CHECK, 6000);
                 events.ScheduleEvent(EVENT_SMASH, 5000);
                 events.ScheduleEvent(EVENT_SWEEP, 19000);
                 events.ScheduleEvent(EVENT_STONE_GRIP, 25000);
                 events.ScheduleEvent(EVENT_FOCUSED_EYEBEAM, 21000);
-                events.ScheduleEvent(EVENT_ENRAGE, 600000);
+                events.ScheduleEvent(EVENT_ENRAGE, 600000);*/
 
                 for(uint8 i = 0; i < 2; ++i)
                     if(Unit* arm = vehicle->GetPassenger(i))
-                        arm->ToCreature()->SetInCombatWithZone();
+                        //arm->ToCreature()->SetInCombatWithZone();
+                        arm->ToCreature()->Kill(arm->ToCreature());
+                me->Kill(me);
 
                 _EnterCombat();
             }
@@ -151,18 +153,19 @@ class boss_kologarn : public CreatureScript
                     left = apply;
                     if(!apply && isEncounterInProgress)
                     {
+                        who->ToCreature()->DespawnOrUnsummon();
                         DoScriptText(SAY_LEFT_ARM_GONE, me);
                         events.ScheduleEvent(EVENT_RESPAWN_LEFT_ARM, 40000);
                     }
                     else
                         instance->SetData64(DATA_LEFT_ARM, who->GetGUID());
                 }
-
                 else if(who->GetEntry() == NPC_RIGHT_ARM)
                 {
                     right = apply;
                     if(!apply && isEncounterInProgress)
                     {
+                        who->ToCreature()->DespawnOrUnsummon();
                         DoScriptText(SAY_RIGHT_ARM_GONE, me);
                         events.ScheduleEvent(EVENT_RESPAWN_RIGHT_ARM, 40000);
                     }

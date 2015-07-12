@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -1497,7 +1497,7 @@ class Player : public Unit, public GridObject<Player>
         void SendQuestTimerFailed(uint32 quest_id);
         void SendCanTakeQuestResponse(uint32 msg);
         void SendQuestConfirmAccept(Quest const* pQuest, Player* pReceiver);
-        void SendPushToPartyResponse(Player* pPlayer, uint32 msg);
+        void SendPushToPartyResponse(Player* pPlayer, uint8 msg);
         void SendQuestUpdateAddItem(Quest const* pQuest, uint32 item_idx, uint16 count);
         void SendQuestUpdateAddCreatureOrGo(Quest const* pQuest, uint64 guid, uint32 creatureOrGO_idx, uint16 old_count, uint16 add_count);
 
@@ -1816,7 +1816,7 @@ class Player : public Unit, public GridObject<Player>
 
         bool IsGroupVisibleFor(Player const* p) const;
         bool IsInSameGroupWith(Player const* p) const;
-        bool IsInSameRaidWith(Player const* p) const { return p == this || (GetGroup() != NULL && GetGroup() == p->GetGroup()); }
+        bool IsInSameRaidWith(Player const* p) const { return p && (p == this || (GetGroup() != NULL && GetGroup() == p->GetGroup())); }
         void UninviteFromGroup();
         static void RemoveFromGroup(Group* group, uint64 guid, RemoveMethod method = GROUP_REMOVEMETHOD_DEFAULT, uint64 kicker = 0, const char* reason = NULL);
         void RemoveFromGroup(RemoveMethod method = GROUP_REMOVEMETHOD_DEFAULT) { RemoveFromGroup(GetGroup(), GetGUID(), method); }
@@ -2294,7 +2294,7 @@ class Player : public Unit, public GridObject<Player>
 
         void SetMover(Unit* target)
         {
-            m_mover->m_movedPlayer = NULL;
+            m_mover->m_movedPlayer = m_mover->ToPlayer();
             m_mover = target;
             m_mover->m_movedPlayer = this;
         }
@@ -2332,7 +2332,7 @@ class Player : public Unit, public GridObject<Player>
         typedef std::set<uint64> ClientGUIDs;
         ClientGUIDs m_clientGUIDs;
 
-        bool HaveAtClient(WorldObject const* u) const { return u == this || m_clientGUIDs.find(u->GetGUID()) != m_clientGUIDs.end(); }
+        bool HaveAtClient(WorldObject const* u) const { return u && (u == this || m_clientGUIDs.find(u->GetGUID()) != m_clientGUIDs.end()); }
 
         bool isValid() const;
 
@@ -2887,6 +2887,12 @@ class Player : public Unit, public GridObject<Player>
         {
             if(AchievementEntry const* pAchievment = GetAchievementStore()->LookupEntry(1727))
                 CompletedAchievement(pAchievment);
+        }
+
+        void CheckQuest13538()
+        {
+            if(hasQuest(13538))
+                CompleteQuest(13538);
         }
 
         int T12066;

@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -54,9 +54,9 @@ void WorldSession::HandleCalendarGetCalendar(WorldPacket& /*recvData*/)
 
     WorldPacket data(SMSG_CALENDAR_SEND_CALENDAR, 1000); // Average size if no instance
 
-    std::vector<CalendarInvite*> invites = sCalendarMgr->GetPlayerInvites(guid);
+    CalendarInviteStore invites = sCalendarMgr->GetPlayerInvites(guid);
     data << uint32(invites.size());
-    for(std::vector<CalendarInvite*>::const_iterator itr = invites.begin(); itr != invites.end(); ++itr)
+    for(CalendarInviteStore::const_iterator itr = invites.begin(); itr != invites.end(); ++itr)
     {
         data << uint64((*itr)->GetEventId());
         data << uint64((*itr)->GetInviteId());
@@ -344,9 +344,9 @@ void WorldSession::HandleCalendarCopyEvent(WorldPacket& recvData)
         newEvent->SetEventTime(time_t(time));
         sCalendarMgr->AddEvent(newEvent, CALENDAR_SENDTYPE_COPY);
 
-        std::vector<CalendarInvite*> invites = sCalendarMgr->GetEventInvites(eventId);
+        CalendarInviteStore invites = sCalendarMgr->GetEventInvites(eventId);
 
-        for(std::vector<CalendarInvite*>::const_iterator itr = invites.begin(); itr != invites.end(); ++itr)
+        for(CalendarInviteStore::const_iterator itr = invites.begin(); itr != invites.end(); ++itr)
             sCalendarMgr->AddInvite(newEvent, new CalendarInvite(**itr, sCalendarMgr->GetFreeInviteId(), newEvent->GetEventId()));
 
         // should we change owner when somebody makes a copy of event owned by another person?

@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Copyright (C) 2012 SymphonyArt <http://symphonyart.com/>
  *
@@ -308,10 +308,10 @@ void PathFinder::BuildPolyPath(const Vector3 &startPos, const Vector3 &endPos)
 
         // take ~80% of the original length
         // TODO : play with the values here
-        uint32 prefixPolyLength = uint32(m_polyLength*0.8f + 0.5f);
-        memmove(m_pathPolyRefs, m_pathPolyRefs+pathStartIndex, prefixPolyLength*sizeof(dtPolyRef));
+        uint32 prefixPolyLength = uint32(m_polyLength * 0.8f + 0.5f);
+        memmove(m_pathPolyRefs, m_pathPolyRefs + pathStartIndex, prefixPolyLength * sizeof(dtPolyRef));
 
-        dtPolyRef suffixStartPoly = m_pathPolyRefs[prefixPolyLength-1];
+        dtPolyRef suffixStartPoly = m_pathPolyRefs[prefixPolyLength - 1];
 
         // we need any point on our suffix start poly to generate poly-path, so we need last poly in prefix data
         float suffixEndPoint[VERTEX_SIZE];

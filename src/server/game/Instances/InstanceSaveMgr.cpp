@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -37,21 +37,23 @@ InstanceSaveManager::~InstanceSaveManager()
     lock_instLists = true;
     for(InstanceSaveHashMap::iterator itr = m_instanceSaveById.begin(); itr != m_instanceSaveById.end(); ++itr)
     {
-        InstanceSave* pInstanceSave = itr->second;
-        for(InstanceSave::PlayerListType::iterator itr2 = pInstanceSave->m_playerList.begin(), next = itr2; itr2 != pInstanceSave->m_playerList.end(); itr2 = next)
+        if(InstanceSave* pInstanceSave = itr->second)
         {
-            ++next;
-            (*itr2)->UnbindInstance(pInstanceSave->GetMapId(), pInstanceSave->GetDifficulty(), true);
-        }
-        pInstanceSave->m_playerList.clear();
+            for(InstanceSave::PlayerListType::iterator itr2 = pInstanceSave->m_playerList.begin(), next = itr2; itr2 != pInstanceSave->m_playerList.end(); itr2 = next)
+            {
+                ++next;
+                (*itr2)->UnbindInstance(pInstanceSave->GetMapId(), pInstanceSave->GetDifficulty(), true);
+            }
+            pInstanceSave->m_playerList.clear();
 
-        for(InstanceSave::GroupListType::iterator itr2 = pInstanceSave->m_groupList.begin(), next = itr2; itr2 != pInstanceSave->m_groupList.end(); itr2 = next)
-        {
-            ++next;
-            (*itr2)->UnbindInstance(pInstanceSave->GetMapId(), pInstanceSave->GetDifficulty(), true);
+            for(InstanceSave::GroupListType::iterator itr2 = pInstanceSave->m_groupList.begin(), next = itr2; itr2 != pInstanceSave->m_groupList.end(); itr2 = next)
+            {
+                ++next;
+                (*itr2)->UnbindInstance(pInstanceSave->GetMapId(), pInstanceSave->GetDifficulty(), true);
+            }
+            pInstanceSave->m_groupList.clear();
+            delete pInstanceSave;
         }
-        pInstanceSave->m_groupList.clear();
-        delete pInstanceSave;
     }
 }
 
@@ -295,15 +297,14 @@ void InstanceSaveManager::LoadResetTimes()
                 instResetTime[instanceId] = ResetTimeMapDiffType(MAKE_PAIR32(mapid, difficulty), resettime);
                 mapDiffResetInstances.insert(ResetTimeMapDiffInstances::value_type(MAKE_PAIR32(mapid, difficulty), instanceId));
             }
-        }
-        while(result->NextRow());
+        } while(result->NextRow());
 
         // update reset time for normal instances with the max creature respawn time + X hours
-        if(PreparedQueryResult result2 = CharacterDatabase.Query(CharacterDatabase.GetPreparedStatement(CHAR_GET_MAX_CREATURE_RESPAWNS)))
+        if(PreparedQueryResult result = CharacterDatabase.Query(CharacterDatabase.GetPreparedStatement(CHAR_GET_MAX_CREATURE_RESPAWNS)))
         {
             do
             {
-                Field* fields = result2->Fetch();
+                Field* fields = result->Fetch();
                 uint32 instance = fields[1].GetUInt32();
                 time_t resettime = time_t(fields[0].GetUInt32() + 2 * HOUR);
                 InstResetTimeMapDiffType::iterator itr = instResetTime.find(instance);
@@ -312,8 +313,7 @@ void InstanceSaveManager::LoadResetTimes()
                     CharacterDatabase.DirectPExecute("UPDATE instance SET resettime = '"UI64FMTD"' WHERE id = '%u'", uint64(resettime), instance);
                     itr->second.second = resettime;
                 }
-            }
-            while(result->NextRow());
+            } while(result->NextRow());
         }
 
         // schedule the reset times

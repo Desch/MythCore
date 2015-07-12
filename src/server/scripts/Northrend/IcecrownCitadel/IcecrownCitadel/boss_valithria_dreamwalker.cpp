@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -707,12 +707,12 @@ public:
             _canCallEnterCombat = true;
         }
 
-        void JustSummoned(Creature* summon)
+        void JustSummoned(Creature* pCreature)
         {
-            if(summon->GetEntry() == NPC_COLUMN_OF_FROST)
-                summon->m_Events.AddEvent(new DelayedCastEvent(summon, SPELL_COLUMN_OF_FROST_DAMAGE, 0, 8000), summon->m_Events.CalculateTime(2000));
-            else if(summon->GetEntry() == NPC_MANA_VOID)
-                summon->DespawnOrUnsummon(36000);
+            if(pCreature->GetEntry() == NPC_COLUMN_OF_FROST)
+                pCreature->m_Events.AddEvent(new DelayedCastEvent(pCreature, SPELL_COLUMN_OF_FROST_DAMAGE, 0, 8000), pCreature->m_Events.CalculateTime(2000));
+            else if(pCreature->GetEntry() == NPC_MANA_VOID)
+                pCreature->DespawnOrUnsummon(36000);
         }
 
         void UpdateAI(uint32 const diff)
@@ -954,8 +954,8 @@ public:
 
         void IsSummonedBy(Unit* /*pSummoner*/)
         {
-            if(Creature* valithria = ObjectAccessor::GetCreature(*me, _instance->GetData64(DATA_VALITHRIA_DREAMWALKER)))
-                AttackStart(valithria);
+            if(Creature* pCreature = ObjectAccessor::GetCreature(*me, _instance->GetData64(DATA_VALITHRIA_DREAMWALKER)))
+                AttackStart(pCreature);
         }
 
         void UpdateAI(uint32 const diff)
@@ -980,7 +980,7 @@ public:
                         break;
                 }
             }
-              DoMeleeAttackIfReady();
+            DoMeleeAttackIfReady();
         }
 
     private:
@@ -1399,12 +1399,9 @@ public:
         void HandleScript(SpellEffIndex effIndex)
         {
             PreventHitDefaultEffect(effIndex);
-            // impossible with TARGET_UNIT_CASTER
-            //if(!GetHitUnit())
-            //    return;
-            if(InstanceScript* instance = GetHitUnit()->GetInstanceScript()) 
-				GetHitUnit()->CastSpell((Unit*)NULL, GetSpellInfo()->EffectTriggerSpell[effIndex], true, NULL, NULL, instance->GetData64(DATA_VALITHRIA_DREAMWALKER));
-		}
+            if(InstanceScript* pInstanceScript = GetHitUnit()->GetInstanceScript()) 
+                GetHitUnit()->CastSpell((Unit*)NULL, GetSpellInfo()->EffectTriggerSpell[effIndex], true, NULL, NULL, pInstanceScript->GetData64(DATA_VALITHRIA_DREAMWALKER));
+        }
 
         void Register()
         {

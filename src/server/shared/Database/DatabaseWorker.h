@@ -1,18 +1,14 @@
 /*
- * Copyright (C) 2008-2011 TrinityCore <http://www.trinitycore.org/>
+ * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the
- * Free Software Foundation; either version 2 of the License, or (at your
- * option) any later version.
+ * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
- * more details.
+ * Copyright (C) 2012 SymphonyArt <http://symphonyart.com/>
  *
- * You should have received a copy of the GNU General Public License along
- * with this program. If not, see <http://www.gnu.org/licenses/>.
+ * Myth Project's source is based on the Trinity Project source, you can find the
+ * link to that easily in Trinity Copyrights. Myth Project is a private community.
+ * To get access, you either have to donate or pass a developer test.
+ * You may not share Myth Project's sources! For personal use only.
  */
 
 #ifndef _WORKERTHREAD_H
@@ -25,17 +21,15 @@ class MySQLConnection;
 
 class DatabaseWorker : protected ACE_Task_Base
 {
-    public:
-        DatabaseWorker(ACE_Activation_Queue* new_queue, MySQLConnection* con);
+public:
+    DatabaseWorker(ACE_Activation_Queue* new_queue, MySQLConnection* con);
+    int svc();
+    int wait() { return ACE_Task_Base::wait(); }
 
-        ///- Inherited from ACE_Task_Base
-        int svc();
-        int wait() { return ACE_Task_Base::wait(); }
-
-    private:
-        DatabaseWorker() : ACE_Task_Base() { }
-        ACE_Activation_Queue* m_queue;
-        MySQLConnection* m_conn;
+private:
+    DatabaseWorker() : ACE_Task_Base() { }
+    ACE_Activation_Queue* m_queue;
+    MySQLConnection* m_conn;
 };
 
 #endif

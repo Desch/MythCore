@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -2015,6 +2015,10 @@ bool Guild::Validate()
     } else if(!pLeader->IsRank(GR_GUILDMASTER))
         _SetLeaderGUID(pLeader);
 
+    for(Members::iterator itr = m_members.begin(); itr != m_members.end(); ++itr)
+        if(itr->second->GetRankId() == GR_GUILDMASTER && itr->second->IsSamePlayer(m_leaderGuid))
+            itr->second->ChangeRank(GR_GUILDMASTER);
+
     _UpdateAccountsNumber();
     return true;
 }
@@ -2028,10 +2032,10 @@ void Guild::BroadcastToGuild(WorldSession* session, bool officerOnly, const std:
         WorldPacket data;
         ChatHandler::FillMessageData(&data, session, officerOnly ? CHAT_MSG_OFFICER : CHAT_MSG_GUILD, language, NULL, 0, msg.c_str(), NULL);
         for(Members::const_iterator itr = m_members.begin(); itr != m_members.end(); ++itr)
-            if(Player* player = itr->second->FindPlayer())
-                if(player->GetSession() && _HasRankRight(player, officerOnly ? GR_RIGHT_OFFCHATLISTEN : GR_RIGHT_GCHATLISTEN) &&
-                    !player->GetSocial()->HasIgnore(session->GetPlayer()->GetGUIDLow()))
-                    player->GetSession()->SendPacket(&data);
+            if(Player* pPlayer = itr->second->FindPlayer())
+                if(pPlayer->GetSession() && _HasRankRight(pPlayer, officerOnly ? GR_RIGHT_OFFCHATLISTEN : GR_RIGHT_GCHATLISTEN)
+               && !pPlayer->GetSocial()->HasIgnore(session->GetPlayer()->GetGUIDLow()))
+                    pPlayer->GetSession()->SendPacket(&data);
     }
 }
 
@@ -2039,15 +2043,15 @@ void Guild::BroadcastPacketToRank(WorldPacket* packet, uint8 rankId) const
 {
     for(Members::const_iterator itr = m_members.begin(); itr != m_members.end(); ++itr)
         if(itr->second->IsRank(rankId))
-            if(Player* player = itr->second->FindPlayer())
-                player->GetSession()->SendPacket(packet);
+            if(Player* pPlayer = itr->second->FindPlayer())
+                pPlayer->GetSession()->SendPacket(packet);
 }
 
 void Guild::BroadcastPacket(WorldPacket* packet) const
 {
     for(Members::const_iterator itr = m_members.begin(); itr != m_members.end(); ++itr)
-        if(Player* player = itr->second->FindPlayer())
-            player->GetSession()->SendPacket(packet);
+        if(Player* pPlayer = itr->second->FindPlayer())
+            pPlayer->GetSession()->SendPacket(packet);
 }
  
 void Guild::MassInviteToEvent(WorldSession* session, uint32 minLevel, uint32 maxLevel, uint32 minRank)

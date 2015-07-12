@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -10,6 +10,7 @@
  */
 
 #include "ScriptPCH.h"
+#include "Group.h"
 #include "vault_of_archavon.h"
 
 enum Events
@@ -62,6 +63,42 @@ class boss_koralon : public CreatureScript
                 events.ScheduleEvent(EVENT_FLAME_CINDER_A, 30000);  // TODO check timer
 
                 _EnterCombat();
+            }
+
+            void JustDied(Unit* killer)
+            {
+                if(killer->GetTypeId() == TYPEID_PLAYER)
+                {
+                    // Custom hack fix for Earth, Wind & Fire (10 player) Achievement http://www.wowhead.com/achievement=4016
+                    if(killer->ToPlayer()->GetGroup())
+                    {
+                        Group* group = killer->ToPlayer()->GetGroup();
+                        for (GroupReference* itr = group->GetFirstMember(); itr != NULL; itr = itr->next())
+                        {
+                            Player* pl = itr->getSource();
+
+                            if (!pl || !pl->GetSession())
+                                continue;
+
+                            uint32 achiev = 0;
+                            switch(GetDifficulty())
+                            {
+                                case RAID_DIFFICULTY_10MAN_NORMAL:
+                                    achiev = 4016;
+                                    break;
+                                case RAID_DIFFICULTY_25MAN_NORMAL:
+                                    achiev = 4017;
+                                    break;
+                                default:
+                                    break;
+                            }
+
+                            if(AchievementEntry const* pAchievment = GetAchievementStore()->LookupEntry(achiev))
+                                pl->CompletedAchievement(pAchievment);
+                        }
+                    }
+                }
+                _JustDied();
             }
 
             void UpdateAI(const uint32 diff)

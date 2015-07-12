@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -33,8 +33,16 @@ inline void Trinity::VisibleNotifier::Visit(GridRefManager<T> &m)
 inline void Trinity::ObjectUpdater::Visit(CreatureMapType &m)
 {
     for(CreatureMapType::iterator iter = m.begin(); iter != m.end(); ++iter)
+    {
+        if(!iter->getSource())
+        {
+            sLog->outString("Possible crash: ObjectUpdate, null pointer in list");
+            continue;
+        }
+
         if(iter->getSource()->IsInWorld())
             iter->getSource()->Update(i_timeDiff);
+    }
 }
 
 // SEARCHERS & LIST SEARCHERS & WORKERS

@@ -1,19 +1,14 @@
 /*
- * Copyright (C) 2008-2011 TrinityCore <http://www.trinitycore.org/>
- * Copyright (C) 2005-2010 MaNGOS <http://getmangos.com/>
+ * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the
- * Free Software Foundation; either version 2 of the License, or (at your
- * option) any later version.
+ * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
- * more details.
+ * Copyright (C) 2012 SymphonyArt <http://symphonyart.com/>
  *
- * You should have received a copy of the GNU General Public License along
- * with this program. If not, see <http://www.gnu.org/licenses/>.
+ * Myth Project's source is based on the Trinity Project source, you can find the
+ * link to that easily in Trinity Copyrights. Myth Project is a private community.
+ * To get access, you either have to donate or pass a developer test.
+ * You may not share Myth Project's sources! For personal use only.
  */
 
 #include <sys/types.h>
@@ -53,8 +48,7 @@ namespace VMAP
         }
     }
 
-    IVMapManager *gVMapManager = 0;
-    Table<unsigned int, bool>* iIgnoreSpellIds=0;
+    IVMapManager* gVMapManager = 0;
 
     //===============================================
     // result false, if no more id are found
@@ -63,7 +57,7 @@ namespace VMAP
     {
         bool result = false;
         unsigned int i;
-        for(i=pStartPos;i<pString.size(); ++i)
+        for(i = pStartPos; i < pString.size(); ++i)
         {
             if(pString[i] == ',')
             {
@@ -82,35 +76,6 @@ namespace VMAP
     }
 
     //===============================================
-    /**
-    parameter: String of map ids. Delimiter = ","
-    */
-
-    void VMapFactory::preventSpellsFromBeingTestedForLoS(const char* pSpellIdString)
-    {
-        if(!iIgnoreSpellIds)
-            iIgnoreSpellIds = new Table<unsigned int, bool>();
-        if(pSpellIdString != NULL)
-        {
-            unsigned int pos =0;
-            unsigned int id;
-            std::string confString(pSpellIdString);
-            chompAndTrim(confString);
-            while(getNextId(confString, pos, id))
-            {
-                iIgnoreSpellIds->set(id, true);
-            }
-        }
-    }
-
-    //===============================================
-
-    bool VMapFactory::checkSpellForLoS(unsigned int pSpellId)
-    {
-        return(!iIgnoreSpellIds->containsKey(pSpellId));
-    }
-
-    //===============================================
     // just return the instance
     IVMapManager* VMapFactory::createOrGetVMapManager()
     {
@@ -123,9 +88,6 @@ namespace VMAP
     // delete all internal data structures
     void VMapFactory::clear()
     {
-        delete iIgnoreSpellIds;
-        iIgnoreSpellIds = NULL;
-
         delete gVMapManager;
         gVMapManager = NULL;
     }

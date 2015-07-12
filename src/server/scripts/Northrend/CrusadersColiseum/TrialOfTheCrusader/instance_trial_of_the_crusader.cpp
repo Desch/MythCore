@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -58,6 +58,8 @@ class instance_trial_of_the_crusader : public InstanceMapScript
             uint64 MainGateDoorGUID;
             uint64 EastPortcullisGUID;
             uint64 WebDoorGUID;
+            uint64 WestPortcullisGUID;
+            uint64 NorthPortcullisGUID;
 
             // Achievement stuff
             uint32 NotOneButTwoJormungarsTimer;
@@ -80,6 +82,8 @@ class instance_trial_of_the_crusader : public InstanceMapScript
                 MainGateDoorGUID = 0;
                 EastPortcullisGUID = 0;
                 WebDoorGUID = 0;
+                WestPortcullisGUID = 0;
+                NorthPortcullisGUID = 0;
 
                 NorthrendBeasts = NOT_STARTED;
 
@@ -208,6 +212,12 @@ class instance_trial_of_the_crusader : public InstanceMapScript
                         break;
                     case GO_WEB_DOOR:
                         WebDoorGUID = go->GetGUID();
+                        break;
+                    case GO_WEST_PORTCULLIS:
+                        WestPortcullisGUID = go->GetGUID();
+                        break;
+                    case GO_NORTH_PORTCULLIS:
+                        NorthPortcullisGUID = go->GetGUID();
                         break;
                     case GO_TRIBUTE_CHEST_10H_25:
                     case GO_TRIBUTE_CHEST_10H_45:
@@ -382,11 +392,15 @@ class instance_trial_of_the_crusader : public InstanceMapScript
                 {
                     CloseDoor(GetData64(GO_EAST_PORTCULLIS));
                     CloseDoor(GetData64(GO_WEB_DOOR));
+                    CloseDoor(GetData64(GO_WEST_PORTCULLIS));
+                    CloseDoor(GetData64(GO_NORTH_PORTCULLIS));
                 }
                 else
                 {
                     OpenDoor(GetData64(GO_EAST_PORTCULLIS));
                     OpenDoor(GetData64(GO_WEB_DOOR));
+                    OpenDoor(GetData64(GO_WEST_PORTCULLIS));
+                    OpenDoor(GetData64(GO_NORTH_PORTCULLIS));
                 }
 
                 if(type < MAX_ENCOUNTERS)
@@ -451,6 +465,10 @@ class instance_trial_of_the_crusader : public InstanceMapScript
                         return EastPortcullisGUID;
                     case GO_WEB_DOOR:
                         return WebDoorGUID;
+                    case GO_WEST_PORTCULLIS:
+                        return WestPortcullisGUID;
+                    case GO_NORTH_PORTCULLIS:
+                        return NorthPortcullisGUID;
                     default:
                         break;
                 }

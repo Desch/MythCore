@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -506,7 +506,7 @@ class spell_blood_queen_vampiric_bite : public SpellScriptLoader
 
             SpellCastResult CheckTarget()
             {
-                if(IsVampire(GetTargetUnit()) || GetTargetUnit()->GetTypeId() != TYPEID_PLAYER || GetTargetUnit()->GetMapId() != 631)
+                if(IsVampire(GetTargetUnit()) || GetTargetUnit()->GetTypeId() != TYPEID_PLAYER || GetTargetUnit()->GetAreaId() != 4891)
                 {
                     SetCustomCastResultMessage(SPELL_CUSTOM_ERROR_CANT_TARGET_VAMPIRES);
                     return SPELL_FAILED_CUSTOM_ERROR;

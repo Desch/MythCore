@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -4330,9 +4330,11 @@ uint32 Player::resetTalentsCost() const
 
 bool Player::resetTalents(bool no_cost)
 {
+    if(HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_DISARMED))
+        return false;
+
     sScriptMgr->OnPlayerTalentsReset(this, no_cost);
 
-    // not need after this call
     if(HasAtLoginFlag(AT_LOGIN_RESET_TALENTS))
         RemoveAtLoginFlag(AT_LOGIN_RESET_TALENTS, true);
 
@@ -6729,10 +6731,10 @@ void Player::CheckAreaExploreAndOutdoor()
     bool isOutdoor;
     uint16 areaFlag = GetBaseMap()->GetAreaFlag(GetPositionX(), GetPositionY(), GetPositionZ(), &isOutdoor);
 
-    if(sWorld->getBoolConfig(CONFIG_VMAP_INDOOR_CHECK) && !isOutdoor)
+    if(sWorld->getBoolConfig(CONFIG_VMAP_ENABLED) && !isOutdoor)
         RemoveAurasWithAttribute(SPELL_ATTR0_OUTDOORS_ONLY);
 
-    if(areaFlag==0xffff)
+    if(areaFlag == 0xffff)
         return;
     int offset = areaFlag / 32;
 
@@ -7513,6 +7515,10 @@ void Player::DuelComplete(DuelCompleteType type)
                 //Credit for quest Death's Challenge
                 if(getClass() == CLASS_DEATH_KNIGHT && duel->opponent->GetQuestStatus(12733) == QUEST_STATUS_INCOMPLETE)
                     duel->opponent->CastSpell(duel->opponent, 52994, true);
+
+                // Honor points after duel (the winner) - ImpConfig
+                if(sWorld->getIntConfig(CONFIG_HONOR_AFTER_DUEL) > 0)
+                    duel->opponent->RewardHonor(NULL, 1, sWorld->getIntConfig(CONFIG_HONOR_AFTER_DUEL));
             }
             break;
         default:
@@ -7559,10 +7565,6 @@ void Player::DuelComplete(DuelCompleteType type)
         duel->opponent->ClearComboPoints();
     else if(duel->opponent->GetComboTarget() == GetPetGUID())
         duel->opponent->ClearComboPoints();
-
-    // Honor points after duel (the winner) - ImpConfig
-    if(uint32 amount = sWorld->getIntConfig(CONFIG_HONOR_AFTER_DUEL))
-        duel->opponent->RewardHonor(NULL, 1, amount);
 
     //cleanups
     SetUInt64Value(PLAYER_DUEL_ARBITER, 0);
@@ -13313,11 +13315,7 @@ void Player::UpdateSoulboundTradeItems()
     // also checks for garbage data
     for(ItemDurationList::iterator itr = m_itemSoulboundTradeable.begin(); itr != m_itemSoulboundTradeable.end();)
     {
-        if(!*itr)
-        {
-            itr = m_itemSoulboundTradeable.erase(itr++);
-            continue;
-        }
+        ASSERT(*itr);
         if((*itr)->GetOwnerGUID() != GetGUID())
         {
             itr = m_itemSoulboundTradeable.erase(itr++);
@@ -13334,14 +13332,7 @@ void Player::UpdateSoulboundTradeItems()
 
 void Player::RemoveTradeableItem(Item* item)
 {
-    for(ItemDurationList::iterator itr = m_itemSoulboundTradeable.begin(); itr != m_itemSoulboundTradeable.end(); ++itr)
-    {
-        if((*itr) == item)
-        {
-            m_itemSoulboundTradeable.erase(itr);
-            break;
-        }
-    }
+    m_itemSoulboundTradeable.remove(item);
 }
 
 void Player::UpdateItemDuration(uint32 time, bool realtimeonly)
@@ -14003,36 +13994,38 @@ void Player::PrepareGossipMenu(WorldObject* source, uint32 menuId /*= 0*/, bool 
                     break;
                 case GOSSIP_OPTION_VENDOR:
                 {
-                    VendorItemData const* vendorItems = pCreature->GetVendorItems();
-                    if(!vendorItems || vendorItems->Empty())
-                    {
-                        sLog->outErrorDb("Creature %u (Entry: %u) have UNIT_NPC_FLAG_VENDOR but have empty trading item list.", pCreature->GetGUIDLow(), pCreature->GetEntry());
-                        canTalk = false;
+                    if(pCreature) {
+                        VendorItemData const* vendorItems = pCreature->GetVendorItems();
+                        if(!vendorItems || vendorItems->Empty())
+                        {
+                            sLog->outErrorDb("Creature %u (Entry: %u) have UNIT_NPC_FLAG_VENDOR but have empty trading item list.", pCreature->GetGUIDLow(), pCreature->GetEntry());
+                            canTalk = false;
+                        }
                     }
                     break;
                 }
                 case GOSSIP_OPTION_TRAINER:
-                    if(!pCreature->isCanTrainingOf(this, false))
+                    if(pCreature && !pCreature->isCanTrainingOf(this, false))
                         canTalk = false;
                     break;
                 case GOSSIP_OPTION_LEARNDUALSPEC:
-                    if(!(GetSpecsCount() == 1 && pCreature->isCanTrainingAndResetTalentsOf(this) && !(getLevel() < sWorld->getIntConfig(CONFIG_MIN_DUALSPEC_LEVEL))))
+                    if(!(pCreature && GetSpecsCount() == 1 && pCreature->isCanTrainingAndResetTalentsOf(this) && !(getLevel() < sWorld->getIntConfig(CONFIG_MIN_DUALSPEC_LEVEL))))
                         canTalk = false;
                     break;
                 case GOSSIP_OPTION_UNLEARNTALENTS:
-                    if(!pCreature->isCanTrainingAndResetTalentsOf(this))
+                    if(pCreature && !pCreature->isCanTrainingAndResetTalentsOf(this))
                         canTalk = false;
                     break;
                 case GOSSIP_OPTION_UNLEARNPETTALENTS:
-                    if(!GetPet() || GetPet()->getPetType() != HUNTER_PET || GetPet()->m_spells.size() <= 1 || pCreature->GetCreatureInfo()->trainer_type != TRAINER_TYPE_PETS || pCreature->GetCreatureInfo()->trainer_class != CLASS_HUNTER)
+                    if(!GetPet() || GetPet()->getPetType() != HUNTER_PET || GetPet()->m_spells.size() <= 1 || (pCreature && (pCreature->GetCreatureInfo()->trainer_type != TRAINER_TYPE_PETS || pCreature->GetCreatureInfo()->trainer_class != CLASS_HUNTER)))
                         canTalk = false;
                     break;
                 case GOSSIP_OPTION_TAXIVENDOR:
-                    if(GetSession()->SendLearnNewTaxiNode(pCreature))
+                    if(pCreature && GetSession()->SendLearnNewTaxiNode(pCreature))
                         return;
                     break;
                 case GOSSIP_OPTION_BATTLEFIELD:
-                    if(!pCreature->isCanInteractWithBattleMaster(this, false))
+                    if(pCreature && !pCreature->isCanInteractWithBattleMaster(this, false))
                         canTalk = false;
                     break;
                 case GOSSIP_OPTION_STABLEPET:
@@ -14051,11 +14044,14 @@ void Player::PrepareGossipMenu(WorldObject* source, uint32 menuId /*= 0*/, bool 
                 case GOSSIP_OPTION_AUCTIONEER:
                     break;                                  // no checks
                 case GOSSIP_OPTION_OUTDOORPVP:
-                    if(!sOutdoorPvPMgr->CanTalkTo(this, pCreature, itr->second))
+                    if(pCreature && !sOutdoorPvPMgr->CanTalkTo(this, pCreature, itr->second))
                         canTalk = false;
                     break;
                 default:
-                    sLog->outErrorDb("Creature entry %u have unknown gossip option %u for menu %u", pCreature ? pCreature->GetEntry() : 0, itr->second.OptionType, itr->second.MenuId);
+                    if(pCreature)
+                        sLog->outErrorDb("Creature entry %u have unknown gossip option %u for menu %u", pCreature ? pCreature->GetEntry() : 0, itr->second.OptionType, itr->second.MenuId);
+                    else
+                        sLog->outErrorDb("pCreature NULL player.cpp!");
                     canTalk = false;
                     break;
             }
@@ -16179,11 +16175,11 @@ void Player::SendQuestConfirmAccept(const Quest* pQuest, Player* pReceiver)
     }
 }
 
-void Player::SendPushToPartyResponse(Player* pPlayer, uint32 msg)
+void Player::SendPushToPartyResponse(Player* pPlayer, uint8 msg)
 {
     if(pPlayer)
     {
-        WorldPacket data(MSG_QUEST_PUSH_RESULT, (8+1));
+        WorldPacket data(MSG_QUEST_PUSH_RESULT, 8 + 1);
         data << uint64(pPlayer->GetGUID());
         data << uint8(msg);                                 // valid values: 0-8
         GetSession()->SendPacket(&data);
@@ -18098,7 +18094,7 @@ bool Player::Satisfy(AccessRequirement const* ar, uint32 target_map, bool report
 
 bool Player::CheckInstanceLoginValid()
 {
-    if(!GetMap())
+    if(!FindMap())
         return false;
 
     if(!GetMap()->IsDungeon() || isGameMaster())

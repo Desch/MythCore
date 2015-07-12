@@ -1,17 +1,18 @@
 -- -------------------------------------------------------------------------
 -- --------------- Myth Project 'Characters' Database Update ---------------
 -- -------------------------------------------------------------------------
-ALTER TABLE `character_glyphs` CHANGE `glyph1` `glyph1` smallint(5) unsigned DEFAULT 0;
+ALTER TABLE `character_queststatus` CHANGE `itemcount5` `itemcount5` SMALLINT(5) UNSIGNED NOT NULL DEFAULT 0;
+ALTER TABLE `character_queststatus` CHANGE `itemcount6` `itemcount6` SMALLINT(5) UNSIGNED NOT NULL DEFAULT 0;
+ALTER TABLE `character_glyphs` CHANGE `glyph1` `glyph1` SMALLINT(5) UNSIGNED DEFAULT 0;
 -- 'old' Myth Anticheat Tables
 DROP TABLE IF EXISTS
-`players_reports_status`,   -- DEPRICATED TABLE
-`daily_players_reports`,    -- DEPRICATED TABLE
-`anticheat_config`,         -- DEPRICATED TABLE
-`cheat_temp_reports`,       -- DEPRICATED TABLE
-`cheat_reports`,            -- DEPRICATED TABLE
-`cheat_first_report`,       -- DEPRICATED TABLE
-`anticheat_log`;            -- DEPRICATED TABLE
-
+ `players_reports_status`,  -- DEPRICATED TABLE
+ `daily_players_reports`,   -- DEPRICATED TABLE
+ `anticheat_config`,        -- DEPRICATED TABLE
+ `cheat_temp_reports`,      -- DEPRICATED TABLE
+ `cheat_reports`,           -- DEPRICATED TABLE
+ `cheat_first_report`,      -- DEPRICATED TABLE
+ `anticheat_log`;           -- DEPRICATED TABLE
 -- Myth OutdoorPvP: Wintergrasp
 DELETE FROM `worldstates` WHERE `entry` IN (31001, 31002, 31003, 31004);
 INSERT INTO `worldstates` VALUES
@@ -50,58 +51,58 @@ ADD PRIMARY KEY (`guid`);
 
 DROP TABLE IF EXISTS `calendar_events`;
 CREATE TABLE IF NOT EXISTS `calendar_events` (
-  `id` bigint(20) unsigned NOT NULL DEFAULT 0,
-  `creator` int(10) unsigned NOT NULL DEFAULT 0,
-  `title` varchar(255) NOT NULL DEFAULT '',
-  `description` varchar(255) NOT NULL DEFAULT '',
-  `type` tinyint(1) unsigned NOT NULL DEFAULT '4',
-  `dungeon` int(10) NOT NULL DEFAULT '-1',
-  `eventtime` int(10) unsigned NOT NULL DEFAULT 0,
-  `flags` int(10) unsigned NOT NULL DEFAULT 0,
-  `time2` int(10) unsigned NOT NULL DEFAULT 0,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `id` BIGINT(20) UNSIGNED NOT NULL DEFAULT 0,
+  `creator` INT(10) UNSIGNED NOT NULL DEFAULT 0,
+  `title` VARCHAR(255) NOT NULL DEFAULT '',
+  `description` VARCHAR(255) NOT NULL DEFAULT '',
+  `type` TINYINT(1) UNSIGNED NOT NULL DEFAULT '4',
+  `dungeon` INT(10) NOT NULL DEFAULT '-1',
+  `eventtime` INT(10) UNSIGNED NOT NULL DEFAULT 0,
+  `flags` INT(10) UNSIGNED NOT NULL DEFAULT 0,
+  `time2` INT(10) UNSIGNED NOT NULL DEFAULT 0,
+  PRIMARY KEY(`id`)
+) ENGINE=INNODB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `calendar_invites`;
 CREATE TABLE IF NOT EXISTS `calendar_invites` (
-  `id` bigint(20) unsigned NOT NULL DEFAULT 0,
-  `event` bigint(20) unsigned NOT NULL DEFAULT 0,
-  `invitee` int(10) unsigned NOT NULL DEFAULT 0,
-  `sender` int(10) unsigned NOT NULL DEFAULT 0,
-  `status` tinyint(1) unsigned NOT NULL DEFAULT 0,
-  `statustime` int(10) unsigned NOT NULL DEFAULT 0,
-  `rank` tinyint(1) unsigned NOT NULL DEFAULT 0,
-  `text` varchar(255) NOT NULL DEFAULT '',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `id` BIGINT(20) UNSIGNED NOT NULL DEFAULT 0,
+  `event` BIGINT(20) UNSIGNED NOT NULL DEFAULT 0,
+  `invitee` INT(10) UNSIGNED NOT NULL DEFAULT 0,
+  `sender` INT(10) UNSIGNED NOT NULL DEFAULT 0,
+  `status` TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,
+  `statustime` INT(10) UNSIGNED NOT NULL DEFAULT 0,
+  `rank` TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,
+  `text` VARCHAR(255) NOT NULL DEFAULT '',
+  PRIMARY KEY(`id`)
+) ENGINE=INNODB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `character_equipmentsets`;
 CREATE TABLE `character_equipmentsets` (
-  `guid` int(10) NOT NULL DEFAULT 0,
-  `setguid` bigint(20) NOT NULL AUTO_INCREMENT,
-  `setindex` tinyint(3) unsigned NOT NULL DEFAULT 0,
-  `name` varchar(31) NOT NULL,
-  `iconname` varchar(100) NOT NULL,
-  `item0` int(10) unsigned NOT NULL DEFAULT 0,
-  `item1` int(10) unsigned NOT NULL DEFAULT 0,
-  `item2` int(10) unsigned NOT NULL DEFAULT 0,
-  `item3` int(10) unsigned NOT NULL DEFAULT 0,
-  `item4` int(10) unsigned NOT NULL DEFAULT 0,
-  `item5` int(10) unsigned NOT NULL DEFAULT 0,
-  `item6` int(10) unsigned NOT NULL DEFAULT 0,
-  `item7` int(10) unsigned NOT NULL DEFAULT 0,
-  `item8` int(10) unsigned NOT NULL DEFAULT 0,
-  `item9` int(10) unsigned NOT NULL DEFAULT 0,
-  `item10` int(10) unsigned NOT NULL DEFAULT 0,
-  `item11` int(10) unsigned NOT NULL DEFAULT 0,
-  `item12` int(10) unsigned NOT NULL DEFAULT 0,
-  `item13` int(10) unsigned NOT NULL DEFAULT 0,
-  `item14` int(10) unsigned NOT NULL DEFAULT 0,
-  `item15` int(10) unsigned NOT NULL DEFAULT 0,
-  `item16` int(10) unsigned NOT NULL DEFAULT 0,
-  `item17` int(10) unsigned NOT NULL DEFAULT 0,
-  `item18` int(10) unsigned NOT NULL DEFAULT 0,
-  PRIMARY KEY (`setguid`),
-  UNIQUE KEY `idx_set` (`guid`,`setguid`,`setindex`),
-  KEY `Idx_setindex` (`setindex`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `guid` INT(10) NOT NULL DEFAULT 0,
+  `setguid` BIGINT(20) NOT NULL AUTO_INCREMENT,
+  `setindex` TINYINT(3) UNSIGNED NOT NULL DEFAULT 0,
+  `name` VARCHAR(31) NOT NULL,
+  `iconname` VARCHAR(100) NOT NULL,
+  `item0` INT(10) UNSIGNED NOT NULL DEFAULT 0,
+  `item1` INT(10) UNSIGNED NOT NULL DEFAULT 0,
+  `item2` INT(10) UNSIGNED NOT NULL DEFAULT 0,
+  `item3` INT(10) UNSIGNED NOT NULL DEFAULT 0,
+  `item4` INT(10) UNSIGNED NOT NULL DEFAULT 0,
+  `item5` INT(10) UNSIGNED NOT NULL DEFAULT 0,
+  `item6` INT(10) UNSIGNED NOT NULL DEFAULT 0,
+  `item7` INT(10) UNSIGNED NOT NULL DEFAULT 0,
+  `item8` INT(10) UNSIGNED NOT NULL DEFAULT 0,
+  `item9` INT(10) UNSIGNED NOT NULL DEFAULT 0,
+  `item10` INT(10) UNSIGNED NOT NULL DEFAULT 0,
+  `item11` INT(10) UNSIGNED NOT NULL DEFAULT 0,
+  `item12` INT(10) UNSIGNED NOT NULL DEFAULT 0,
+  `item13` INT(10) UNSIGNED NOT NULL DEFAULT 0,
+  `item14` INT(10) UNSIGNED NOT NULL DEFAULT 0,
+  `item15` INT(10) UNSIGNED NOT NULL DEFAULT 0,
+  `item16` INT(10) UNSIGNED NOT NULL DEFAULT 0,
+  `item17` INT(10) UNSIGNED NOT NULL DEFAULT 0,
+  `item18` INT(10) UNSIGNED NOT NULL DEFAULT 0,
+  PRIMARY KEY(`setguid`),
+  UNIQUE KEY `idx_set`(`guid`,`setguid`,`setindex`),
+  KEY `Idx_setindex`(`setindex`)
+) ENGINE = INNODB DEFAULT CHARSET=utf8;

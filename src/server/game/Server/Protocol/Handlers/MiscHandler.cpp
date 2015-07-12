@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -767,7 +767,7 @@ void WorldSession::HandleResurrectResponseOpcode(WorldPacket &recv_data)
 
     if(status == 0)
     {
-        GetPlayer()->clearResurrectRequestData();           // reject
+        GetPlayer()->clearResurrectRequestData();   // reject
         return;
     }
 
@@ -787,8 +787,8 @@ void WorldSession::SendAreaTriggerMessage(const char* Text, ...)
     vsnprintf(szStr, 1024, Text, ap);
     va_end(ap);
 
-    uint32 length = strlen(szStr)+1;
-    WorldPacket data(SMSG_AREA_TRIGGER_MESSAGE, 4+length);
+    uint32 length = strlen(szStr) + 1;
+    WorldPacket data(SMSG_AREA_TRIGGER_MESSAGE, 4 + length);
     data << length;
     data << szStr;
     SendPacket(&data);

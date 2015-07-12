@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -382,7 +382,7 @@ inline void Battleground::_ProcessJoin(uint32 diff)
 {
     ModifyStartDelayTime(diff);
 
-    if(m_ResetStatTimer <= 5000)
+    if(m_ResetStatTimer > 5000)
     {
         m_ResetStatTimer = 0;
         for(BattlegroundPlayerMap::const_iterator itr = GetPlayers().begin(); itr != GetPlayers().end(); ++itr)
@@ -1163,22 +1163,26 @@ void Battleground::EventPlayerLoggedIn(Player* player)
 }
 
 // This method should be called when player logs out from running battleground
-void Battleground::EventPlayerLoggedOut(Player* player)
+void Battleground::EventPlayerLoggedOut(Player* pPlayer)
 {
     // player is correct pointer, it is checked in WorldSession::LogoutPlayer()
-    m_OfflineQueue.push_back(player->GetGUID());
-    m_Players[player->GetGUID()].OfflineRemoveTime = sWorld->GetGameTime() + MAX_OFFLINE_TIME;
+    m_OfflineQueue.push_back(pPlayer->GetGUID());
+    m_Players[pPlayer->GetGUID()].OfflineRemoveTime = sWorld->GetGameTime() + MAX_OFFLINE_TIME;
     if(GetStatus() == STATUS_IN_PROGRESS)
     {
         // drop flag and handle other cleanups
-        RemovePlayer(player, player->GetGUID(), GetPlayerTeam(player->GetGUID()));
+        RemovePlayer(pPlayer, pPlayer->GetGUID(), GetPlayerTeam(pPlayer->GetGUID()));
 
         // 1 player is logging out, if it is the last, then end arena!
         if(isArena())
-            if(GetAlivePlayersCountByTeam(player->GetTeam()) <= 1 && GetPlayersCountByTeam(GetOtherTeam(player->GetTeam())))
-                EndBattleground(GetOtherTeam(player->GetTeam()));
+        {
+            if(GetAlivePlayersCountByTeam(pPlayer->GetTeam()) <= 1 && GetPlayersCountByTeam(GetOtherTeam(pPlayer->GetTeam())))
+                EndBattleground(GetOtherTeam(pPlayer->GetTeam()));
+        }
     }
 
+    if(isArena())
+        pPlayer->LeaveBattleground();
 }
 
 // This method should be called only once ... it adds pointer to queue
@@ -1222,9 +1226,7 @@ uint32 Battleground::GetFreeSlotsForTeam(uint32 Team) const
     {
         otherTeam = GetInvitedCount(HORDE);
         otherIn = GetPlayersCountByTeam(HORDE);
-    }
-    else
-    {
+    } else {
         otherTeam = GetInvitedCount(ALLIANCE);
         otherIn = GetPlayersCountByTeam(ALLIANCE);
     }
@@ -1256,7 +1258,6 @@ uint32 Battleground::GetFreeSlotsForTeam(uint32 Team) const
             diff3 = GetMinPlayersPerTeam() - GetInvitedCount(Team) + 1;
 
         // return the minimum of the 3 differences
-
         // min of diff and diff 2
         diff = std::min(diff, diff2);
         // min of diff, diff2 and diff3
@@ -1265,10 +1266,7 @@ uint32 Battleground::GetFreeSlotsForTeam(uint32 Team) const
     return 0;
 }
 
-bool Battleground::HasFreeSlots() const
-{
-    return GetPlayersSize() < GetMaxPlayers();
-}
+bool Battleground::HasFreeSlots() const { return GetPlayersSize() < GetMaxPlayers(); }
 
 void Battleground::UpdatePlayerScore(Player* Source, uint32 type, uint32 value, bool doAddHonor)
 {
@@ -1317,11 +1315,8 @@ void Battleground::AddPlayerToResurrectQueue(const uint64& npc_guid, const uint6
 {
     m_ReviveQueue[npc_guid].push_back(player_guid);
 
-    Player* plr = sObjectMgr->GetPlayer(player_guid);
-    if(!plr)
-        return;
-
-    plr->CastSpell(plr, SPELL_WAITING_FOR_RESURRECT, true);
+    if(Player* pPlayer = sObjectMgr->GetPlayer(player_guid))
+        pPlayer->CastSpell(pPlayer, SPELL_WAITING_FOR_RESURRECT, true);
 }
 
 void Battleground::RemovePlayerFromResurrectQueue(const uint64& player_guid)
@@ -1671,37 +1666,38 @@ void Battleground::HandleTriggerBuff(const uint64& go_guid)
     }
 }
 
-void Battleground::HandleKillPlayer(Player* victim, Player* killer)
+void Battleground::HandleKillPlayer(Player* pVictim, Player* pKiller)
 {
     // Keep in mind that for arena this will have to be changed a bit
     // Add +1 deaths
-    UpdatePlayerScore(victim, SCORE_DEATHS, 1);
+    if(!pVictim)
+        return;
+    UpdatePlayerScore(pVictim, SCORE_DEATHS, 1);
     // Add +1 kills to group and +1 killing_blows to killer
-    if(killer)
+    if(!pKiller)
+        return;
+    // Don't reward credit for killing ourselves, like fall damage of hellfire (warlock)
+    if(pKiller == pVictim)
+        return;
+
+    UpdatePlayerScore(pKiller, SCORE_HONORABLE_KILLS, 1);
+    UpdatePlayerScore(pKiller, SCORE_KILLING_BLOWS, 1);
+
+    for(BattlegroundPlayerMap::const_iterator itr = m_Players.begin(); itr != m_Players.end(); ++itr)
     {
-        // Don't reward credit for killing ourselves, like fall damage of hellfire (warlock)
-        if(killer == victim)
-            return;
+        Player* creditedPlayer = sObjectMgr->GetPlayer(itr->first);
+        if(!creditedPlayer || creditedPlayer == pKiller)
+            continue;
 
-        UpdatePlayerScore(killer, SCORE_HONORABLE_KILLS, 1);
-        UpdatePlayerScore(killer, SCORE_KILLING_BLOWS, 1);
-
-        for(BattlegroundPlayerMap::const_iterator itr = m_Players.begin(); itr != m_Players.end(); ++itr)
-        {
-            Player* creditedPlayer = sObjectMgr->GetPlayer(itr->first);
-            if(!creditedPlayer || creditedPlayer == killer)
-                continue;
-
-            if(creditedPlayer->GetTeam() == killer->GetTeam() && creditedPlayer->IsAtGroupRewardDistance(victim))
-                UpdatePlayerScore(creditedPlayer, SCORE_HONORABLE_KILLS, 1);
-        }
+        if(creditedPlayer->GetTeam() == pKiller->GetTeam() && creditedPlayer->IsAtGroupRewardDistance(pVictim))
+            UpdatePlayerScore(creditedPlayer, SCORE_HONORABLE_KILLS, 1);
     }
 
     if(!isArena())
     {
         // To be able to remove insignia -- ONLY IN Battlegrounds
-        victim->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SKINNABLE);
-        RewardXPAtKill(killer, victim);
+        pVictim->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SKINNABLE);
+        RewardXPAtKill(pKiller, pVictim);
     }
 }
 

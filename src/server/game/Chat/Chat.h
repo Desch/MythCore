@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -28,10 +28,10 @@ struct GameTele;
 class ChatCommand
 {
     public:
-        const char *       Name;
-        uint32             SecurityLevel;                   // function pointer required correct align (use uint32)
+        const char*        Name;
+        uint32             SecurityLevel;                   // function pointer required correct align(use uint32)
         bool               AllowConsole;
-        bool (*Handler)(ChatHandler*, const char* args);
+        bool(*Handler)(ChatHandler*, const char* args);
         std::string        Help;
         ChatCommand *      ChildCommands;
 };
@@ -44,7 +44,7 @@ class ChatHandler
         explicit ChatHandler(Player* player) : m_session(player->GetSession()) { }
         virtual ~ChatHandler() { }
 
-        static void FillMessageData(WorldPacket *data, WorldSession* session, uint8 type, uint32 language, const char *channelName, uint64 target_guid, const char *message, Unit* speaker);
+        static void FillMessageData(WorldPacket *data, WorldSession* session, uint8 type, uint32 language, const char* channelName, uint64 target_guid, const char* message, Unit* speaker);
 
         void FillMessageData(WorldPacket *data, uint8 type, uint32 language, uint64 target_guid, const char* message)
         {
@@ -59,11 +59,11 @@ class ChatHandler
         static char* LineFromMessage(char*& pos) { char* start = strtok(pos, "\n"); pos = NULL; return start; }
 
         // function with different implementation for chat/console
-        virtual const char *GetTrinityString(int32 entry) const;
-        virtual void SendSysMessage(const char *str);
+        virtual const char* GetTrinityString(int32 entry) const;
+        virtual void SendSysMessage(const char* str);
 
         void SendSysMessage(int32     entry);
-        void PSendSysMessage(const char *format, ...) ATTR_PRINTF(2, 3);
+        void PSendSysMessage(const char* format, ...) ATTR_PRINTF(2, 3);
         void PSendSysMessage(int32     entry, ...);
         std::string PGetParseString(int32 entry, ...) const;
 
@@ -72,7 +72,7 @@ class ChatHandler
         static ChatCommand* getCommandTable();
 
         bool isValidChatMessage(const char* msg);
-        void SendGlobalSysMessage(const char *str);
+        void SendGlobalSysMessage(const char* str);
 
         bool hasStringAbbr(const char* name, const char* part);
 
@@ -86,7 +86,7 @@ class ChatHandler
         bool HasLowerSecurity(Player* target, uint64 guid, bool strong = false);
         bool HasLowerSecurityAccount(WorldSession* target, uint32 account, bool strong = false);
 
-        void SendGlobalGMSysMessage(const char *str);
+        void SendGlobalGMSysMessage(const char* str);
         Player* getSelectedPlayer();
         Creature* getSelectedCreature();
         Unit* getSelectedUnit();
@@ -140,22 +140,22 @@ class ChatHandler
         bool HandleBanListCharacterCommand(const char* args);
         bool HandleBanListIPCommand(const char* args);
 
-        bool HandleCastCommand(const char *args);
-        bool HandleCastBackCommand(const char *args);
-        bool HandleCastDistCommand(const char *args);
-        bool HandleCastSelfCommand(const char *args);
-        bool HandleCastTargetCommand(const char *args);
+        bool HandleCastCommand(const char* args);
+        bool HandleCastBackCommand(const char* args);
+        bool HandleCastDistCommand(const char* args);
+        bool HandleCastSelfCommand(const char* args);
+        bool HandleCastTargetCommand(const char* args);
 
-        bool HandleCharacterCustomizeCommand(const char * args);
-        bool HandleCharacterChangeFactionCommand(const char * args);
-        bool HandleCharacterChangeRaceCommand(const char * args);
+        bool HandleCharacterCustomizeCommand(const char* args);
+        bool HandleCharacterChangeFactionCommand(const char* args);
+        bool HandleCharacterChangeRaceCommand(const char* args);
         bool HandleCharacterDeletedDeleteCommand(const char* args);
         bool HandleCharacterDeletedListCommand(const char* args);
         bool HandleCharacterDeletedRestoreCommand(const char* args);
         bool HandleCharacterDeletedOldCommand(const char* args);
         bool HandleCharacterEraseCommand(const char* args);
         bool HandleCharacterLevelCommand(const char* args);
-        bool HandleCharacterRenameCommand(const char * args);
+        bool HandleCharacterRenameCommand(const char* args);
         bool HandleCharacterReputationCommand(const char* args);
         bool HandleCharacterTitlesCommand(const char* args);
 
@@ -165,7 +165,7 @@ class ChatHandler
         bool HandleMmapStatsCommand(const char* args);
         bool HandleMmapTestAreaCommand(const char* args);
 
-        bool HandleChannelSetOwnership(const char *args);
+        bool HandleChannelSetOwnership(const char* args);
 
         bool HandlePossessCommand(const char* args);
         bool HandleUnPossessCommand(const char* args);
@@ -181,9 +181,9 @@ class ChatHandler
         bool HandleInstanceListBindsCommand(const char* args);
         bool HandleInstanceUnbindCommand(const char* args);
         bool HandleInstanceStatsCommand(const char* args);
-        bool HandleInstanceSaveDataCommand(const char * args);
+        bool HandleInstanceSaveDataCommand(const char* args);
 
-        bool HandleListAurasCommand(const char * args);
+        bool HandleListAurasCommand(const char* args);
         bool HandleListCreatureCommand(const char* args);
         bool HandleListItemCommand(const char* args);
         bool HandleListObjectCommand(const char* args);
@@ -191,9 +191,9 @@ class ChatHandler
         bool HandleLookupAreaCommand(const char* args);
         bool HandleLookupCreatureCommand(const char* args);
         bool HandleLookupEventCommand(const char* args);
-        bool HandleLookupFactionCommand(const char * args);
-        bool HandleLookupItemCommand(const char * args);
-        bool HandleLookupItemSetCommand(const char * args);
+        bool HandleLookupFactionCommand(const char* args);
+        bool HandleLookupItemCommand(const char* args);
+        bool HandleLookupItemSetCommand(const char* args);
         bool HandleLookupObjectCommand(const char* args);
         bool HandleLookupPlayerIpCommand(const char* args);
         bool HandleLookupPlayerAccountCommand(const char* args);
@@ -201,24 +201,24 @@ class ChatHandler
         bool HandleLookupQuestCommand(const char* args);
         bool HandleLookupSkillCommand(const char* args);
         bool HandleLookupSpellCommand(const char* args);
-        bool HandleLookupTaxiNodeCommand(const char * args);
-        bool HandleLookupTeleCommand(const char * args);
-        bool HandleLookupTitleCommand(const char * args);
+        bool HandleLookupTaxiNodeCommand(const char* args);
+        bool HandleLookupTeleCommand(const char* args);
+        bool HandleLookupTitleCommand(const char* args);
 
-        bool HandlePDumpLoadCommand(const char *args);
-        bool HandlePDumpWriteCommand(const char *args);
+        bool HandlePDumpLoadCommand(const char* args);
+        bool HandlePDumpWriteCommand(const char* args);
 
-        bool HandleResetAchievementsCommand(const char * args);
-        bool HandleResetAllCommand(const char * args);
-        bool HandleResetHonorCommand(const char * args);
-        bool HandleResetLevelCommand(const char * args);
-        bool HandleResetSpellsCommand(const char * args);
-        bool HandleResetStatsCommand(const char * args);
-        bool HandleResetTalentsCommand(const char * args);
+        bool HandleResetAchievementsCommand(const char* args);
+        bool HandleResetAllCommand(const char* args);
+        bool HandleResetHonorCommand(const char* args);
+        bool HandleResetLevelCommand(const char* args);
+        bool HandleResetSpellsCommand(const char* args);
+        bool HandleResetStatsCommand(const char* args);
+        bool HandleResetTalentsCommand(const char* args);
 
         bool HandleSendItemsCommand(const char* args);
         bool HandleSendMailCommand(const char* args);
-        bool HandleSendMessageCommand(const char * args);
+        bool HandleSendMessageCommand(const char* args);
         bool HandleSendMoneyCommand(const char* args);
 
         bool HandleServerExitCommand(const char* args);
@@ -265,15 +265,15 @@ class ChatHandler
         bool HandleMuteCommand(const char* args);
         bool HandleUnmuteCommand(const char* args);
         bool HandleMovegensCommand(const char* args);
-        bool HandleFreezeCommand(const char *args);
-        bool HandleUnFreezeCommand(const char *args);
+        bool HandleFreezeCommand(const char* args);
+        bool HandleUnFreezeCommand(const char* args);
         bool HandleListFreezeCommand(const char* args);
 
         bool HandleCooldownCommand(const char* args);
         bool HandleUnLearnCommand(const char* args);
         bool HandleGetDistanceCommand(const char* args);
         bool HandleDieCommand(const char* args);
-        bool HandleDamageCommand(const char *args);
+        bool HandleDamageCommand(const char* args);
         bool HandleReviveCommand(const char* args);
         bool HandleAuraCommand(const char* args);
         bool HandleUnAuraCommand(const char* args);
@@ -298,7 +298,7 @@ class ChatHandler
         bool HandleGroupRemoveCommand(const char* args);
 
         bool HandleBankCommand(const char* args);
-        bool HandleKickPlayerCommand(const char * args);
+        bool HandleKickPlayerCommand(const char* args);
 
         // GM ticket command handlers
         bool HandleGMTicketListCommand(const char* args);
@@ -322,13 +322,10 @@ class ChatHandler
         bool HandleMaxSkillCommand(const char* args);
         bool HandleSetSkillCommand(const char* args);
         bool HandleRespawnCommand(const char* args);
-        bool HandleComeToMeCommand(const char *args);
-        bool HandleCombatStopCommand(const char *args);
+        bool HandleComeToMeCommand(const char* args);
+        bool HandleCombatStopCommand(const char* args);
 
-        /*bool HandleCharDeleteCommand(const char *args);
-        bool HandleSendMessageCommand(const char * args);*/
-
-        bool HandleFlushArenaPointsCommand(const char *args);
+        bool HandleFlushArenaPointsCommand(const char* args);
         bool HandlePlayAllCommand(const char* args);
         bool HandleRepairitemsCommand(const char* args);
 
@@ -347,11 +344,11 @@ class ChatHandler
         void HandleLearnSkillRecipesHelper(Player* player, uint32 skill_id);
 
         //Wintergrasp
-        bool HandleWintergraspStatusCommand(const char *args);
-        bool HandleWintergraspStartCommand(const char *args);
-        bool HandleWintergraspStopCommand(const char *args);
-        bool HandleWintergraspSwitchTeamCommand(const char *args);
-        bool HandleWintergraspTimerCommand(const char *args);
+        bool HandleWintergraspStatusCommand(const char* args);
+        bool HandleWintergraspStartCommand(const char* args);
+        bool HandleWintergraspStopCommand(const char* args);
+        bool HandleWintergraspSwitchTeamCommand(const char* args);
+        bool HandleWintergraspTimerCommand(const char* args);
 
         // Stores informations about a deleted character
         struct DeletedInfo
@@ -386,9 +383,9 @@ class CliHandler : public ChatHandler
         explicit CliHandler(void* callbackArg, Print* zprint) : m_callbackArg(callbackArg), m_print(zprint) { }
 
         // overwrite functions
-        const char *GetTrinityString(int32 entry) const;
+        const char* GetTrinityString(int32 entry) const;
         bool isAvailable(ChatCommand const& cmd) const;
-        void SendSysMessage(const char *str);
+        void SendSysMessage(const char* str);
         std::string GetNameLink() const;
         bool needReportToTarget(Player* chr) const;
         LocaleConstant GetSessionDbcLocale() const;

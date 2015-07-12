@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -1366,27 +1366,28 @@ void LFGMgr::UpdateProposal(uint32 proposalId, const uint64& guid, bool accept)
         }
 
         // Set the dungeon difficulty
-        LFGDungeonEntry const* pDungeon = sLFGDungeonStore.LookupEntry(pProposal->dungeonId);
-        ASSERT(pDungeon);
-        grp->SetDungeonDifficulty(Difficulty(pDungeon->difficulty));
-        uint64 gguid = grp->GetGUID();
-        SetDungeon(gguid, pDungeon->Entry());
-        SetState(gguid, LFG_STATE_DUNGEON);
+        if(grp) {
+            LFGDungeonEntry const* pDungeon = sLFGDungeonStore.LookupEntry(pProposal->dungeonId);
+            ASSERT(pDungeon);
+            grp->SetDungeonDifficulty(Difficulty(pDungeon->difficulty));
+            uint64 gguid = grp->GetGUID();
+            SetDungeon(gguid, pDungeon->Entry());
+            SetState(gguid, LFG_STATE_DUNGEON);
 
-        // Remove players/groups from Queue
-        for(LfgGuidList::const_iterator it = pProposal->queues.begin(); it != pProposal->queues.end(); ++it)
-        {
-            uint64 guid = (*it);
-            RemoveFromQueue(guid);
+            // Remove players/groups from Queue
+            for(LfgGuidList::const_iterator it = pProposal->queues.begin(); it != pProposal->queues.end(); ++it)
+            {
+                uint64 guid = (*it);
+                RemoveFromQueue(guid);
+            }
+
+            // Teleport Player
+            for(LfgPlayerList::const_iterator it = playersToTeleport.begin(); it != playersToTeleport.end(); ++it)
+                TeleportPlayer(*it, false);
+
+            // Update group info
+            grp->SendUpdate();
         }
-
-        // Teleport Player
-        for(LfgPlayerList::const_iterator it = playersToTeleport.begin(); it != playersToTeleport.end(); ++it)
-            TeleportPlayer(*it, false);
-
-        // Update group info
-        grp->SendUpdate();
-
         delete pProposal;
         m_Proposals.erase(itProposal);
     }

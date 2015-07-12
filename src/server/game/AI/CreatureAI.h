@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -130,6 +130,12 @@ class CreatureAI : public UnitAI
 
         // Called at text emote receive from player
         virtual void ReceiveEmote(Player* /*pPlayer*/, uint32 /*emoteId*/) { }
+
+        // Called when owner takes damage
+        virtual void OwnerDamagedBy(Unit* /*attacker*/) {}
+
+        // Called when owner attacks something
+        virtual void OwnerAttacked(Unit* /*target*/) {}
 
         /// == State checks =================================
         // called when the corpse of this creature gets removed

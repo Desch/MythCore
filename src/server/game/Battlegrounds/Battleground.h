@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -99,7 +99,7 @@ enum BattlegroundTimeIntervals
     RESURRECTION_INTERVAL           = 30000,                // ms
     //REMIND_INTERVAL                 = 10000,                // ms
     INVITATION_REMIND_TIME          = 20000,                // ms
-    INVITE_ACCEPT_WAIT_TIME         = 40000,                // ms
+    INVITE_ACCEPT_WAIT_TIME         = 60000,                // ms
     TIME_TO_AUTOREMOVE              = 120000,               // ms
     MAX_OFFLINE_TIME                = 300,                  // secs
     RESPAWN_ONE_DAY                 = 86400,                // secs

@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -503,6 +503,13 @@ class Creature : public Unit, public GridObject<Creature>
         void AddCreatureSpellCooldown(uint32 spellid);
         bool HasSpellCooldown(uint32 spell_id) const;
         bool HasCategoryCooldown(uint32 spell_id) const;
+        uint32 GetCreatureSpellCooldownDelay(uint32 spell_id) const
+        {
+            CreatureSpellCooldowns::const_iterator itr = m_CreatureSpellCooldowns.find(spell_id);
+            time_t t = time(NULL);
+            return uint32(itr != m_CreatureSpellCooldowns.end() && itr->second > t ? itr->second - t : 0);
+        }
+        virtual void ProhibitSpellSchool(SpellSchoolMask, uint32);
 
         bool HasSpell(uint32 spellID) const;
 

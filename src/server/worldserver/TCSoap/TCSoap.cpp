@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -37,7 +37,7 @@ void TCSoapRunnable::run()
         if(!soap_valid_socket(soap_accept(&soap)))
             continue;   // ran into an accept timeout
 
-        sLog->outDebug(LOG_FILTER_NETWORKIO, "SOAP: accepted connection from IP=%d.%d.%d.%d", (int)(soap.ip>>24)&0xFF, (int)(soap.ip>>16)&0xFF, (int)(soap.ip>>8)&0xFF, (int)soap.ip&0xFF);
+        sLog->outDebug(LOG_FILTER_NETWORKIO, "SOAP: accepted connection from IP = %d.%d.%d.%d", (int)(soap.ip>>24)&0xFF, (int)(soap.ip>>16)&0xFF, (int)(soap.ip>>8)&0xFF, (int)soap.ip&0xFF);
         struct soap* thread_soap = soap_copy(&soap);// make a safe copy
 
         ACE_Message_Block* mb = new ACE_Message_Block(sizeof(struct soap*));
@@ -58,20 +58,18 @@ void TCSoapRunnable::process_message(ACE_Message_Block* mb)
 
     soap_serve(soap);
     soap_destroy(soap); // dealloc C++ data
-    soap_end(soap); // dealloc data and clean up
-    soap_done(soap); // detach soap struct
+    soap_end(soap);     // dealloc data and clean up
+    soap_done(soap);    // detach soap struct
     free(soap);
 }
-/*
-Code used for generating stubs:
-int ns1__executeCommand(char* command, char** result);
-*/
+
 int ns1__executeCommand(soap* soap, char* command, char** result)
 {
     // security check
     if(!soap->userid || !soap->passwd)
     {
         sLog->outDebug(LOG_FILTER_NETWORKIO, "SOAP Client didn't provide login information");
+        sLog->outRemote("SOAP Client didn't provide login information");
         return 401;
     }
 
@@ -79,18 +77,21 @@ int ns1__executeCommand(soap* soap, char* command, char** result)
     if(!accountId)
     {
         sLog->outDebug(LOG_FILTER_NETWORKIO, "SOAP Client used invalid username '%s'", soap->userid);
+        sLog->outRemote("SOAP Client used invalid username '%s'", soap->userid);
         return 401;
     }
 
     if(!sAccountMgr->CheckPassword(accountId, soap->passwd))
     {
         sLog->outDebug(LOG_FILTER_NETWORKIO, "SOAP invalid password for account '%s'", soap->userid);
+        sLog->outRemote("SOAP invalid password for account '%s'", soap->userid);
         return 401;
     }
 
     if(sAccountMgr->GetSecurity(accountId) < SEC_ADMINISTRATOR)
     {
         sLog->outDebug(LOG_FILTER_NETWORKIO, "SOAP %s's gmlevel is too low", soap->userid);
+        sLog->outRemote("SOAP %s's gmlevel is too low", soap->userid);
         return 403;
     }
 
@@ -98,6 +99,7 @@ int ns1__executeCommand(soap* soap, char* command, char** result)
         return soap_sender_fault(soap, "Command mustn't be empty", "The supplied command was an empty string");
 
     sLog->outDebug(LOG_FILTER_NETWORKIO, "SOAP got command '%s'", command);
+    sLog->outRemote("SOAP got command: '%s' from user: '%s' ", command, soap->userid);
     SOAPCommand connection;
 
     // commands are executed in the world thread. We have to wait for them to be completed
@@ -107,15 +109,11 @@ int ns1__executeCommand(soap* soap, char* command, char** result)
         sWorld->QueueCliCommand(cmd);
     }
 
-    // wait for callback to complete command
-
     int acc = connection.pendingCommands.acquire();
     if(acc)
     {
         sLog->outError("SOAP Error while acquiring lock, acc = %i, errno = %u", acc, errno);
     }
-
-    // alright, command finished
 
     char* printBuffer = soap_strdup(soap, connection.m_printBuffer.c_str());
     if(connection.hasCommandSucceeded())
@@ -133,12 +131,6 @@ void SOAPCommand::commandFinished(void* soapconnection, bool success)
     con->setCommandSuccess(success);
     con->pendingCommands.release();
 }
-
-////////////////////////////////////////////////////////////////////////////////
-//
-//  Namespace Definition Table
-//
-////////////////////////////////////////////////////////////////////////////////
 
 struct Namespace namespaces[] =
 {   { "SOAP-ENV", "http://schemas.xmlsoap.org/soap/envelope/", NULL, NULL }, // must be first

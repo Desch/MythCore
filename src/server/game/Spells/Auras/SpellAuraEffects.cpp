@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -1518,7 +1518,7 @@ void AuraEffect::HandleShapeshiftBoosts(Unit* target, bool apply) const
                     // Heart of the Wild
                     if((*i)->GetSpellProto()->SpellIconID == 240 && (*i)->GetMiscValue() == 3)
                     {
-                        int32 HotWMod = (*i)->GetAmount() / 2;
+                        int32 HotWMod = HotWSpellId == 24900 ? (*i)->GetAmount()/2 : (*i)->GetAmount(); //fix x2 attack power bonus by Heart of the Wild
 
                         target->CastCustomSpell(target, HotWSpellId, &HotWMod, NULL, NULL, true, NULL, this);
                         break;
@@ -1985,7 +1985,8 @@ void AuraEffect::HandleAuraModShapeshift(AuraApplication const* aurApp, uint8 mo
         }
 
         // remove other shapeshift before applying a new one
-        target->RemoveAurasByType(SPELL_AURA_MOD_SHAPESHIFT, 0, GetBase());
+        if(!target->HasAura(51713))
+            target->RemoveAurasByType(SPELL_AURA_MOD_SHAPESHIFT, 0, GetBase());
         // Priest: Hymn of Hope
         target->RemoveAurasDueToSpell(64904);
 
@@ -2626,7 +2627,10 @@ void AuraEffect::HandleAuraModPacify(AuraApplication const* aurApp, uint8 mode, 
     Unit* target = aurApp->GetTarget();
 
     if(apply)
+    {
         target->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PACIFIED);
+        target->AttackStop();
+    }
     else
     {
         // do not remove unit flag if there are more than this auraEffect of that kind on unit on unit
@@ -2760,13 +2764,13 @@ void AuraEffect::HandleAuraUntrackable(AuraApplication const* aurApp, uint8 mode
     Unit* target = aurApp->GetTarget();
 
     if(apply)
-        target->SetByteFlag(UNIT_FIELD_BYTES_1, 3, UNIT_BYTE1_FLAG_UNTRACKABLE);
+        target->SetByteFlag(UNIT_FIELD_BYTES_1, 2, UNIT_STAND_FLAGS_UNTRACKABLE);
     else
     {
         // do not remove unit flag if there are more than this auraEffect of that kind on unit on unit
         if(target->HasAuraType(GetAuraType()))
             return;
-        target->RemoveByteFlag(UNIT_FIELD_BYTES_1, 3, UNIT_BYTE1_FLAG_UNTRACKABLE);
+        target->RemoveByteFlag(UNIT_FIELD_BYTES_1, 2, UNIT_STAND_FLAGS_UNTRACKABLE);
     }
 }
 
@@ -4517,7 +4521,7 @@ void AuraEffect::HandleModDamagePercentDone(AuraApplication const* aurApp, uint8
     if(!target)
         return;
 
-    if(target->HasItemFitToSpellRequirements(GetSpellProto()))
+    if(target->HasItemFitToSpellRequirements(GetSpellProto()) && GetMiscValue() & SPELL_SCHOOL_MASK_NORMAL)
     {
         target->ApplyModSignedFloatValue(PLAYER_FIELD_MOD_DAMAGE_DONE_PCT, GetAmount() / 100.0f, apply);
         target->UpdateDamagePhysical(BASE_ATTACK);
@@ -6324,9 +6328,9 @@ void AuraEffect::HandlePeriodicDamageAurasTick(Unit* target, Unit* caster) const
 
     SpellPeriodicAuraLogInfo pInfo(this, damage, overkill, absorb, resist, 0.0f, crit);
     target->SendPeriodicAuraLog(&pInfo);
-
-    caster->ProcDamageAndSpell(target, procAttacker, procVictim, procEx, damage, BASE_ATTACK, GetSpellProto());
+    
     caster->DealDamage(target, damage, &cleanDamage, DOT, GetSpellSchoolMask(GetSpellProto()), GetSpellProto(), true);
+    caster->ProcDamageAndSpell(target, procAttacker, procVictim, procEx, damage, BASE_ATTACK, GetSpellProto());
 }
 
 void AuraEffect::HandlePeriodicHealthLeechAuraTick(Unit* target, Unit* caster) const
@@ -6384,8 +6388,10 @@ void AuraEffect::HandlePeriodicHealthLeechAuraTick(Unit* target, Unit* caster) c
     damage = (damage <= absorb+resist) ? 0 : (damage-absorb-resist);
     if(damage)
         procVictim |= PROC_FLAG_TAKEN_DAMAGE;
-    caster->ProcDamageAndSpell(target, procAttacker, procVictim, procEx, damage, BASE_ATTACK, GetSpellProto());
+        
     int32 new_damage = caster->DealDamage(target, damage, &cleanDamage, DOT, GetSpellSchoolMask(GetSpellProto()), GetSpellProto(), false);
+
+    caster->ProcDamageAndSpell(target, procAttacker, procVictim, procEx, damage, BASE_ATTACK, GetSpellProto());
 
     float gainMultiplier = SpellMgr::CalculateSpellEffectValueMultiplier(GetSpellProto(), GetEffIndex(), caster);
 
@@ -6740,10 +6746,10 @@ void AuraEffect::HandlePeriodicPowerBurnManaAuraTick(Unit* target, Unit* caster)
     uint32 procEx       = createProcExtendMask(&damageInfo, SPELL_MISS_NONE) | PROC_EX_INTERNAL_DOT;
     if(damageInfo.damage)
         procVictim |= PROC_FLAG_TAKEN_DAMAGE;
+        
+    caster->DealSpellDamage(&damageInfo, true);
 
     caster->ProcDamageAndSpell(damageInfo.target, procAttacker, procVictim, procEx, damageInfo.damage, BASE_ATTACK, spellProto);
-
-    caster->DealSpellDamage(&damageInfo, true);
 }
 
 void AuraEffect::HandleProcTriggerSpellAuraProc(AuraApplication* aurApp, ProcEventInfo& eventInfo)

@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -768,10 +768,16 @@ void Map::MoveAllCreaturesInMoveList()
             // update pos
             c->Relocate(cm.x, cm.y, cm.z, cm.ang);
             c->UpdateObjectVisibility(false);
-        } else {
-            // if creature can't be move in new cell/grid (not loaded) move it to repawn cell/grid
-            // creature coordinates will be updated and notifiers send
-            if(!CreatureRespawnRelocation(c, true))  // ... or unload (if respawn grid also not loaded) TODO: CHECK IT!!!
+        } else if(c && !CreatureRespawnRelocation(c, true)) {
+            //AddObjectToRemoveList(Pet*) should only be called in Pet::Remove
+            //This may happen when a player just logs in and a pet moves to a nearby unloaded cell
+            //To avoid this, we can load nearby cells when player log in
+            //But this check is always needed to ensure safety
+            //TODO: pets will disappear if this is outside CreatureRespawnRelocation
+            //need to check why pet is frequently relocated to an unloaded cell
+            if(c->isPet())
+                ((Pet*)c)->Remove(PET_SAVE_NOT_IN_SLOT, true);
+            else
                 AddObjectToRemoveList(c);
         }
     }

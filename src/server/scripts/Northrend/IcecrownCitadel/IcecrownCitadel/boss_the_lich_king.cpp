@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -365,6 +365,31 @@ public:
             me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
             //SetEquipmentSlots(false, 49706, EQUIP_NO_CHANGE, EQUIP_NO_CHANGE);    //2 swords are too much
 
+            // fixing the platform edge bug
+            // we now rebuild the platform at LK reset
+            InstanceScript* _instance = me->GetInstanceScript();
+            me->CastSpell(me, SPELL_WMO_INTACT, true);
+            me->CastSpell(me, SPELL_WMO_REBUILD, true);
+
+            //Rebuilding ice shards
+            if(GameObject* go = ObjectAccessor::GetGameObject(*me, _instance->GetData64(GUID_ICE_SHARD_1)))
+                go->SetGoState(GO_STATE_READY);
+            if(GameObject* go = ObjectAccessor::GetGameObject(*me, _instance->GetData64(GUID_ICE_SHARD_2)))
+                go->SetGoState(GO_STATE_READY);
+            if(GameObject* go = ObjectAccessor::GetGameObject(*me, _instance->GetData64(GUID_ICE_SHARD_3)))
+                go->SetGoState(GO_STATE_READY);
+            if(GameObject* go = ObjectAccessor::GetGameObject(*me, _instance->GetData64(GUID_ICE_SHARD_4)))
+                go->SetGoState(GO_STATE_READY);
+            //Hiding edge destroy warning
+            if(GameObject* go = ObjectAccessor::GetGameObject(*me, _instance->GetData64(GUID_EDGE_DESTROY_WARNING)))
+                go->SetGoState(GO_STATE_READY);
+            //Hiding inner waterfall
+            if(GameObject* go = ObjectAccessor::GetGameObject(*me, _instance->GetData64(GUID_FROSTY_EDGE_INNER)))
+                go->SetGoState(GO_STATE_READY);
+            //Showing outer waterfall
+            if(GameObject* go = ObjectAccessor::GetGameObject(*me, _instance->GetData64(GUID_FROSTY_EDGE_OUTER)))
+                go->SetGoState(GO_STATE_ACTIVE);
+
             if(me->GetMotionMaster()->GetCurrentMovementGeneratorType() == POINT_MOTION_TYPE)
                 me->GetMotionMaster()->MovementExpired();
              summons.DespawnAll();
@@ -425,6 +450,43 @@ public:
         void JustDied(Unit* killer)
         {
             BossAI::JustDied(killer);
+            if(killer->GetTypeId() ==  TYPEID_PLAYER)
+            {
+                if(killer->ToPlayer()->GetGroup())
+                {
+                    Group* group = killer->ToPlayer()->GetGroup();
+                    for (GroupReference* itr = group->GetFirstMember(); itr != NULL; itr = itr->next())
+                    {
+                        Player* pl = itr->getSource();
+
+                        if (!pl || !pl->GetSession())
+                            continue;
+
+                        uint32 achiev;
+                        achiev = 0;
+                        switch(GetDifficulty())
+                        {
+                            case RAID_DIFFICULTY_10MAN_NORMAL:
+                                achiev = 4530;
+                                break;
+                            case RAID_DIFFICULTY_25MAN_NORMAL:
+                                achiev = 4597;
+                                break;
+                            case RAID_DIFFICULTY_10MAN_HEROIC:
+                                achiev = 4583;
+                                break;
+                            case RAID_DIFFICULTY_25MAN_HEROIC:
+                                achiev = 4584;
+                                break;
+                            default:
+                                break;
+                        }
+                        
+                        if(AchievementEntry const* pAchievment = GetAchievementStore()->LookupEntry(achiev))
+                            pl->CompletedAchievement(pAchievment);                    
+                    }
+                }
+            }
 
             Cleanup();
             DoCastAOE(SPELL_PLAY_MOVIE);
@@ -586,6 +648,8 @@ public:
                     SetCombatMovement(false);
                     me->SetInCombatWithZone();
                     me->GetMotionMaster()->MovePoint(POINT_PLATFORM_CENTER, MovePos[1]);
+                    instance->DoRemoveAurasDueToSpellOnPlayers(RAID_MODE(SPELL_NECROTIC_PLAGUE_10_N, SPELL_NECROTIC_PLAGUE_25_N, SPELL_NECROTIC_PLAGUE_10_H, SPELL_NECROTIC_PLAGUE_25_H));
+                    instance->DoRemoveAurasDueToSpellOnPlayers(RAID_MODE(SPELL_NECROTIC_PLAGUE_EFFECT_10_N, SPELL_NECROTIC_PLAGUE_EFFECT_25_N, SPELL_NECROTIC_PLAGUE_EFFECT_10_H, SPELL_NECROTIC_PLAGUE_EFFECT_25_H));
                     break;
                 }
                 case ACTION_PHASE_SWITCH_2:
@@ -1136,6 +1200,7 @@ public:
             me->GetMotionMaster()->MovePoint(POINT_PLATFORM_CENTER, MovePos[8]);
             DoCast(me, SPELL_REVIVE, true);
             DoCast(SPELL_WMO_INTACT);
+            me->CastSpell(me, SPELL_WMO_REBUILD, true);
             //Rebuilding ice shards
             if(GameObject* go = ObjectAccessor::GetGameObject(*me, _instance->GetData64(GUID_ICE_SHARD_1)))
                 go->SetGoState(GO_STATE_READY);
@@ -1479,7 +1544,7 @@ public:
                 case SPELL_VALKYR_GRAB_PLAYER:
                 {
                     float speedRate = me->GetSpeedRate(MOVE_RUN);
-                    speedRate = 0.10f;
+                    speedRate = 0.20f;
                     me->SetSpeed(MOVE_FLIGHT, speedRate);
                     me->SetSpeed(MOVE_RUN, speedRate);
 
@@ -3281,7 +3346,6 @@ public:
             events.ScheduleEvent(EVENT_BECOME_ACTIVE, 500);
             events.ScheduleEvent(EVENT_DESPAWN, 60000);
             SetCombatMovement(false);
-            active = false;
         }
 
         void UpdateAI(const uint32 diff)
@@ -3295,6 +3359,7 @@ public:
                     {
                         DoCast(me, SPELL_SHADOW_TRAP_INTRO, true);
                         me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE);
+                        me->SetReactState(REACT_AGGRESSIVE);
                         events.ScheduleEvent(EVENT_ACTIVE, 1500);
                         break;
                     }
@@ -3305,17 +3370,11 @@ public:
                         //If they don't reach that player within around 45 seconds, they will despawn harmlessly.
                         events.ScheduleEvent(EVENT_DESPAWN, 45000);
                         events.ScheduleEvent(EVENT_CHECK, 500);
-                        active = true;
                         break;
                     }
                     case EVENT_CHECK:
                     {
-                        if(Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0, 4.0f, true))
-                        {
-                            if(target->GetTypeId() == TYPEID_PLAYER)
-                                me->CastSpell(target, SPELL_SHADOW_TRAP_EFFECT, true);
-                        }
-                        else if(Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 1, 4.0f, true))
+                        if(Unit* target = SelectTarget(SELECT_TARGET_RANDOM))
                         {
                             if(target->GetTypeId() == TYPEID_PLAYER)
                                 me->CastSpell(target, SPELL_SHADOW_TRAP_EFFECT, true);
@@ -3337,7 +3396,6 @@ public:
         }
     private:
         EventMap events;
-        bool active;
     };
 
     CreatureAI* GetAI(Creature* pCreature) const

@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Copyright (C) 2012 SymphonyArt <http://symphonyart.com/>
  *
@@ -119,31 +119,31 @@ public:
             BossAI::Reset();
         }
 
-        void JustDied(Unit* who)
+        void JustDied(Unit* /*pWho*/)
         {
             DoCast(GetDifficulty() == DUNGEON_DIFFICULTY_NORMAL ? SPELL_SUMMON_LOOT_MISSILE : SPELL_SUMMON_LOOT_MISSILE_H);
-            BossAI::JustDied(who);
+            //BossAI::JustDied(who);
         }
 
-        void JustSummoned(Creature* summon)
+        void JustSummoned(Creature* pSummon)
         {
-            switch(summon->GetEntry())
+            switch(pSummon->GetEntry())
             {
-            case NPC_AHUNE_FROZEN_CORE:
-                FrozenCoreGUID = summon->GetGUID();
-                //no break intended
-            case NPC_AHUNITE_HAILSTONE:
-            case NPC_AHUNITE_FROSTWIND:
-            case NPC_AHUNITE_COLDWAVE:
-                break;
-            case NPC_AHUNE_SUMMONLOC_BUNNY:
-                summon->DespawnOrUnsummon(400);
-                //no break intended
-            default:
-                return;
+                case NPC_AHUNITE_HAILSTONE:
+                case NPC_AHUNITE_FROSTWIND:
+                case NPC_AHUNITE_COLDWAVE:
+                    break;
+                case NPC_AHUNE_FROZEN_CORE:
+                    FrozenCoreGUID = pSummon->GetGUID();
+                    break;
+                case NPC_AHUNE_SUMMONLOC_BUNNY:
+                    pSummon->DespawnOrUnsummon(400);
+                    //no break intended
+                default:
+                    return;
             }
-            summons.Summon(summon);
-            summon->SetReactState(REACT_AGGRESSIVE);
+            summons.Summon(pSummon);
+            pSummon->SetReactState(REACT_AGGRESSIVE);
         }
 
         void EnterCombat(Unit* who)
@@ -178,9 +178,7 @@ public:
             {
                 FrozenCore->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE);
                 FrozenCore->SetVisible(true);
-            }
-            else if(instance->GetBossState(DATA_AHUNE) == IN_PROGRESS)
-            {
+            } else if(instance->GetBossState(DATA_AHUNE) == IN_PROGRESS) {
                 me->Kill(me, false);
                 return;
             }
@@ -228,39 +226,39 @@ public:
             {
                 switch(eventId)
                 {
-                case EVENT_COLD:
-                    DoCastVictim(SPELL_COLD_SLAP);
-                    events.ScheduleEvent(EVENT_COLD, 10000);
-                    break;
-                case EVENT_SUMMON_HAILSTONE:
-                    SpawnSummonLocBunnies(round);
-                    DoCastAOE(SPELL_SUMMON_HAILSTONE);
-                    events.ScheduleEvent(EVENT_SUMMON_HAILSTONE, urand(17500, 20000));
-                    break;
-                case EVENT_SUMMON_COLDWAVE:
-                    SpawnSummonLocBunnies(round);
-                    DoCastAOE(SPELL_SUMMON_COLDWAVE);
-                    events.ScheduleEvent(EVENT_SUMMON_FROSTWIND, urand(12500, 15000));
-                    break;
-                case EVENT_SUMMON_FROSTWIND:
-                    SpawnSummonLocBunnies(2*round);
-                    DoCastAOE(SPELL_SUMMON_FROSTWIND);
-                    events.ScheduleEvent(EVENT_SUMMON_COLDWAVE, urand(10000, 12000));
-                    break;
-                case EVENT_PHASE_TWO:
-                    EnterPhaseTwo();
-                    return;
-                case EVENT_PHASE_ONE:
-                    EnterPhaseOne();
-                    break;
-                case EVENT_ANNOUNCE_EMERGE:
-                    DoScriptText(TEXTID_EMERGE, me);
-                    break;
-                case EVENT_ICE_SPIKES:
-                    if(Unit* victim = SelectTarget(SELECT_TARGET_RANDOM, 0, 60.0f, true))
-                        DoCast(victim, SPELL_SUMMON_ICE_SPEAR_BUNNY);
-                    events.ScheduleEvent(EVENT_ICE_SPIKES, urand(6000, 7500));
-                    break;
+                    case EVENT_COLD:
+                        DoCastVictim(SPELL_COLD_SLAP);
+                        events.ScheduleEvent(EVENT_COLD, 10000);
+                        break;
+                    case EVENT_SUMMON_HAILSTONE:
+                        SpawnSummonLocBunnies(round);
+                        DoCastAOE(SPELL_SUMMON_HAILSTONE);
+                        events.ScheduleEvent(EVENT_SUMMON_HAILSTONE, urand(17500, 20000));
+                        break;
+                    case EVENT_SUMMON_COLDWAVE:
+                        SpawnSummonLocBunnies(round);
+                        DoCastAOE(SPELL_SUMMON_COLDWAVE);
+                        events.ScheduleEvent(EVENT_SUMMON_FROSTWIND, urand(12500, 15000));
+                        break;
+                    case EVENT_SUMMON_FROSTWIND:
+                        SpawnSummonLocBunnies(2*round);
+                        DoCastAOE(SPELL_SUMMON_FROSTWIND);
+                        events.ScheduleEvent(EVENT_SUMMON_COLDWAVE, urand(10000, 12000));
+                        break;
+                    case EVENT_PHASE_TWO:
+                        EnterPhaseTwo();
+                        return;
+                    case EVENT_PHASE_ONE:
+                        EnterPhaseOne();
+                        break;
+                    case EVENT_ANNOUNCE_EMERGE:
+                        DoScriptText(TEXTID_EMERGE, me);
+                        break;
+                    case EVENT_ICE_SPIKES:
+                        if(Unit* victim = SelectTarget(SELECT_TARGET_RANDOM, 0, 60.0f, true))
+                            DoCast(victim, SPELL_SUMMON_ICE_SPEAR_BUNNY);
+                        events.ScheduleEvent(EVENT_ICE_SPIKES, urand(6000, 7500));
+                        break;
                 }
             }
             if(phase == PHASE_1)
@@ -328,10 +326,10 @@ public:
             {
                 switch(eventId)
                 {
-                case EVENT_PULVERIZE:
-                    DoCastAOE(SPELL_PULVERIZE);
-                    events.ScheduleEvent(EVENT_COLD, urand(5000, 6000));
-                    break;
+                    case EVENT_PULVERIZE:
+                        DoCastAOE(SPELL_PULVERIZE);
+                        events.ScheduleEvent(EVENT_COLD, urand(5000, 6000));
+                        break;
                 }
             }
             DoMeleeAttackIfReady();
@@ -433,12 +431,12 @@ public:
             {
                 switch(eventId)
                 {
-                case EVENT_BITTER_BLAST:
-                    if(Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0, 60.0f, true))
-                        DoCast(target, SPELL_BITTER_BLAST);
+                    case EVENT_BITTER_BLAST:
+                        if(Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0, 60.0f, true))
+                            DoCast(target, SPELL_BITTER_BLAST);
 
-                    events.ScheduleEvent(EVENT_BITTER_BLAST, urand(5000, 6000));
-                    break;
+                        events.ScheduleEvent(EVENT_BITTER_BLAST, urand(5000, 6000));
+                        break;
                 }
             }
             DoMeleeAttackIfReady();
@@ -476,7 +474,7 @@ public:
                 me->DealDamage(ahune, dmg);
         }
 
-        void JustDied(Unit* /*victim*/)
+        void JustDied(Unit* /*pVictim*/)
         {
             if(Unit* ahune = me->ToTempSummon()->GetSummoner())
             {
@@ -486,9 +484,9 @@ public:
         }
     };
 
-    CreatureAI* GetAI(Creature* creature) const
+    CreatureAI* GetAI(Creature* pCreature) const
     {
-        return new boss_ahune_frostcoreAI(creature);
+        return new boss_ahune_frostcoreAI(pCreature);
     }
 };
 
@@ -527,8 +525,7 @@ public:
                 DoCastAOE(SPELL_ICE_SPEAR_KNOCKBACK, true);
                 me->DespawnOrUnsummon(3000);
                 timer = 10000;
-            }
-            else timer -= diff;
+            } else timer -= diff;
         }
     };
 

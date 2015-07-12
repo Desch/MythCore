@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2008 - 2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2013 Myth Project <http://mythprojectnetwork.blogspot.com/>
+ * Copyright (C) 2010 - 2014 Myth Project <http://mythprojectnetwork.blogspot.com/>
  *
  * Myth Project's source is based on the Trinity Project source, you can find the
  * link to that easily in Trinity Copyrights. Myth Project is a private community.
@@ -63,14 +63,14 @@ float LackeyLocations[4][2]=
 
 const uint32 m_auiAddEntries[] =
 {
-    24557,                                                  //Kagani Nightstrike
-    24558,                                                  //Elris Duskhallow
-    24554,                                                  //Eramas Brightblaze
-    24561,                                                  //Yazzaj
-    24559,                                                  //Warlord Salaris
-    24555,                                                  //Garaxxas
-    24553,                                                  //Apoko
-    24556,                                                  //Zelfan
+    24557,  //Kagani Nightstrike
+    24558,  //Elris Duskhallow
+    24554,  //Eramas Brightblaze
+    24561,  //Yazzaj
+    24559,  //Warlord Salaris
+    24555,  //Garaxxas
+    24553,  //Apoko
+    24556,  //Zelfan
 };
 
 class boss_priestess_delrissa : public CreatureScript
@@ -215,11 +215,8 @@ public:
 
             if(pInstance->GetData(DATA_DELRISSA_DEATH_COUNT) == MAX_ACTIVE_LACKEY)
                 pInstance->SetData(DATA_DELRISSA_EVENT, DONE);
-            else
-            {
-                if(me->HasFlag(UNIT_DYNAMIC_FLAGS, UNIT_DYNFLAG_LOOTABLE))
-                    me->RemoveFlag(UNIT_DYNAMIC_FLAGS, UNIT_DYNFLAG_LOOTABLE);
-            }
+            else if(me->HasFlag(UNIT_DYNAMIC_FLAGS, UNIT_DYNFLAG_LOOTABLE))
+                me->RemoveFlag(UNIT_DYNAMIC_FLAGS, UNIT_DYNFLAG_LOOTABLE);
         }
 
         void UpdateAI(const uint32 diff)
@@ -341,25 +338,22 @@ struct boss_priestess_lackey_commonAI : public ScriptedAI
 
     void Reset()
     {
-        UsedPotion = false;
-
-        // These guys does not follow normal threat system rules
-        // For later development, some alternative threat system should be made
-        // We do not know what this system is based upon, but one theory is class (healers=high threat, dps=medium, etc)
-        // We reset their threat frequently as an alternative until such a system exist
-        ResetThreatTimer = urand(5000, 20000);
+        if(!pInstance)
+            return;
+        UsedPotion          = false;
+        ResetThreatTimer    = urand(5000, 20000);
 
         // in case she is not alive and Reset was for some reason called, respawn her (most likely party wipe after killing her)
-        if(Creature* pDelrissa = Unit::GetCreature(*me, pInstance ? pInstance->GetData64(DATA_DELRISSA) : 0))
+        if(Creature* pDelrissa = Unit::GetCreature(*me, pInstance->GetData64(DATA_DELRISSA)))
         {
-            if(!pDelrissa->isAlive())
+            if(!pDelrissa->isAlive() && pInstance->GetData(DATA_DELRISSA_EVENT) != DONE)
                 pDelrissa->Respawn();
         }
     }
 
-    void EnterCombat(Unit* who)
+    void EnterCombat(Unit* pWho)
     {
-        if(!who)
+        if(!pWho)
             return;
 
         if(pInstance)
@@ -370,8 +364,8 @@ struct boss_priestess_lackey_commonAI : public ScriptedAI
                 {
                     if(!pAdd->getVictim() && pAdd != me)
                     {
-                        who->SetInCombatWith(pAdd);
-                        pAdd->AddThreat(who, 0.0f);
+                        pWho->SetInCombatWith(pAdd);
+                        pAdd->AddThreat(pWho, 0.0f);
                     }
                 }
             }
@@ -380,8 +374,8 @@ struct boss_priestess_lackey_commonAI : public ScriptedAI
             {
                 if(pDelrissa->isAlive() && !pDelrissa->getVictim())
                 {
-                    who->SetInCombatWith(pDelrissa);
-                    pDelrissa->AddThreat(who, 0.0f);
+                    pWho->SetInCombatWith(pDelrissa);
+                    pDelrissa->AddThreat(pWho, 0.0f);
                 }
             }
         }
@@ -419,13 +413,13 @@ struct boss_priestess_lackey_commonAI : public ScriptedAI
         }
     }
 
-    void KilledUnit(Unit* victim)
+    void KilledUnit(Unit* pVictim)
     {
         if(!pInstance)
             return;
 
         if(Creature* Delrissa = Unit::GetCreature(*me, pInstance->GetData64(DATA_DELRISSA)))
-            Delrissa->AI()->KilledUnit(victim);
+            Delrissa->AI()->KilledUnit(pVictim);
     }
 
     void AcquireGUIDs()
@@ -458,12 +452,12 @@ struct boss_priestess_lackey_commonAI : public ScriptedAI
 
 enum eRogueSpells
 {
-    SPELL_KIDNEY_SHOT       = 27615,
-    SPELL_GOUGE             = 12540,
-    SPELL_KICK              = 27613,
-    SPELL_VANISH            = 44290,
-    SPELL_BACKSTAB          = 15657,
-    SPELL_EVISCERATE        = 27611
+    SPELL_KIDNEY_SHOT   = 27615,
+    SPELL_GOUGE         = 12540,
+    SPELL_KICK          = 27613,
+    SPELL_VANISH        = 44290,
+    SPELL_BACKSTAB      = 15657,
+    SPELL_EVISCERATE    = 27611
 };
 
 class boss_kagani_nightstrike : public CreatureScript
@@ -479,7 +473,7 @@ public:
     struct boss_kagani_nightstrikeAI : public boss_priestess_lackey_commonAI
     {
         //Rogue
-        boss_kagani_nightstrikeAI(Creature* c) : boss_priestess_lackey_commonAI(c) { }
+        boss_kagani_nightstrikeAI(Creature* pCreature) : boss_priestess_lackey_commonAI(pCreature) { }
 
         uint32 Gouge_Timer;
         uint32 Kick_Timer;
@@ -490,12 +484,12 @@ public:
 
         void Reset()
         {
-            Gouge_Timer = 5500;
-            Kick_Timer = 7000;
-            Vanish_Timer = 2000;
+            Gouge_Timer     = 5500;
+            Kick_Timer      = 7000;
+            Vanish_Timer    = 2000;
             Eviscerate_Timer = 6000;
-            Wait_Timer = 5000;
-            InVanish = false;
+            Wait_Timer      = 5000;
+            InVanish        = false;
             me->SetVisible(true);
 
             boss_priestess_lackey_commonAI::Reset();
@@ -530,7 +524,7 @@ public:
                 {
                     DoCast(me->getVictim(), SPELL_BACKSTAB, true);
                     DoCast(me->getVictim(), SPELL_KIDNEY_SHOT, true);
-                    me->SetVisible(true);       // ...? Hacklike
+                    me->SetVisible(true);
                     InVanish = false;
                 } else Wait_Timer -= diff;
             }
@@ -582,8 +576,7 @@ public:
 
     struct boss_ellris_duskhallowAI : public boss_priestess_lackey_commonAI
     {
-        //Warlock
-        boss_ellris_duskhallowAI(Creature* c) : boss_priestess_lackey_commonAI(c) { }
+        boss_ellris_duskhallowAI(Creature* pCreature) : boss_priestess_lackey_commonAI(pCreature) { }
 
         uint32 Immolate_Timer;
         uint32 Shadow_Bolt_Timer;
@@ -593,12 +586,11 @@ public:
 
         void Reset()
         {
-            Immolate_Timer = 6000;
-            Shadow_Bolt_Timer = 3000;
+            Immolate_Timer          = 6000;
+            Shadow_Bolt_Timer       = 3000;
             Seed_of_Corruption_Timer = 2000;
-            Curse_of_Agony_Timer = 1000;
-            Fear_Timer = 10000;
-
+            Curse_of_Agony_Timer    = 1000;
+            Fear_Timer              = 10000;
             boss_priestess_lackey_commonAI::Reset();
         }
 
@@ -657,8 +649,8 @@ public:
 
 enum eKickDown
 {
-    SPELL_KNOCKDOWN     = 11428,
-    SPELL_SNAP_KICK     = 46182
+    SPELL_KNOCKDOWN = 11428,
+    SPELL_SNAP_KICK = 46182
 };
 
 class boss_eramas_brightblaze : public CreatureScript
@@ -673,8 +665,7 @@ public:
 
     struct boss_eramas_brightblazeAI : public boss_priestess_lackey_commonAI
     {
-        //Monk
-        boss_eramas_brightblazeAI(Creature* c) : boss_priestess_lackey_commonAI(c) { }
+        boss_eramas_brightblazeAI(Creature* pCreature) : boss_priestess_lackey_commonAI(pCreature) { }
 
         uint32 Knockdown_Timer;
         uint32 Snap_Kick_Timer;
@@ -713,13 +704,13 @@ public:
 
 enum eMageSpells
 {
-    SPELL_POLYMORPH         = 13323,
-    SPELL_ICE_BLOCK         = 27619,
-    SPELL_BLIZZARD          = 44178,
-    SPELL_ICE_LANCE         = 46194,
-    SPELL_CONE_OF_COLD      = 38384,
-    SPELL_FROSTBOLT         = 15043,
-    SPELL_BLINK             = 14514
+    SPELL_POLYMORPH     = 13323,
+    SPELL_ICE_BLOCK     = 27619,
+    SPELL_BLIZZARD      = 44178,
+    SPELL_ICE_LANCE     = 46194,
+    SPELL_CONE_OF_COLD  = 38384,
+    SPELL_FROSTBOLT     = 15043,
+    SPELL_BLINK         = 14514
 };
 
 class boss_yazzai : public CreatureScript
@@ -734,8 +725,7 @@ public:
 
     struct boss_yazzaiAI : public boss_priestess_lackey_commonAI
     {
-        //Mage
-        boss_yazzaiAI(Creature* c) : boss_priestess_lackey_commonAI(c) { }
+        boss_yazzaiAI(Creature* pCreature) : boss_priestess_lackey_commonAI(pCreature) { }
 
         bool HasIceBlocked;
 
@@ -750,16 +740,15 @@ public:
 
         void Reset()
         {
-            HasIceBlocked = false;
-
+            HasIceBlocked   = false;
             Polymorph_Timer = 1000;
             Ice_Block_Timer = 20000;
-            Wait_Timer = 10000;
-            Blizzard_Timer = 8000;
+            Wait_Timer      = 10000;
+            Blizzard_Timer  = 8000;
             Ice_Lance_Timer = 12000;
             Cone_of_Cold_Timer = 10000;
             Frostbolt_Timer = 3000;
-            Blink_Timer = 8000;
+            Blink_Timer     = 8000;
 
             boss_priestess_lackey_commonAI::Reset();
         }
@@ -843,13 +832,13 @@ public:
 
 enum eWarriorSpells
 {
-    SPELL_INTERCEPT_STUN        = 27577,
-    SPELL_DISARM                = 27581,
-    SPELL_PIERCING_HOWL         = 23600,
-    SPELL_FRIGHTENING_SHOUT     = 19134,
-    SPELL_HAMSTRING             = 27584,
-    SPELL_BATTLE_SHOUT          = 27578,
-    SPELL_MORTAL_STRIKE         = 44268
+    SPELL_INTERCEPT_STUN    = 27577,
+    SPELL_DISARM            = 27581,
+    SPELL_PIERCING_HOWL     = 23600,
+    SPELL_FRIGHTENING_SHOUT = 19134,
+    SPELL_HAMSTRING         = 27584,
+    SPELL_BATTLE_SHOUT      = 27578,
+    SPELL_MORTAL_STRIKE     = 44268
 };
 
 class boss_warlord_salaris : public CreatureScript
@@ -865,7 +854,7 @@ public:
     struct boss_warlord_salarisAI : public boss_priestess_lackey_commonAI
     {
         //Warrior
-        boss_warlord_salarisAI(Creature* c) : boss_priestess_lackey_commonAI(c) { }
+        boss_warlord_salarisAI(Creature* pCreature) : boss_priestess_lackey_commonAI(pCreature) { }
 
         uint32 Intercept_Stun_Timer;
         uint32 Disarm_Timer;
@@ -876,12 +865,12 @@ public:
 
         void Reset()
         {
-            Intercept_Stun_Timer = 500;
-            Disarm_Timer = 6000;
-            Piercing_Howl_Timer = 10000;
+            Intercept_Stun_Timer    = 500;
+            Disarm_Timer            = 6000;
+            Piercing_Howl_Timer     = 10000;
             Frightening_Shout_Timer = 18000;
-            Hamstring_Timer = 4500;
-            Mortal_Strike_Timer = 8000;
+            Hamstring_Timer         = 4500;
+            Mortal_Strike_Timer     = 8000;
 
             boss_priestess_lackey_commonAI::Reset();
         }
@@ -962,14 +951,13 @@ public:
 
 enum eHunterSpells
 {
-    SPELL_AIMED_SHOT            = 44271,
-    SPELL_SHOOT                 = 15620,
-    SPELL_CONCUSSIVE_SHOT       = 27634,
-    SPELL_MULTI_SHOT            = 31942,
-    SPELL_WING_CLIP             = 44286,
-    SPELL_FREEZING_TRAP         = 44136,
-
-    NPC_SLIVER                  = 24552
+    SPELL_AIMED_SHOT        = 44271,
+    SPELL_SHOOT             = 15620,
+    SPELL_CONCUSSIVE_SHOT   = 27634,
+    SPELL_MULTI_SHOT        = 31942,
+    SPELL_WING_CLIP         = 44286,
+    SPELL_FREEZING_TRAP     = 44136,
+    NPC_SLIVER              = 24552
 };
 
 class boss_garaxxas : public CreatureScript
@@ -985,7 +973,7 @@ public:
     struct boss_garaxxasAI : public boss_priestess_lackey_commonAI
     {
         //Hunter
-        boss_garaxxasAI(Creature* c) : boss_priestess_lackey_commonAI(c) { m_uiPetGUID = 0; }
+        boss_garaxxasAI(Creature* pCreature) : boss_priestess_lackey_commonAI(pCreature) { m_uiPetGUID = 0; }
 
         uint64 m_uiPetGUID;
 
@@ -998,11 +986,11 @@ public:
 
         void Reset()
         {
-            Aimed_Shot_Timer = 6000;
-            Shoot_Timer = 2500;
+            Aimed_Shot_Timer    = 6000;
+            Shoot_Timer         = 2500;
             Concussive_Shot_Timer = 8000;
-            Multi_Shot_Timer = 10000;
-            Wing_Clip_Timer = 4000;
+            Multi_Shot_Timer    = 10000;
+            Wing_Clip_Timer     = 4000;
             Freezing_Trap_Timer = 15000;
 
             Unit* pPet = Unit::GetUnit(*me, m_uiPetGUID);
@@ -1104,7 +1092,7 @@ public:
     struct boss_apokoAI : public boss_priestess_lackey_commonAI
     {
         //Shaman
-        boss_apokoAI(Creature* c) : boss_priestess_lackey_commonAI(c) { }
+        boss_apokoAI(Creature* pCreature) : boss_priestess_lackey_commonAI(pCreature) { }
 
         uint32 Totem_Timer;
         uint8  Totem_Amount;
@@ -1115,12 +1103,12 @@ public:
 
         void Reset()
         {
-            Totem_Timer = 2000;
-            Totem_Amount = 1;
-            War_Stomp_Timer = 10000;
-            Purge_Timer = 8000;
-            Healing_Wave_Timer = 5000;
-            Frost_Shock_Timer = 7000;
+            Totem_Timer         = 2000;
+            Totem_Amount        = 1;
+            War_Stomp_Timer     = 10000;
+            Purge_Timer         = 8000;
+            Healing_Wave_Timer  = 5000;
+            Frost_Shock_Timer   = 7000;
 
             boss_priestess_lackey_commonAI::Reset();
         }
@@ -1202,7 +1190,7 @@ public:
     struct boss_zelfanAI : public boss_priestess_lackey_commonAI
     {
         //Engineer
-        boss_zelfanAI(Creature* c) : boss_priestess_lackey_commonAI(c) { }
+        boss_zelfanAI(Creature* pCreature) : boss_priestess_lackey_commonAI(pCreature) { }
 
         uint32 Goblin_Dragon_Gun_Timer;
         uint32 Rocket_Launch_Timer;
@@ -1213,10 +1201,10 @@ public:
         void Reset()
         {
             Goblin_Dragon_Gun_Timer = 20000;
-            Rocket_Launch_Timer = 7000;
-            Recombobulate_Timer = 4000;
+            Rocket_Launch_Timer     = 7000;
+            Recombobulate_Timer     = 4000;
             High_Explosive_Sheep_Timer = 10000;
-            Fel_Iron_Bomb_Timer = 15000;
+            Fel_Iron_Bomb_Timer     = 15000;
 
             boss_priestess_lackey_commonAI::Reset();
         }
@@ -1273,20 +1261,6 @@ public:
     };
 };
 
-/*
-class mob_high_explosive_sheep : public CreatureScript
-{
-public:
-    mob_high_explosive_sheep() : CreatureScript("mob_high_explosive_sheep") { }
-
-    //CreatureAI* GetAI(Creature* pCreature) const
-    //{
-    //    return new mob_high_explosive_sheepAI(pCreature);
-    //};
-};
-
-*/
-
 void AddSC_boss_priestess_delrissa()
 {
     new boss_priestess_delrissa;
@@ -1298,5 +1272,4 @@ void AddSC_boss_priestess_delrissa()
     new boss_garaxxas;
     new boss_apoko;
     new boss_zelfan;
-    // new mob_high_explosive_sheep();
 }

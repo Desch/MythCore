@@ -34,7 +34,7 @@
 
 Warden.Enabled = 1
 
-#     WardenLogFile = "warden.log"
+#     WardenLogFile = "WARDEN.log"
 #        Warden log file
 
 WardenLogFile = ""
@@ -312,57 +312,21 @@ PlayerSave.Stats.MinLevel = 0
 PlayerSave.Stats.SaveOnlyOnLogout = 1
 
 #
-#    vmap.enableLOS
-#    vmap.enableHeight
-#        Description: VMmap support for line of sight and height calculation.
-#        Default:     1 - (Enabled, vmap.enableLOS)
-#                     1 - (Enabled, vmap.enableHeight)
-#                     0 - (Disabled)
-
-vmap.enableLOS    = 1
-vmap.enableHeight = 1
-
-#
-#    vmap.ignoreSpellIds
-#        Description: These spells are ignored for LoS calculation.
-#                     List of ids with delimiter ','.
-#        Example:     "7720,1337"
-#        Default:     "7720"
-
-vmap.ignoreSpellIds = "7720"
-
-#
-#    vmap.petLOS
-#        Description: Check line of sight for pets, to avoid them attacking through walls.
+#    VMaps.enabled
+#        Description: VMmap support is for line of sight and height calculation. Check line of sight for pets,
+#        to avoid them attacking through walls. VMap based indoor check to remove outdoor-only auras (mounts etc.).
 #        Default:     1 - (Enabled, each pet attack will be checked for line of sight)
 #                     0 - (Disabled, somewhat less CPU usage)
 
-vmap.petLOS = 1
+VMaps.enabled       = 1
 
 #
-#    vmap.enableIndoorCheck
-#        Description: VMap based indoor check to remove outdoor-only auras (mounts etc.).
-#        Default:     1 - (Enabled)
-#                     0 - (Disabled, somewhat less CPU usage)
-
-vmap.enableIndoorCheck = 1
-
-#
-#    Pathfinding.enabled
+#    MMaps.enabled
 #        Description: Enable pathfinding support
 #        Default:     0 - (Disabled, less CPU and memory usage)
 #                     1 - (Enabled)
 
-Pathfinding.enabled = 1
-
-#
-#    DetectPosCollision
-#        Description: Check final move position, summon position, etc for visible collision with
-#                     other objects or walls (walls only if vmaps are enabled).
-#        Default:     1 - (Enabled)
-#                     0 - (Disabled, Less position precision but less CPU usage)
-
-DetectPosCollision = 1
+MMaps.enabled       = 1
 
 #
 #    TargetPosRecalculateRange
@@ -453,7 +417,7 @@ LogLevel = 3
 #        Default:     "Server.log" - (Enabled)
 #                     ""           - (Disabled)
 
-LogFile = "Server.log"
+LogFile = "SERVER.log"
 
 #
 #    LogTimestamp
@@ -603,12 +567,12 @@ GmLogTimestamp = 0
 GmLogPerAccount = 0
 
 #
-#    RaLogFile
-#        Description: Log file for Remote Access commands.
-#        Default:     "RA.log" - (Enabled)
-#                     ""       - (Disabled)
+#    RASOAP
+#        Description: Log file for Remote Access and SOAP commands.
+#        Default:     "RASOAP.log"  - (Enabled)
+#                     ""            - (Disabled)
 
-RaLogFile = ""
+RASOAP = ""
 
 #
 #    ArenaLogFile
