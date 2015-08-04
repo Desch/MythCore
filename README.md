@@ -2,6 +2,7 @@ MythCore
 ========
 
 MythCore v12.54 by Desch. 
+
 This repository contains 3 diferents branches: blizzlike (master), Custom_A and Custom_B.
 
 Custom_A Custom Scripts
