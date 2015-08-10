@@ -5,6 +5,8 @@ MythCore v12.54 by Desch.
 
 This repository contains 3 diferents branches: blizzlike (master), Custom_A and Custom_B.
 
+DBCs, MAPS, VMAPs and MMaps are available at RELEASE PAGE.
+
 Custom_A Custom Scripts
 ========
 
