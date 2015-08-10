@@ -1,10 +1,18 @@
 MythCore
 ========
 
-MythCore v12.54 Custom A by Desch
+MythCore v12.54 by Desch. 
 
-zonewow.com 
+This repository contains 3 diferents branches: blizzlike (master), Custom_A and Custom_B.
 
-wowtallercreador.com
+DBCs, MAPS, VMAPs and MMaps are available at RELEASE PAGE.
 
-sourcewow.com
+Custom_A Custom Scripts
+========
+
+![alt tag](http://i.imgur.com/YZLNena.png "Custom A")
+![alt tag](http://i.imgur.com/gzLE06h.png "Custom A")
+
+More information and other items at: ZoneWoW.com
+
+Desch
