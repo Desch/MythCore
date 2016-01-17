@@ -12,7 +12,7 @@ DBCs, MAPS, VMAPs and MMaps are available at RELEASE PAGE.
 Build Status
 ========
 
-Master (Blizzlike): [![3.3.5 Build Status](https://travis-ci.org/Desch/MythCore.svg?branch=master)](https://travis-ci.org/Desch/MythCore)
+Master (Blizzlike): ![alt tag](http://i.imgur.com/5VgVP3D.png)
 
 Custom_A Custom Scripts
 ========
