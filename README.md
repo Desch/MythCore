@@ -1,5 +1,3 @@
-# ![logo](http://zonewow.com/public/style_images/5_logo2.png)
-
 MythCore
 ========
 
